@@ -115,6 +115,107 @@ function Explosion({ active }: { active: boolean }) {
   );
 }
 
+/* ---------------------------- scatter stars ------------------------------ */
+
+const SCATTER_COUNT = 120;
+const SCATTER_DURATION = 2.0;
+
+function ScatterStars({ active }: { active: boolean }) {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const time = useRef(0);
+  const alive = useRef(false);
+
+  const particles = useMemo(() => {
+    const arr: {
+      vel: THREE.Vector3;
+      start: number;
+      life: number;
+      size: number;
+    }[] = [];
+    for (let i = 0; i < SCATTER_COUNT; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const speed = 10 + Math.random() * 30;
+      arr.push({
+        vel: new THREE.Vector3(
+          Math.sin(phi) * Math.cos(theta) * speed,
+          Math.sin(phi) * Math.sin(theta) * speed * 0.5,
+          Math.cos(phi) * speed * 0.35,
+        ),
+        start: Math.random() * 0.2,
+        life: 0.6 + Math.random() * 0.8,
+        size: 0.015 + Math.random() * 0.04,
+      });
+    }
+    return arr;
+  }, []);
+
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const color = useMemo(() => new THREE.Color(), []);
+
+  useFrame((_, dt) => {
+    const mesh = ref.current;
+    if (!mesh) return;
+
+    if (active && !alive.current) {
+      alive.current = true;
+      time.current = 0;
+    }
+    if (!alive.current) {
+      mesh.visible = false;
+      return;
+    }
+
+    time.current += dt;
+    const t = time.current;
+    mesh.visible = true;
+
+    if (t > SCATTER_DURATION + 0.5) {
+      alive.current = false;
+      mesh.visible = false;
+      return;
+    }
+
+    for (let i = 0; i < SCATTER_COUNT; i++) {
+      const p = particles[i];
+      const lt = t - p.start;
+      if (lt < 0 || lt > p.life) {
+        dummy.scale.setScalar(0);
+      } else {
+        const progress = lt / p.life;
+        const ease = 1 - progress * progress;
+        dummy.position.set(
+          p.vel.x * lt * 0.7,
+          p.vel.y * lt * 0.7,
+          p.vel.z * lt * 0.7,
+        );
+        const s = p.size * ease;
+        dummy.scale.setScalar(s);
+        const b = Math.floor(ease * 200 + 55);
+        color.setRGB(b / 255, b / 255, Math.min(1, (b + 40) / 255));
+      }
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+      mesh.setColorAt(i, color);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, SCATTER_COUNT]} visible={false}>
+      <sphereGeometry args={[1, 4, 4]} />
+      <meshBasicMaterial
+        toneMapped={false}
+        transparent
+        opacity={0.8}
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
+    </instancedMesh>
+  );
+}
+
 /* ---------------------------------- utils --------------------------------- */
 
 export function detectQuality(): SceneQuality {
@@ -203,24 +304,70 @@ function Nebulae() {
 
 /* -------------------------------- dock core ------------------------------- */
 
-function DockCore({ motion }: { motion: boolean }) {
+function DockCore({ motion, explode }: { motion: boolean; explode: boolean }) {
   const glow = useGlowTexture();
   const ringsRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Mesh>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
+  const haloRef = useRef<THREE.Sprite>(null);
+  const explTimer = useRef(0);
+  const wasExploding = useRef(false);
 
   useFrame((state, dt) => {
     const t = state.clock.elapsedTime;
-    if (ringsRef.current) {
-      if (motion) {
-        ringsRef.current.rotation.y += dt * 0.12;
-        ringsRef.current.rotation.x =
-          0.35 + Math.sin(t * 0.15) * 0.06;
-      }
-      ringsRef.current.rotation.z = Math.sin(t * 0.1) * 0.08;
+
+    // detect explosion start
+    if (explode && !wasExploding.current) {
+      wasExploding.current = true;
+      explTimer.current = 0;
     }
+    if (!explode) wasExploding.current = false;
+
+    // core pulsing
     if (coreRef.current) {
-      const s = 1 + Math.sin(t * 1.4) * 0.04;
-      coreRef.current.scale.setScalar(s);
+      if (wasExploding.current) {
+        explTimer.current += dt;
+        const et = explTimer.current;
+        if (et < 0.35) {
+          // flash & expand
+          const p = et / 0.35;
+          coreRef.current.scale.setScalar(1 + p * 8);
+          if (lightRef.current) lightRef.current.intensity = 30 + p * 220;
+          if (haloRef.current) haloRef.current.scale.setScalar(4.2 + p * 18);
+        } else if (et < 0.8) {
+          // collapse
+          const p = (et - 0.35) / 0.45;
+          coreRef.current.scale.setScalar(9 * (1 - p));
+          if (lightRef.current) lightRef.current.intensity = 250 * (1 - p);
+          if (haloRef.current) haloRef.current.scale.setScalar(22 * (1 - p));
+        } else {
+          coreRef.current.scale.setScalar(0);
+          if (lightRef.current) lightRef.current.intensity = 0;
+          if (haloRef.current) haloRef.current.scale.setScalar(0);
+        }
+      } else {
+        const s = 1 + Math.sin(t * 1.4) * 0.04;
+        coreRef.current.scale.setScalar(s);
+        if (lightRef.current) lightRef.current.intensity = 30;
+        if (haloRef.current) haloRef.current.scale.setScalar(4.2);
+      }
+    }
+
+    // rings explode outward
+    if (ringsRef.current) {
+      if (wasExploding.current) {
+        const et = explTimer.current;
+        const expand = et < 0.5 ? 1 + et * 8 : 5 * Math.max(0, 1 - (et - 0.5));
+        ringsRef.current.scale.setScalar(expand);
+        ringsRef.current.rotation.y += dt * 2.5;
+      } else {
+        ringsRef.current.scale.setScalar(1);
+        if (motion) {
+          ringsRef.current.rotation.y += dt * 0.12;
+          ringsRef.current.rotation.x = 0.35 + Math.sin(t * 0.15) * 0.06;
+        }
+        ringsRef.current.rotation.z = Math.sin(t * 0.1) * 0.08;
+      }
     }
   });
 
@@ -237,7 +384,7 @@ function DockCore({ motion }: { motion: boolean }) {
           roughness={0.15}
         />
       </mesh>
-      <pointLight color="#7dd3fc" intensity={30} distance={16} />
+      <pointLight ref={lightRef} color="#7dd3fc" intensity={30} distance={16} />
 
       {/* orbital rings */}
       <group ref={ringsRef}>
@@ -256,7 +403,7 @@ function DockCore({ motion }: { motion: boolean }) {
       </group>
 
       {/* halo */}
-      <sprite scale={[4.2, 4.2, 1]}>
+      <sprite ref={haloRef} scale={[4.2, 4.2, 1]}>
         <spriteMaterial
           map={glow}
           color="#38bdf8"
@@ -606,7 +753,8 @@ export function DockScene({ hovered, onHover, quality, scrollRef, explode }: Doc
       />
       <Nebulae />
       <Explosion active={explode} />
-      <DockCore motion={quality.motion} />
+      <ScatterStars active={explode} />
+      <DockCore motion={quality.motion} explode={explode} />
 
       {PROVIDERS.map((p, i) => (
         <ProviderOrbit

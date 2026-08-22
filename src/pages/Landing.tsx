@@ -66,10 +66,13 @@ export default function Landing() {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [webgl, setWebgl] = useState(true);
   const [explode, setExplode] = useState(false);
+  const [shake, setShake] = useState(false);
   const scrollRef = useRef(0);
   const triggerExplosion = () => {
     setExplode(true);
+    setShake(true);
     setTimeout(() => setExplode(false), 1800);
+    setTimeout(() => setShake(false), 500);
   };
 
   useEffect(() => {
@@ -88,7 +91,7 @@ export default function Landing() {
 
   return (
     <ExplosionCtx.Provider value={triggerExplosion}>
-    <div className="relative min-h-screen bg-[#060b18] text-slate-100 overflow-x-clip font-sans selection:bg-cyan-500/30 selection:text-white">
+    <div className={`relative min-h-screen bg-[#060b18] text-slate-100 overflow-x-clip font-sans selection:bg-cyan-500/30 selection:text-white ${shake ? "screen-shake" : ""}`}>
       {/* ── radial glow backdrop ── */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
