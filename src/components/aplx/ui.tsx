@@ -116,7 +116,7 @@ export function SectionHeading({
 
 const NAV_LINKS = [
   { label: "Dock", href: "#dock" },
-  { label: "Providers", href: "#providers" },
+  { label: "Catalog", href: "#catalog" },
   { label: "Nano", href: "#nano" },
   { label: "Open Source", href: "#source" },
 ];
