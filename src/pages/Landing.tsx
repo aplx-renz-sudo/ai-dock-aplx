@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -28,9 +28,11 @@ import {
   GlassPanel,
   LaunchButton,
   GithubButton,
+  InstallWebsiteButton,
   Navbar,
   SectionHeading,
 } from "@/components/aplx/ui";
+import { ExplosionCtx } from "@/components/aplx/ExplosionContext";
 
 /* ----------------------------- helper icons ------------------------------ */
 
@@ -63,7 +65,12 @@ export default function Landing() {
   const [hovered3d, setHovered3d] = useState<string | null>(null);
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [webgl, setWebgl] = useState(true);
+  const [explode, setExplode] = useState(false);
   const scrollRef = useRef(0);
+  const triggerExplosion = () => {
+    setExplode(true);
+    setTimeout(() => setExplode(false), 1800);
+  };
 
   useEffect(() => {
     setQuality(detectQuality());
@@ -80,6 +87,7 @@ export default function Landing() {
   }, []);
 
   return (
+    <ExplosionCtx.Provider value={triggerExplosion}>
     <div className="relative min-h-screen bg-[#060b18] text-slate-100 overflow-x-clip font-sans selection:bg-cyan-500/30 selection:text-white">
       {/* ── radial glow backdrop ── */}
       <div
@@ -98,6 +106,7 @@ export default function Landing() {
               hovered={hovered3d}
               onHover={setHovered3d}
               quality={quality}
+              explode={explode}
               scrollRef={scrollRef as React.RefObject<number>}
             />
           ) : (
@@ -147,6 +156,7 @@ export default function Landing() {
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <LaunchButton />
               <GithubButton />
+              <InstallWebsiteButton />
             </div>
           </motion.div>
 
@@ -385,6 +395,7 @@ export default function Landing() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <LaunchButton />
               <GithubButton label="Explore the source" />
+              <InstallWebsiteButton />
             </div>
           </motion.div>
         </section>
@@ -395,29 +406,12 @@ export default function Landing() {
             <span className="font-display text-sm tracking-[0.18em] text-slate-500">
               APLX DOCK
             </span>
-            <div className="flex items-center gap-5 text-xs text-slate-500">
-              <a
-                href={LAUNCH_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:text-white"
-              >
-                Launch
-              </a>
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:text-white"
-              >
-                GitHub
-              </a>
-              <span>MIT License</span>
-            </div>
+            <FooterLinks />
           </div>
         </footer>
       </main>
     </div>
+    </ExplosionCtx.Provider>
   );
 }
 
@@ -600,6 +594,37 @@ function ProviderCard({
 /* ====================================================================== */
 /* FALLBACK (no WebGL)                                                     */
 /* ====================================================================== */
+
+function FooterLinks() {
+  const trigger = useContext(ExplosionCtx);
+  const busy = useRef(false);
+  const go = (href: string) => {
+    if (busy.current) return;
+    busy.current = true;
+    trigger();
+    setTimeout(() => {
+      window.open(href, "_blank", "noopener,noreferrer");
+      busy.current = false;
+    }, 1500);
+  };
+  return (
+    <div className="flex items-center gap-5 text-xs text-slate-500">
+      <button
+        onClick={() => go(LAUNCH_URL)}
+        className="transition-colors hover:text-white"
+      >
+        Launch
+      </button>
+      <button
+        onClick={() => go(GITHUB_URL)}
+        className="transition-colors hover:text-white"
+      >
+        GitHub
+      </button>
+      <span>MIT License</span>
+    </div>
+  );
+}
 
 function FallbackStars() {
   return (

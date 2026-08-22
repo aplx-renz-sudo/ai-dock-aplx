@@ -1,17 +1,40 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, Github, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_URL, LAUNCH_URL } from "./data";
+import { useExplosion } from "./ExplosionContext";
+
+const EXPLOSION_WAIT_MS = 1500;
+
+/* ---- explosive link: triggers 3-D star burst, then opens link ---- */
+
+function useNavigateAfterExplosion() {
+  const trigger = useExplosion();
+  const busy = useRef(false);
+
+  const navigate = useCallback(
+    (href: string, target = "_blank") => {
+      if (busy.current) return;
+      busy.current = true;
+      trigger();
+      setTimeout(() => {
+        window.open(href, target, "noopener,noreferrer");
+        busy.current = false;
+      }, EXPLOSION_WAIT_MS);
+    },
+    [trigger],
+  );
+  return navigate;
+}
 
 /* --------------------------------- buttons -------------------------------- */
 
 export function LaunchButton({ className }: { className?: string }) {
+  const go = useNavigateAfterExplosion();
   return (
-    <a
-      href={LAUNCH_URL}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      onClick={() => go(LAUNCH_URL)}
       className={cn(
         "group pointer-events-auto inline-flex items-center gap-2 rounded-full px-7 py-3.5",
         "bg-white text-slate-950 font-semibold tracking-wide",
@@ -22,7 +45,7 @@ export function LaunchButton({ className }: { className?: string }) {
     >
       Launch Aplx
       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-    </a>
+    </button>
   );
 }
 
@@ -33,11 +56,10 @@ export function GithubButton({
   label?: string;
   className?: string;
 }) {
+  const go = useNavigateAfterExplosion();
   return (
-    <a
-      href={GITHUB_URL}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      onClick={() => go(GITHUB_URL)}
       className={cn(
         "group pointer-events-auto inline-flex items-center gap-2 rounded-full px-7 py-3.5",
         "border border-white/20 bg-white/[0.08] backdrop-blur-xl font-medium tracking-wide text-slate-100",
@@ -49,7 +71,28 @@ export function GithubButton({
       <Github className="h-4 w-4" />
       {label}
       <ExternalLink className="h-3.5 w-3.5 opacity-60 transition-opacity group-hover:opacity-100" />
-    </a>
+    </button>
+  );
+}
+
+const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
+
+export function InstallWebsiteButton({ className }: { className?: string }) {
+  const go = useNavigateAfterExplosion();
+  return (
+    <button
+      onClick={() => go(INSTALL_WEBSITE_URL)}
+      className={cn(
+        "group pointer-events-auto inline-flex items-center gap-2 rounded-full px-6 py-3",
+        "border border-cyan-400/30 bg-cyan-500/[0.1] backdrop-blur-xl font-medium tracking-wide text-cyan-200",
+        "shadow-[inset_0_1px_0_rgba(34,211,238,0.15)]",
+        "transition-all duration-300 hover:bg-cyan-500/[0.2] hover:border-cyan-400/50 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(34,211,238,0.2)]",
+        className,
+      )}
+    >
+      Install Website
+      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+    </button>
   );
 }
 
@@ -123,6 +166,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const go = useNavigateAfterExplosion();
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
@@ -148,23 +192,19 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <a
-              href={LAUNCH_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => go(LAUNCH_URL)}
               className="hidden rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-slate-950 transition-shadow hover:shadow-[0_0_24px_rgba(125,211,252,0.5)] sm:inline-flex"
             >
               Launch
-            </a>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            </button>
+            <button
+              onClick={() => go(GITHUB_URL)}
               aria-label="GitHub repository"
               className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-slate-200 transition-colors hover:bg-white/10"
             >
               <Github className="h-4 w-4" />
-            </a>
+            </button>
             <button
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
@@ -187,15 +227,12 @@ export function Navbar() {
                 {l.label}
               </a>
             ))}
-            <a
-              href={LAUNCH_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-              className="block px-5 py-3 text-sm font-semibold text-cyan-300 hover:bg-white/10"
+            <button
+              onClick={() => { setOpen(false); go(LAUNCH_URL); }}
+              className="block w-full px-5 py-3 text-left text-sm font-semibold text-cyan-300 hover:bg-white/10"
             >
               Launch Aplx →
-            </a>
+            </button>
           </div>
         )}
       </nav>
