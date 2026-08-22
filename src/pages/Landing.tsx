@@ -310,6 +310,69 @@ export default function Landing() {
           </motion.div>
         </section>
 
+        {/* ============================================================ CREDITS */}
+        <section className="relative px-6 py-28 sm:py-36">
+          <SectionHeading
+            kicker="Credits"
+            title="Built by a 15-year-old."
+            subtitle="Aplx Dock is an ongoing project by R3nz — developed with the help of AI and the open-source community."
+          />
+
+          <motion.div {...fadeUp} className="mx-auto mt-14 max-w-3xl">
+            <GlassPanel className="p-8 sm:p-10">
+              {/* developer credit */}
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-500/[0.1] text-cyan-300">
+                  <span className="font-display text-lg font-bold">R3nz</span>
+                </div>
+                <div>
+                  <h4 className="font-display text-base font-semibold text-white">
+                    R3nz <span className="font-normal text-slate-500">— Developer</span>
+                  </h4>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-400">
+                    Aplx Dock is a solo project by a 15-year-old developer, built out of genuine
+                    curiosity about what a unified AI dock could look like. It is still actively
+                    under development — new providers, models, and features are being added
+                    regularly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="my-6 h-px w-full bg-white/[0.07]" />
+
+              {/* tools credit */}
+              <div>
+                <h4 className="font-display text-sm font-semibold text-white mb-3">
+                  Built with
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Claude Opus",
+                    "Sonnet 4.6",
+                    "Haiku 4.5",
+                    "GPT-5.6",
+                    "GPT-4",
+                    "Gemini 3.7",
+                    "Gemini 3.1 Pro",
+                    "GitHub Copilot",
+                    "Ollama",
+                  ].map((tool) => (
+                    <span
+                      key={tool}
+                      className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[11px] font-medium text-slate-300"
+                    >
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs text-slate-500">
+                  …and many more tools, models, and community contributions.
+                </p>
+              </div>
+            </GlassPanel>
+          </motion.div>
+        </section>
+
         {/* ============================================================ FINAL CTA */}
         <section className="relative px-6 py-28 text-center sm:py-36">
           <motion.div {...fadeUp} className="mx-auto max-w-xl">
