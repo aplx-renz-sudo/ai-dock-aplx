@@ -91,13 +91,13 @@ export default function Landing() {
 
   return (
     <ExplosionCtx.Provider value={triggerExplosion}>
-    <div className={`relative min-h-screen bg-[#060b18] text-slate-100 overflow-x-clip font-sans selection:bg-cyan-500/30 selection:text-white ${shake ? "screen-shake" : ""}`}>
+    <div className={`relative min-h-screen bg-[#020408] text-slate-100 overflow-x-clip font-sans selection:bg-cyan-500/30 selection:text-white ${shake ? "screen-shake" : ""}`}>
       {/* ── radial glow backdrop ── */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 50% 35%, rgba(34,211,238,0.07) 0%, rgba(139,92,246,0.04) 40%, transparent 75%)",
+            "radial-gradient(ellipse 80% 60% at 50% 35%, rgba(34,211,238,0.06) 0%, rgba(139,92,246,0.03) 40%, rgba(15,23,42,0.02) 60%, transparent 80%)",
         }}
       />
 

@@ -5,9 +5,14 @@
  */
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
-import { Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { PROVIDERS } from "./data";
+import {
+  Galaxy,
+  RealisticNebulae,
+  DustCloud,
+  RealisticStars,
+} from "./SpaceEnvironment";
 
 export interface SceneQuality {
   stars: number;
@@ -272,35 +277,7 @@ function useGlowTexture() {
   }, []);
 }
 
-function Nebulae() {
-  const tex = useGlowTexture();
-  const clouds = useMemo(
-    () => [
-      { pos: [-14, 6, -38] as const, scale: 42, color: "#1e3a8a", opacity: 0.22 },
-      { pos: [16, -8, -42] as const, scale: 50, color: "#4c1d95", opacity: 0.18 },
-      { pos: [4, 12, -50] as const, scale: 60, color: "#0e7490", opacity: 0.12 },
-      { pos: [-10, -12, -46] as const, scale: 44, color: "#312e81", opacity: 0.16 },
-    ],
-    [],
-  );
-  return (
-    <group>
-      {clouds.map((c, i) => (
-        <mesh key={i} position={c.pos as unknown as THREE.Vector3Tuple}>
-          <planeGeometry args={[c.scale, c.scale]} />
-          <meshBasicMaterial
-            map={tex}
-            color={c.color}
-            transparent
-            opacity={c.opacity}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-}
+
 
 /* -------------------------------- dock core ------------------------------- */
 
@@ -736,22 +713,60 @@ export function DockScene({ hovered, onHover, quality, scrollRef, explode }: Doc
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 1.1,
       }}
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.25} />
-      <directionalLight position={[6, 8, 4]} intensity={0.5} color="#c7d2fe" />
+      <ambientLight intensity={0.15} />
+      <directionalLight position={[6, 8, 4]} intensity={0.6} color="#c7d2fe" />
+      <directionalLight position={[-4, -3, 6]} intensity={0.15} color="#60a5fa" />
 
-      <Stars
-        radius={90}
-        depth={50}
-        count={quality.stars}
-        factor={3.2}
-        saturation={0}
-        fade
-        speed={quality.motion ? 0.5 : 0}
+      <RealisticStars count={quality.stars} motion={quality.motion} />
+      <RealisticNebulae />
+      <DustCloud />
+
+      {/* Spiral galaxies in the deep background */}
+      <Galaxy
+        position={[-30, 12, -70]}
+        arms={3}
+        count={800}
+        radius={12}
+        coreBrightness={1.4}
+        rotationSpeed={0.008}
+        hue={0.62}
+        scale={1}
       />
-      <Nebulae />
+      <Galaxy
+        position={[35, -10, -80]}
+        arms={4}
+        count={600}
+        radius={10}
+        coreBrightness={1.2}
+        rotationSpeed={0.006}
+        hue={0.58}
+        scale={0.85}
+      />
+      <Galaxy
+        position={[-8, -18, -90]}
+        arms={2}
+        count={500}
+        radius={8}
+        coreBrightness={1.6}
+        rotationSpeed={0.01}
+        hue={0.08}
+        scale={0.7}
+      />
+      <Galaxy
+        position={[20, 20, -95]}
+        arms={3}
+        count={400}
+        radius={7}
+        coreBrightness={1.0}
+        rotationSpeed={0.005}
+        hue={0.75}
+        scale={0.6}
+      />
       <Explosion active={explode} />
       <ScatterStars active={explode} />
       <DockCore motion={quality.motion} explode={explode} />
@@ -776,7 +791,7 @@ export function DockScene({ hovered, onHover, quality, scrollRef, explode }: Doc
       {quality.shootingStars && <ShootingStar motion={quality.motion} />}
       <CameraRig motion={quality.motion} scrollRef={scrollRef} />
 
-      <fog attach="fog" args={["#020617", 26, 70]} />
+      <fog attach="fog" args={["#010308", 30, 80]} />
     </Canvas>
   );
 }
