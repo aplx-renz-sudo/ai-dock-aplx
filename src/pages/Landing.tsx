@@ -33,6 +33,7 @@ import {
   SectionHeading,
 } from "@/components/aplx/ui";
 import { ExplosionCtx } from "@/components/aplx/ExplosionContext";
+import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
 
 /* ----------------------------- helper icons ------------------------------ */
 
@@ -62,18 +63,51 @@ const fadeUp = {
 /* ============================== LANDING ================================== */
 
 export default function Landing() {
+  return (
+    <DJProvider>
+      <LandingInner />
+    </DJProvider>
+  );
+}
+
+function LandingInner() {
   const [hovered3d, setHovered3d] = useState<string | null>(null);
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [webgl, setWebgl] = useState(true);
   const [explode, setExplode] = useState(false);
   const [shake, setShake] = useState(false);
+  const [djMode, setDjMode] = useState(false);
   const scrollRef = useRef(0);
+  const { active: djActive, engine: djEngine } = useDJ();
   const triggerExplosion = () => {
     setExplode(true);
     setShake(true);
     setTimeout(() => setExplode(false), 1800);
     setTimeout(() => setShake(false), 500);
   };
+
+  // wire DJ mode events
+  useEffect(() => {
+    const onStart = () => {
+      setDjMode(true);
+      djEngine?.start();
+    };
+    const onStop = () => {
+      setDjMode(false);
+      djEngine?.stop();
+    };
+    const onToggleMic = () => {
+      djEngine?.enableMic();
+    };
+    window.addEventListener("dj-start", onStart as EventListener);
+    window.addEventListener("dj-stop", onStop as EventListener);
+    window.addEventListener("dj-toggle-mic", onToggleMic as EventListener);
+    return () => {
+      window.removeEventListener("dj-start", onStart as EventListener);
+      window.removeEventListener("dj-stop", onStop as EventListener);
+      window.removeEventListener("dj-toggle-mic", onToggleMic as EventListener);
+    };
+  }, [djEngine]);
 
   useEffect(() => {
     setQuality(detectQuality());
@@ -96,8 +130,10 @@ export default function Landing() {
       <div
         className="pointer-events-none fixed inset-0 z-0"
         style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 35%, rgba(34,211,238,0.06) 0%, rgba(139,92,246,0.03) 40%, rgba(15,23,42,0.02) 60%, transparent 80%)",
+          background: djMode
+            ? "radial-gradient(ellipse 80% 60% at 50% 35%, rgba(34,211,238,0.15) 0%, rgba(139,92,246,0.08) 40%, rgba(15,23,42,0.02) 60%, transparent 80%)"
+            : "radial-gradient(ellipse 80% 60% at 50% 35%, rgba(34,211,238,0.06) 0%, rgba(139,92,246,0.03) 40%, rgba(15,23,42,0.02) 60%, transparent 80%)",
+          transition: "background 1s ease",
         }}
       />
 
@@ -111,6 +147,7 @@ export default function Landing() {
               quality={quality}
               explode={explode}
               scrollRef={scrollRef as React.RefObject<number>}
+              djMode={djMode}
             />
           ) : (
             <FallbackStars />
@@ -120,6 +157,10 @@ export default function Landing() {
 
       {/* ── nav ── */}
       <Navbar />
+
+      {/* ── DJ overlay ── */}
+      <DJOverlay />
+      {djMode && <DJShake />}
 
       {/* ── page content ── */}
       <main className="relative z-10">
@@ -646,5 +687,43 @@ function FallbackStars() {
         />
       ))}
     </div>
+  );
+}
+
+/* ====================================================================== */
+/* DJ SHAKE — subtle screen vibration driven by bass                       */
+/* ====================================================================== */
+
+function DJShake() {
+  const { bassLevel } = useDJ();
+  const ref = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let lastBass = 0;
+    const tick = () => {
+      // subtle shake scaled by bass
+      const intensity = bassLevel * 2.5;
+      const x = (Math.random() - 0.5) * intensity;
+      const y = (Math.random() - 0.5) * intensity;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+      lastBass = bassLevel;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      el.style.transform = "";
+    };
+  }, [bassLevel]);
+
+  return (
+    <div
+      ref={ref}
+      className="pointer-events-none fixed inset-0 z-[2]"
+      style={{ willChange: "transform" }}
+    />
   );
 }

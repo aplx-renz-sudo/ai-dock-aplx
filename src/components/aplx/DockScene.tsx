@@ -13,6 +13,7 @@ import {
   DustCloud,
   RealisticStars,
 } from "./SpaceEnvironment";
+import { DJLasers, DJFloor, DJDiscoBall, DJBeatParticles } from "./DJMode";
 
 export interface SceneQuality {
   stars: number;
@@ -702,9 +703,10 @@ export interface DockSceneProps {
   quality: SceneQuality;
   scrollRef: React.RefObject<number>;
   explode: boolean;
+  djMode?: boolean;
 }
 
-export function DockScene({ hovered, onHover, quality, scrollRef, explode }: DockSceneProps) {
+export function DockScene({ hovered, onHover, quality, scrollRef, explode, djMode }: DockSceneProps) {
   return (
     <Canvas
       dpr={quality.dpr}
@@ -789,6 +791,17 @@ export function DockScene({ hovered, onHover, quality, scrollRef, explode }: Doc
       ))}
 
       {quality.shootingStars && <ShootingStar motion={quality.motion} />}
+
+      {/* DJ Mode 3D elements */}
+      {djMode && (
+        <>
+          <DJLasers />
+          <DJFloor />
+          <DJDiscoBall />
+          <DJBeatParticles />
+        </>
+      )}
+
       <CameraRig motion={quality.motion} scrollRef={scrollRef} />
 
       <fog attach="fog" args={["#010308", 30, 80]} />

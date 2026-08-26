@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ExternalLink, Github, Menu, X } from "lucide-react";
+import { ArrowRight, ExternalLink, Github, Menu, Music, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_URL, LAUNCH_URL } from "./data";
 import { useExplosion } from "./ExplosionContext";
+import { useDJ } from "./DJMode";
 
 const EXPLOSION_WAIT_MS = 1500;
 
@@ -192,6 +193,7 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <DJNavButton />
             <button
               onClick={() => go(LAUNCH_URL)}
               className="hidden rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-slate-950 transition-shadow hover:shadow-[0_0_24px_rgba(125,211,252,0.5)] sm:inline-flex"
@@ -227,6 +229,7 @@ export function Navbar() {
                 {l.label}
               </a>
             ))}
+            <MobileDJButton onClose={() => setOpen(false)} />
             <button
               onClick={() => { setOpen(false); go(LAUNCH_URL); }}
               className="block w-full px-5 py-3 text-left text-sm font-semibold text-cyan-300 hover:bg-white/10"
@@ -237,5 +240,73 @@ export function Navbar() {
         )}
       </nav>
     </header>
+  );
+}
+
+/* -------------------------------- DJ button ------------------------------- */
+
+interface DJNavButtonProps {
+  onClose?: () => void;
+}
+
+function DJNavButtonBase({ onClose, className }: DJNavButtonProps & { className?: string }) {
+  const { active } = useDJ();
+  const trigger = useExplosion();
+  const busy = useRef(false);
+
+  const handleClick = useCallback(() => {
+    if (busy.current) return;
+    busy.current = true;
+
+    if (!active) {
+      // trigger explosion then activate DJ mode after delay
+      trigger();
+      setTimeout(() => {
+        const evt = new CustomEvent("dj-start");
+        window.dispatchEvent(evt);
+        busy.current = false;
+      }, 1400);
+    } else {
+      const evt = new CustomEvent("dj-stop");
+      window.dispatchEvent(evt);
+      busy.current = false;
+    }
+    onClose?.();
+  }, [active, trigger, onClose]);
+
+  return (
+    <button
+      onClick={handleClick}
+      className={cn(
+        "group inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide transition-all duration-300",
+        active
+          ? "border border-cyan-400/50 bg-cyan-500/20 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse"
+          : "border border-white/15 bg-white/[0.06] text-slate-300 hover:bg-white/10 hover:border-violet-400/30 hover:text-violet-300",
+        className,
+      )}
+      aria-label="Toggle DJ mode"
+    >
+      <Music className="h-3.5 w-3.5" />
+      <span className="hidden sm:inline">DJ</span>
+    </button>
+  );
+}
+
+function DJNavButton() {
+  return <DJNavButtonBase />;
+}
+
+function MobileDJButton({ onClose }: { onClose: () => void }) {
+  const { active } = useDJ();
+  return (
+    <button
+      onClick={onClose}
+      className="block w-full border-b border-white/[0.06] px-5 py-3 text-left text-sm text-slate-200 last:border-0 hover:bg-white/10 md:hidden"
+    >
+      <span className="flex items-center gap-2">
+        <Music className="h-4 w-4" />
+        {active ? "Exit DJ Mode" : "Enter DJ Mode"}
+      </span>
+    </button>
   );
 }

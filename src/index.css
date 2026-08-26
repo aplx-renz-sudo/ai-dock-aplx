@@ -147,3 +147,14 @@
 .screen-shake {
   animation: screen-shake 0.5s ease-out;
 }
+
+/* ---- DJ mode subtle shake ---- */
+@keyframes dj-shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-1.5px, 1px); }
+  50% { transform: translate(1px, -1.5px); }
+  75% { transform: translate(-1px, -0.5px); }
+}
+.dj-shake-active {
+  animation: dj-shake 0.15s ease-in-out infinite;
+}
