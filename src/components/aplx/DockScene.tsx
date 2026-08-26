@@ -13,7 +13,7 @@ import {
   DustCloud,
   RealisticStars,
 } from "./SpaceEnvironment";
-import { DJLasers, DJFloor, DJDiscoBall, DJBeatParticles } from "./DJMode";
+import { DJLasers, DJFloor, DJDiscoBall, DJBeatParticles, useDJ } from "./DJMode";
 
 export interface SceneQuality {
   stars: number;
@@ -707,6 +707,7 @@ export interface DockSceneProps {
 }
 
 export function DockScene({ hovered, onHover, quality, scrollRef, explode, djMode }: DockSceneProps) {
+  const { bassLevel } = useDJ();
   return (
     <Canvas
       dpr={quality.dpr}
@@ -724,7 +725,7 @@ export function DockScene({ hovered, onHover, quality, scrollRef, explode, djMod
       <directionalLight position={[6, 8, 4]} intensity={0.6} color="#c7d2fe" />
       <directionalLight position={[-4, -3, 6]} intensity={0.15} color="#60a5fa" />
 
-      <RealisticStars count={quality.stars} motion={quality.motion} />
+      <RealisticStars count={quality.stars} motion={quality.motion} bassLevel={djMode ? bassLevel : 0} />
       <RealisticNebulae />
       <DustCloud />
 

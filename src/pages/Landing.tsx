@@ -145,7 +145,7 @@ function LandingInner() {
       {djMode && <DJShake />}
 
       {/* ── page content ── */}
-      <main className="relative z-10">
+      <main className="relative z-10 transition-opacity duration-700" style={{ opacity: djMode ? 0 : 1, pointerEvents: djMode ? "none" : "auto" }}>
         {/* ============================================================ HERO */}
         <section
           id="top"

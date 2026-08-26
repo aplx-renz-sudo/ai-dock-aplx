@@ -284,7 +284,7 @@ export function DustCloud() {
  */
 const STAR_COUNT = 4000;
 
-export function RealisticStars({ count, motion }: { count: number; motion: boolean }) {
+export function RealisticStars({ count, motion, bassLevel = 0 }: { count: number; motion: boolean; bassLevel?: number }) {
   const ref = useRef<THREE.Points>(null);
   const tex = useMemo(() => makeGlowTexture(), []);
 
@@ -334,9 +334,16 @@ export function RealisticStars({ count, motion }: { count: number; motion: boole
     return { positions: pos, colors: col, sizes: sz };
   }, [count]);
 
+  const matRef = useRef<THREE.PointsMaterial>(null);
+
   useFrame((state) => {
     if (ref.current && motion) {
       ref.current.rotation.y = state.clock.elapsedTime * 0.002;
+    }
+    // pulse star brightness with the beat
+    if (matRef.current) {
+      matRef.current.opacity = 0.9 + bassLevel * 0.6;
+      matRef.current.size = 0.1 + bassLevel * 0.06;
     }
   });
 
@@ -353,6 +360,7 @@ export function RealisticStars({ count, motion }: { count: number; motion: boole
         />
       </bufferGeometry>
       <pointsMaterial
+        ref={matRef}
         map={tex}
         vertexColors
         transparent

@@ -726,14 +726,14 @@ export function DJLasers() {
   const { active, bassLevel, midLevel } = useDJ();
   const groupRef = useRef<THREE.Group>(null);
   const laserRefs = useRef<THREE.Mesh[]>([]);
-  const targetRotations = useRef<number[]>([]);
 
-  // init target rotations
-  useMemo(() => {
-    targetRotations.current = Array.from(
-      { length: LASER_COUNT },
-      () => Math.random() * Math.PI * 0.6 - Math.PI * 0.3,
-    );
+  // spread: each laser fans out slightly from the center-Z axis
+  const spread = useMemo(() => {
+    return Array.from({ length: LASER_COUNT }, (_, i) => {
+      const angle = ((i / LASER_COUNT) - 0.5) * Math.PI * 0.4; // fan ±36° horizontally
+      const tilt = (((i % 3) / 2) - 0.5) * 0.15; // slight vertical spread
+      return { angle, tilt };
+    });
   }, []);
 
   useFrame((state, dt) => {
@@ -747,25 +747,25 @@ export function DJLasers() {
     for (let i = 0; i < LASER_COUNT; i++) {
       const mesh = laserRefs.current[i];
       if (!mesh) continue;
+      const s = spread[i];
 
-      const baseAngle = (i / LASER_COUNT) * Math.PI * 2;
-      const sweepSpeed = 0.3 + (i % 3) * 0.15;
-      const sweep =
-        Math.sin(t * sweepSpeed + i * 1.7) * (0.15 + bassLevel * 0.35);
-      const pitch = Math.sin(t * 0.5 + i * 0.9) * (0.1 + midLevel * 0.25);
+      // sweep left/right and tilt up/down with the beat
+      const sweepX = Math.sin(t * (0.4 + (i % 3) * 0.15) + i * 1.3) * (0.12 + bassLevel * 0.25);
+      const sweepY = Math.sin(t * 0.35 + i * 0.7) * (0.08 + midLevel * 0.18);
 
+      // all lasers point forward (+Z) with spread + sweep
       mesh.rotation.set(
-        baseAngle + sweep,
-        pitch,
+        s.tilt + sweepY,  // tilt up/down
+        s.angle + sweepX, // fan left/right
         0,
       );
 
       // opacity pulses with bass
       const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.15 + bassLevel * 0.6 + Math.sin(t * 3 + i) * 0.05;
+      mat.opacity = 0.15 + bassLevel * 0.65 + Math.sin(t * 3 + i) * 0.05;
 
       // scale length with mid
-      mesh.scale.y = 1 + midLevel * 0.4;
+      mesh.scale.y = 1 + midLevel * 0.5;
     }
   });
 
@@ -780,9 +780,8 @@ export function DJLasers() {
             if (el) laserRefs.current[i] = el;
           }}
           position={[0, 0.1, 0]}
-          rotation={[(i / LASER_COUNT) * Math.PI * 2, 0, 0]}
         >
-          <cylinderGeometry args={[0.015, 0.015, LASER_LENGTH, 4]} />
+          <cylinderGeometry args={[0.018, 0.018, LASER_LENGTH, 4]} />
           <meshBasicMaterial
             color={LASER_COLORS[i % LASER_COLORS.length]}
             transparent
