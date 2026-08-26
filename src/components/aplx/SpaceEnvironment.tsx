@@ -287,6 +287,8 @@ const STAR_COUNT = 4000;
 export function RealisticStars({ count, motion, bassLevel = 0 }: { count: number; motion: boolean; bassLevel?: number }) {
   const ref = useRef<THREE.Points>(null);
   const tex = useMemo(() => makeGlowTexture(), []);
+  const bassRef = useRef(bassLevel);
+  bassRef.current = bassLevel;
 
   const data = useMemo(() => {
     const actualCount = count || STAR_COUNT;
@@ -342,8 +344,9 @@ export function RealisticStars({ count, motion, bassLevel = 0 }: { count: number
     }
     // pulse star brightness with the beat
     if (matRef.current) {
-      matRef.current.opacity = 0.9 + bassLevel * 0.6;
-      matRef.current.size = 0.1 + bassLevel * 0.06;
+      const b = bassRef.current;
+      matRef.current.opacity = 0.9 + b * 0.6;
+      matRef.current.size = 0.1 + b * 0.06;
     }
   });
 
