@@ -837,36 +837,56 @@ export function DJLasers() {
     });
   }, []);
 
+  const bassRef = useRef(0);
+  const laserIntensity = useRef(0);
+
   useFrame((state, dt) => {
     if (!groupRef.current || !active) {
       if (groupRef.current) groupRef.current.visible = false;
       return;
     }
-    groupRef.current.visible = true;
     const t = state.clock.elapsedTime;
+    bassRef.current = bassLevel;
+
+    // lasers activate on heavy bass — threshold at 0.35, ramp up to full at 0.6
+    const BASS_THRESHOLD = 0.35;
+    const BASS_PEAK = 0.6;
+    const targetIntensity = bassLevel > BASS_THRESHOLD
+      ? Math.min(1, (bassLevel - BASS_THRESHOLD) / (BASS_PEAK - BASS_THRESHOLD))
+      : 0;
+    // smooth ramp up fast, fade out slow for a punchy feel
+    const speed = targetIntensity > laserIntensity.current ? 12 : 4;
+    laserIntensity.current += (targetIntensity - laserIntensity.current) * Math.min(1, dt * speed);
+
+    // hide the whole group when intensity is near zero
+    if (laserIntensity.current < 0.01) {
+      groupRef.current.visible = false;
+      return;
+    }
+    groupRef.current.visible = true;
 
     for (let i = 0; i < LASER_COUNT; i++) {
       const mesh = laserRefs.current[i];
       if (!mesh) continue;
       const s = spread[i];
+      const intensity = laserIntensity.current;
 
-      // sweep left/right and tilt up/down with the beat
-      const sweepX = Math.sin(t * (0.4 + (i % 3) * 0.15) + i * 1.3) * (0.12 + bassLevel * 0.25);
-      const sweepY = Math.sin(t * 0.35 + i * 0.7) * (0.08 + midLevel * 0.18);
+      // sweep left/right and tilt up/down — wider sweep when bass is strong
+      const sweepX = Math.sin(t * (0.4 + (i % 3) * 0.15) + i * 1.3) * (0.12 + intensity * 0.35);
+      const sweepY = Math.sin(t * 0.35 + i * 0.7) * (0.08 + intensity * 0.25);
 
-      // all lasers point forward (+Z) with spread + sweep
       mesh.rotation.set(
-        s.tilt + sweepY,  // tilt up/down
-        s.angle + sweepX, // fan left/right
+        s.tilt + sweepY,
+        s.angle + sweepX,
         0,
       );
 
-      // opacity pulses with bass
+      // opacity driven by bass intensity
       const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.15 + bassLevel * 0.65 + Math.sin(t * 3 + i) * 0.05;
+      mat.opacity = intensity * (0.7 + Math.sin(t * 3 + i) * 0.15);
 
-      // scale length with mid
-      mesh.scale.y = 1 + midLevel * 0.5;
+      // scale length with intensity
+      mesh.scale.y = 1 + intensity * 0.8;
     }
   });
 
