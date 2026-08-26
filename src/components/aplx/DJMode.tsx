@@ -55,9 +55,12 @@ class BeatEngine {
     return this.analyser;
   }
 
+  private paused = false;
+
   start() {
     if (this.running) return;
     this.running = true;
+    this.paused = false;
     this.ctx.resume();
     if (this.demoMode) {
       this.nextBeatTime = this.ctx.currentTime + 0.1;
@@ -66,8 +69,35 @@ class BeatEngine {
     }
   }
 
+  pause() {
+    if (!this.running || this.paused) return;
+    this.paused = true;
+    if (this.timerId) clearTimeout(this.timerId);
+    this.timerId = null;
+    try {
+      this.ctx.suspend();
+    } catch { /* ignore */ }
+  }
+
+  resume() {
+    if (!this.running || !this.paused) return;
+    this.paused = false;
+    try {
+      this.ctx.resume();
+    } catch { /* ignore */ }
+    if (this.demoMode) {
+      this.nextBeatTime = this.ctx.currentTime + 0.05;
+      this.scheduleLoop();
+    }
+  }
+
+  get isPaused() {
+    return this.paused;
+  }
+
   stop() {
     this.running = false;
+    this.paused = false;
     if (this.timerId) clearTimeout(this.timerId);
     this.timerId = null;
     this.stopMic();
@@ -317,6 +347,7 @@ class BeatEngine {
 
 interface DJState {
   active: boolean;
+  paused: boolean;
   bassLevel: number;
   midLevel: number;
   highLevel: number;
@@ -325,6 +356,7 @@ interface DJState {
   youtubeVideoId: string | null;
   startDJ: () => void;
   stopDJ: () => void;
+  togglePause: () => void;
   toggleMic: () => void;
   captureTab: () => Promise<boolean>;
   loadYouTube: (url: string) => void;
@@ -332,6 +364,7 @@ interface DJState {
 
 const DJCtx = createContext<DJState>({
   active: false,
+  paused: false,
   bassLevel: 0,
   midLevel: 0,
   highLevel: 0,
@@ -340,6 +373,7 @@ const DJCtx = createContext<DJState>({
   youtubeVideoId: null,
   startDJ: () => {},
   stopDJ: () => {},
+  togglePause: () => {},
   toggleMic: () => {},
   captureTab: async () => false,
   loadYouTube: () => {},
@@ -361,6 +395,7 @@ function extractYouTubeId(url: string): string | null {
 
 export function DJProvider({ children }: { children: React.ReactNode }) {
   const [active, setActive] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [levels, setLevels] = useState({ bass: 0, mid: 0, high: 0 });
   const [micActive, setMicActive] = useState(false);
   const [tabCaptured, setTabCaptured] = useState(false);
@@ -374,6 +409,7 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
     }
     engineRef.current.start();
     setActive(true);
+    setPaused(false);
     setMicActive(false);
     setTabCaptured(false);
 
@@ -391,10 +427,23 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
     engineRef.current?.stop();
     cancelAnimationFrame(rafRef.current);
     setActive(false);
+    setPaused(false);
     setMicActive(false);
     setTabCaptured(false);
     setYoutubeVideoId(null);
     setLevels({ bass: 0, mid: 0, high: 0 });
+  }, []);
+
+  const togglePause = useCallback(() => {
+    const e = engineRef.current;
+    if (!e) return;
+    if (e.isPaused) {
+      e.resume();
+      setPaused(false);
+    } else {
+      e.pause();
+      setPaused(true);
+    }
   }, []);
 
   const toggleMic = useCallback(async () => {
@@ -435,6 +484,7 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<DJState>(
     () => ({
       active,
+      paused,
       bassLevel: levels.bass,
       midLevel: levels.mid,
       highLevel: levels.high,
@@ -443,11 +493,12 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
       youtubeVideoId,
       startDJ,
       stopDJ,
+      togglePause,
       toggleMic,
       captureTab,
       loadYouTube,
     }),
-    [active, levels.bass, levels.mid, levels.high, micActive, tabCaptured, youtubeVideoId, startDJ, stopDJ, toggleMic, captureTab, loadYouTube],
+    [active, paused, levels.bass, levels.mid, levels.high, micActive, tabCaptured, youtubeVideoId, startDJ, stopDJ, togglePause, toggleMic, captureTab, loadYouTube],
   );
 
   return <DJCtx.Provider value={value}>{children}</DJCtx.Provider>;
@@ -471,9 +522,9 @@ function extractYouTubeIdFromInput(input: string): string | null {
 
 export function DJOverlay() {
   const {
-    active, bassLevel, midLevel, highLevel,
+    active, paused, bassLevel, midLevel, highLevel,
     micActive, tabCaptured, youtubeVideoId,
-    toggleMic, stopDJ, captureTab, loadYouTube,
+    togglePause, toggleMic, stopDJ, captureTab, loadYouTube,
   } = useDJ();
   const [bars, setBars] = useState<number[]>(new Array(32).fill(0));
   const [ytInput, setYtInput] = useState("");
@@ -519,8 +570,10 @@ export function DJOverlay() {
       ? "YouTube Stream"
       : micActive
         ? "Microphone — Live"
-        : "Aplx Beats — Demo Track";
-  const bpmLabel = tabCaptured || micActive ? "Analyzing…" : "128 BPM · Electronic";
+        : paused
+          ? "Aplx Beats — Paused"
+          : "Aplx Beats — Demo Track";
+  const bpmLabel = paused ? "Paused" : tabCaptured || micActive ? "Analyzing…" : "128 BPM · Electronic";
 
   return (
     <>
@@ -541,6 +594,13 @@ export function DJOverlay() {
             </span>
           </div>
           <div className="flex items-center gap-1.5">
+            {/* pause / play */}
+            <button
+              onClick={togglePause}
+              className="rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[10px] font-semibold tracking-wider text-slate-300 transition-all hover:bg-white/10"
+            >
+              {paused ? "▶ Play" : "❚❚"}
+            </button>
             <button
               onClick={() => setShowYouTube((v) => !v)}
               className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${
