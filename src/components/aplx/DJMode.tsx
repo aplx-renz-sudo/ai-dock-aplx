@@ -523,6 +523,7 @@ export function DJOverlay() {
   const bpmLabel = tabCaptured || micActive ? "Analyzing…" : "128 BPM · Electronic";
 
   return (
+    <>
     <div className="pointer-events-auto fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-5">
       <div
         className="w-full max-w-lg rounded-2xl border border-cyan-400/20 bg-black/60 p-5 backdrop-blur-2xl shadow-[0_0_60px_rgba(34,211,238,0.12),inset_0_1px_0_rgba(255,255,255,0.08)]"
@@ -569,76 +570,60 @@ export function DJOverlay() {
           </div>
         </div>
 
-        {/* YouTube panel */}
-        {showYouTube && (
+        {/* YouTube URL input panel (only when no video loaded yet) */}
+        {showYouTube && !youtubeVideoId && (
           <div className="mb-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
               Stream through YouTube
             </p>
-            {!youtubeVideoId ? (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={ytInput}
-                  onChange={(e) => setYtInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleLoadYouTube()}
-                  placeholder="Paste YouTube URL or video ID…"
-                  className="flex-1 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] text-white placeholder-slate-500 outline-none focus:border-red-400/40"
-                />
-                <button
-                  onClick={handleLoadYouTube}
-                  className="shrink-0 rounded-lg border border-red-400/30 bg-red-500/[0.1] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-300 transition-all hover:bg-red-500/20"
-                >
-                  Load
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {/* embedded player */}
-                <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
-                  <iframe
-                    src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`}
-                    className="absolute inset-0 h-full w-full"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                    title="YouTube player"
-                  />
-                </div>
-                {/* capture button */}
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => { loadYouTube(""); setYtInput(""); }}
-                    className="text-[10px] text-slate-500 hover:text-slate-300"
-                  >
-                    ← Change video
-                  </button>
-                  <button
-                    onClick={handleCaptureTab}
-                    disabled={capturing || tabCaptured}
-                    className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                      tabCaptured
-                        ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300"
-                        : capturing
-                          ? "border-yellow-400/40 bg-yellow-500/10 text-yellow-300 animate-pulse"
-                          : "border-cyan-400/30 bg-cyan-500/[0.1] text-cyan-300 hover:bg-cyan-500/20"
-                    }`}
-                  >
-                    {tabCaptured ? "✓ Captured" : capturing ? "Select tab…" : "🎙 Capture Tab Audio"}
-                  </button>
-                </div>
-                {tabCaptured && (
-                  <p className="text-center text-[9px] text-emerald-400/70">
-                    Audio captured — the visuals are now reacting to your stream.
-                  </p>
-                )}
-                {!tabCaptured && !capturing && (
-                  <p className="text-center text-[9px] text-slate-500">
-                    Click Capture, then select this tab with "Share tab audio" enabled.
-                  </p>
-                )}
-              </div>
-            )}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={ytInput}
+                onChange={(e) => setYtInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleLoadYouTube()}
+                placeholder="Paste YouTube URL or video ID…"
+                className="flex-1 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] text-white placeholder-slate-500 outline-none focus:border-red-400/40"
+              />
+              <button
+                onClick={handleLoadYouTube}
+                className="shrink-0 rounded-lg border border-red-400/30 bg-red-500/[0.1] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-300 transition-all hover:bg-red-500/20"
+              >
+                Load
+              </button>
+            </div>
           </div>
+        )}
+
+        {/* capture button row (shown when video is loaded) */}
+        {youtubeVideoId && (
+          <div className="mb-3 flex items-center justify-center gap-2">
+            <button
+              onClick={handleCaptureTab}
+              disabled={capturing || tabCaptured}
+              className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
+                tabCaptured
+                  ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300"
+                  : capturing
+                    ? "border-yellow-400/40 bg-yellow-500/10 text-yellow-300 animate-pulse"
+                    : "border-cyan-400/30 bg-cyan-500/[0.1] text-cyan-300 hover:bg-cyan-500/20"
+              }`}
+            >
+              {tabCaptured ? "✓ Audio Captured" : capturing ? "Select this tab…" : "🎙 Capture Tab Audio"}
+            </button>
+            <button
+              onClick={() => { loadYouTube(""); setYtInput(""); }}
+              className="text-[10px] text-slate-500 hover:text-slate-300"
+            >
+              Change video
+            </button>
+          </div>
+        )}
+
+        {tabCaptured && (
+          <p className="mb-2 text-center text-[9px] text-emerald-400/70">
+            Audio captured — visuals are reacting to your stream.
+          </p>
         )}
 
         {/* now playing */}
@@ -704,6 +689,62 @@ export function DJOverlay() {
         </div>
       </div>
     </div>
+
+    {/* ── YouTube PiP window (bottom-right corner) ── */}
+    {youtubeVideoId && (
+      <div
+        className="pointer-events-auto fixed bottom-20 right-4 z-50 overflow-hidden rounded-xl border border-red-400/25 bg-black/80 shadow-[0_0_40px_rgba(239,68,68,0.15)] backdrop-blur-xl"
+        style={{
+          width: 220,
+          transform: `scale(${1 + bassLevel * 0.03})`,
+          transition: "transform 0.08s ease-out",
+        }}
+      >
+        {/* top bar */}
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-2.5 py-1.5">
+          <div className="flex items-center gap-1.5">
+            <div className={`h-1.5 w-1.5 rounded-full ${tabCaptured ? "bg-emerald-400 animate-pulse" : "bg-red-400"}`} />
+            <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400">
+              {tabCaptured ? "Live" : "YouTube"}
+            </span>
+          </div>
+          <button
+            onClick={() => { loadYouTube(""); setYtInput(""); }}
+            className="text-[9px] text-slate-500 hover:text-red-400"
+          >
+            ✕
+          </button>
+        </div>
+        {/* embedded player */}
+        <div className="relative" style={{ paddingBottom: "56.25%" }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&controls=1`}
+            className="absolute inset-0 h-full w-full"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            title="YouTube player"
+          />
+        </div>
+        {/* mini level bar */}
+        <div className="flex items-end justify-center gap-[1px] px-2 py-1.5" style={{ height: 18 }}>
+          {Array.from({ length: 16 }).map((_, i) => {
+            const v = i < 5 ? bassLevel : i < 11 ? midLevel : highLevel;
+            return (
+              <div
+                key={i}
+                className="w-[3px] rounded-t-sm"
+                style={{
+                  height: `${Math.max(15, v * 100)}%`,
+                  backgroundColor: i < 5 ? "rgb(34,211,238)" : i < 11 ? "rgb(168,85,247)" : "rgb(99,182,255)",
+                  transition: "height 0.06s ease-out",
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
