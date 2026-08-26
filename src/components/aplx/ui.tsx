@@ -250,7 +250,7 @@ interface DJNavButtonProps {
 }
 
 function DJNavButtonBase({ onClose, className }: DJNavButtonProps & { className?: string }) {
-  const { active } = useDJ();
+  const { active, startDJ, stopDJ } = useDJ();
   const trigger = useExplosion();
   const busy = useRef(false);
 
@@ -262,17 +262,15 @@ function DJNavButtonBase({ onClose, className }: DJNavButtonProps & { className?
       // trigger explosion then activate DJ mode after delay
       trigger();
       setTimeout(() => {
-        const evt = new CustomEvent("dj-start");
-        window.dispatchEvent(evt);
+        startDJ();
         busy.current = false;
       }, 1400);
     } else {
-      const evt = new CustomEvent("dj-stop");
-      window.dispatchEvent(evt);
+      stopDJ();
       busy.current = false;
     }
     onClose?.();
-  }, [active, trigger, onClose]);
+  }, [active, trigger, startDJ, stopDJ, onClose]);
 
   return (
     <button
@@ -297,10 +295,28 @@ function DJNavButton() {
 }
 
 function MobileDJButton({ onClose }: { onClose: () => void }) {
-  const { active } = useDJ();
+  const { active, startDJ, stopDJ } = useDJ();
+  const trigger = useExplosion();
+  const busy = useRef(false);
+
+  const handleClick = () => {
+    if (busy.current) return;
+    busy.current = true;
+    if (!active) {
+      trigger();
+      setTimeout(() => {
+        startDJ();
+        busy.current = false;
+      }, 1400);
+    } else {
+      stopDJ();
+      busy.current = false;
+    }
+    onClose();
+  };
   return (
     <button
-      onClick={onClose}
+      onClick={handleClick}
       className="block w-full border-b border-white/[0.06] px-5 py-3 text-left text-sm text-slate-200 last:border-0 hover:bg-white/10 md:hidden"
     >
       <span className="flex items-center gap-2">

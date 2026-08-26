@@ -78,7 +78,7 @@ function LandingInner() {
   const [shake, setShake] = useState(false);
   const [djMode, setDjMode] = useState(false);
   const scrollRef = useRef(0);
-  const { active: djActive, engine: djEngine } = useDJ();
+  const { active: djActive } = useDJ();
   const triggerExplosion = () => {
     setExplode(true);
     setShake(true);
@@ -86,28 +86,10 @@ function LandingInner() {
     setTimeout(() => setShake(false), 500);
   };
 
-  // wire DJ mode events
+  // wire DJ mode: sync djMode state with context active state
   useEffect(() => {
-    const onStart = () => {
-      setDjMode(true);
-      djEngine?.start();
-    };
-    const onStop = () => {
-      setDjMode(false);
-      djEngine?.stop();
-    };
-    const onToggleMic = () => {
-      djEngine?.enableMic();
-    };
-    window.addEventListener("dj-start", onStart as EventListener);
-    window.addEventListener("dj-stop", onStop as EventListener);
-    window.addEventListener("dj-toggle-mic", onToggleMic as EventListener);
-    return () => {
-      window.removeEventListener("dj-start", onStart as EventListener);
-      window.removeEventListener("dj-stop", onStop as EventListener);
-      window.removeEventListener("dj-toggle-mic", onToggleMic as EventListener);
-    };
-  }, [djEngine]);
+    setDjMode(djActive);
+  }, [djActive]);
 
   useEffect(() => {
     setQuality(detectQuality());

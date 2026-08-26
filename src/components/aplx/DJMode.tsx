@@ -258,20 +258,24 @@ class BeatEngine {
 
 interface DJState {
   active: boolean;
-  engine: BeatEngine | null;
   bassLevel: number;
   midLevel: number;
   highLevel: number;
   micActive: boolean;
+  startDJ: () => void;
+  stopDJ: () => void;
+  toggleMic: () => void;
 }
 
 const DJCtx = createContext<DJState>({
   active: false,
-  engine: null,
   bassLevel: 0,
   midLevel: 0,
   highLevel: 0,
   micActive: false,
+  startDJ: () => {},
+  stopDJ: () => {},
+  toggleMic: () => {},
 });
 
 export const useDJ = () => useContext(DJCtx);
@@ -331,13 +335,15 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<DJState>(
     () => ({
       active,
-      engine: engineRef.current,
       bassLevel: levels.bass,
       midLevel: levels.mid,
       highLevel: levels.high,
       micActive,
+      startDJ,
+      stopDJ,
+      toggleMic,
     }),
-    [active, levels.bass, levels.mid, levels.high, micActive],
+    [active, levels.bass, levels.mid, levels.high, micActive, startDJ, stopDJ, toggleMic],
   );
 
   return <DJCtx.Provider value={value}>{children}</DJCtx.Provider>;
@@ -348,15 +354,13 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
 /* ================================================================== */
 
 export function DJOverlay() {
-  const { active, bassLevel, midLevel, highLevel, micActive } = useDJ();
+  const { active, bassLevel, midLevel, highLevel, micActive, toggleMic, stopDJ } = useDJ();
   const [bars, setBars] = useState<number[]>(new Array(32).fill(0));
   const rafRef = useRef(0);
-  const engineRef = useRef<BeatEngine | null>(null);
 
   useEffect(() => {
     if (!active) return;
-    // grab engine reference through the context (we need the raw frequency)
-    // We'll use a simpler approach: derive bars from bass/mid/high
+    // derive bars from bass/mid/high
     const tick = () => {
       setBars((prev) => {
         const next = [...prev];
@@ -395,11 +399,7 @@ export function DJOverlay() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => {
-                /* toggle handled by parent */
-                const evt = new CustomEvent("dj-toggle-mic");
-                window.dispatchEvent(evt);
-              }}
+              onClick={() => toggleMic()}
               className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${
                 micActive
                   ? "border-cyan-400/50 bg-cyan-500/20 text-cyan-300"
@@ -409,10 +409,7 @@ export function DJOverlay() {
               {micActive ? "🎤 Live" : "🎤 Mic"}
             </button>
             <button
-              onClick={() => {
-                const evt = new CustomEvent("dj-stop");
-                window.dispatchEvent(evt);
-              }}
+              onClick={() => stopDJ()}
               className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 transition-all hover:bg-white/10"
             >
               ✕ Exit
