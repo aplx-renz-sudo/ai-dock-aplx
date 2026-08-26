@@ -118,6 +118,65 @@ class BeatEngine {
     this.micStream = null;
   }
 
+  /* ---- tab audio capture (for YouTube / any tab audio) ---- */
+
+  private tabCaptureStream: MediaStream | null = null;
+  private tabCaptureSource: MediaStreamAudioSourceNode | null = null;
+
+  async enableTabCapture(): Promise<boolean> {
+    if (!this.running) return false;
+    try {
+      // try audio-only first, fall back to audio+video if rejected
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+          } as MediaTrackConstraints,
+          video: false,
+        });
+      } catch {
+        stream = await navigator.mediaDevices.getDisplayMedia({
+          audio: true,
+          video: true,
+        });
+      }
+      this.stopAllSources();
+      this.tabCaptureStream = stream;
+      this.tabCaptureSource = this.ctx.createMediaStreamSource(stream);
+      this.tabCaptureSource.connect(this.analyser);
+      this.demoMode = false;
+      // auto-fallback when user stops sharing
+      stream.getAudioTracks()[0]?.addEventListener("ended", () => {
+        this.disableTabCapture();
+        if (this.running) {
+          this.demoMode = true;
+          this.nextBeatTime = this.ctx.currentTime + 0.1;
+          this.beatCount = 0;
+          this.scheduleLoop();
+        }
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  disableTabCapture() {
+    this.tabCaptureSource?.disconnect();
+    this.tabCaptureSource = null;
+    this.tabCaptureStream?.getTracks().forEach((t) => t.stop());
+    this.tabCaptureStream = null;
+  }
+
+  private stopAllSources() {
+    this.stopDemo();
+    this.stopMic();
+    this.disableTabCapture();
+  }
+
   private stopDemo() {
     if (this.timerId) clearTimeout(this.timerId);
     this.timerId = null;
@@ -262,9 +321,13 @@ interface DJState {
   midLevel: number;
   highLevel: number;
   micActive: boolean;
+  tabCaptured: boolean;
+  youtubeVideoId: string | null;
   startDJ: () => void;
   stopDJ: () => void;
   toggleMic: () => void;
+  captureTab: () => Promise<boolean>;
+  loadYouTube: (url: string) => void;
 }
 
 const DJCtx = createContext<DJState>({
@@ -273,17 +336,35 @@ const DJCtx = createContext<DJState>({
   midLevel: 0,
   highLevel: 0,
   micActive: false,
+  tabCaptured: false,
+  youtubeVideoId: null,
   startDJ: () => {},
   stopDJ: () => {},
   toggleMic: () => {},
+  captureTab: async () => false,
+  loadYouTube: () => {},
 });
 
 export const useDJ = () => useContext(DJCtx);
+
+function extractYouTubeId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/,
+    /^([\w-]{11})$/, // bare video ID
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
 
 export function DJProvider({ children }: { children: React.ReactNode }) {
   const [active, setActive] = useState(false);
   const [levels, setLevels] = useState({ bass: 0, mid: 0, high: 0 });
   const [micActive, setMicActive] = useState(false);
+  const [tabCaptured, setTabCaptured] = useState(false);
+  const [youtubeVideoId, setYoutubeVideoId] = useState<string | null>(null);
   const engineRef = useRef<BeatEngine | null>(null);
   const rafRef = useRef(0);
 
@@ -294,6 +375,7 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
     engineRef.current.start();
     setActive(true);
     setMicActive(false);
+    setTabCaptured(false);
 
     const tick = () => {
       const e = engineRef.current;
@@ -310,6 +392,8 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
     cancelAnimationFrame(rafRef.current);
     setActive(false);
     setMicActive(false);
+    setTabCaptured(false);
+    setYoutubeVideoId(null);
     setLevels({ bass: 0, mid: 0, high: 0 });
   }, []);
 
@@ -320,10 +404,26 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
       e.disableMic();
       setMicActive(false);
     } else {
+      e.disableTabCapture();
+      setTabCaptured(false);
       await e.enableMic();
       setMicActive(true);
     }
   }, [micActive]);
+
+  const captureTab = useCallback(async (): Promise<boolean> => {
+    const e = engineRef.current;
+    if (!e) return false;
+    const ok = await e.enableTabCapture();
+    setTabCaptured(ok);
+    if (ok) setMicActive(false);
+    return ok;
+  }, []);
+
+  const loadYouTube = useCallback((url: string) => {
+    const id = extractYouTubeId(url);
+    setYoutubeVideoId(id);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -339,11 +439,15 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
       midLevel: levels.mid,
       highLevel: levels.high,
       micActive,
+      tabCaptured,
+      youtubeVideoId,
       startDJ,
       stopDJ,
       toggleMic,
+      captureTab,
+      loadYouTube,
     }),
-    [active, levels.bass, levels.mid, levels.high, micActive, startDJ, stopDJ, toggleMic],
+    [active, levels.bass, levels.mid, levels.high, micActive, tabCaptured, youtubeVideoId, startDJ, stopDJ, toggleMic, captureTab, loadYouTube],
   );
 
   return <DJCtx.Provider value={value}>{children}</DJCtx.Provider>;
@@ -353,14 +457,32 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
 /*  HTML OVERLAY — futuristic DJ HUD                                   */
 /* ================================================================== */
 
+function extractYouTubeIdFromInput(input: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/,
+    /^([\w-]{11})$/,
+  ];
+  for (const p of patterns) {
+    const m = input.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
 export function DJOverlay() {
-  const { active, bassLevel, midLevel, highLevel, micActive, toggleMic, stopDJ } = useDJ();
+  const {
+    active, bassLevel, midLevel, highLevel,
+    micActive, tabCaptured, youtubeVideoId,
+    toggleMic, stopDJ, captureTab, loadYouTube,
+  } = useDJ();
   const [bars, setBars] = useState<number[]>(new Array(32).fill(0));
+  const [ytInput, setYtInput] = useState("");
+  const [showYouTube, setShowYouTube] = useState(false);
+  const [capturing, setCapturing] = useState(false);
   const rafRef = useRef(0);
 
   useEffect(() => {
     if (!active) return;
-    // derive bars from bass/mid/high
     const tick = () => {
       setBars((prev) => {
         const next = [...prev];
@@ -378,7 +500,27 @@ export function DJOverlay() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [active, bassLevel, midLevel, highLevel]);
 
+  const handleLoadYouTube = () => {
+    const id = extractYouTubeIdFromInput(ytInput.trim());
+    if (id) loadYouTube(id);
+  };
+
+  const handleCaptureTab = async () => {
+    setCapturing(true);
+    await captureTab();
+    setCapturing(false);
+  };
+
   if (!active) return null;
+
+  const trackLabel = tabCaptured
+    ? "Tab Audio — Live"
+    : youtubeVideoId
+      ? "YouTube Stream"
+      : micActive
+        ? "Microphone — Live"
+        : "Aplx Beats — Demo Track";
+  const bpmLabel = tabCaptured || micActive ? "Analyzing…" : "128 BPM · Electronic";
 
   return (
     <div className="pointer-events-auto fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-5">
@@ -397,10 +539,20 @@ export function DJOverlay() {
               DJ Mode
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setShowYouTube((v) => !v)}
+              className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                showYouTube || youtubeVideoId
+                  ? "border-red-400/50 bg-red-500/20 text-red-300"
+                  : "border-white/15 bg-white/[0.06] text-slate-400 hover:bg-white/10"
+              }`}
+            >
+              ▶ YT
+            </button>
             <button
               onClick={() => toggleMic()}
-              className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${
+              className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${
                 micActive
                   ? "border-cyan-400/50 bg-cyan-500/20 text-cyan-300"
                   : "border-white/15 bg-white/[0.06] text-slate-400 hover:bg-white/10"
@@ -410,12 +562,84 @@ export function DJOverlay() {
             </button>
             <button
               onClick={() => stopDJ()}
-              className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 transition-all hover:bg-white/10"
+              className="rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 transition-all hover:bg-white/10"
             >
-              ✕ Exit
+              ✕
             </button>
           </div>
         </div>
+
+        {/* YouTube panel */}
+        {showYouTube && (
+          <div className="mb-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              Stream through YouTube
+            </p>
+            {!youtubeVideoId ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={ytInput}
+                  onChange={(e) => setYtInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLoadYouTube()}
+                  placeholder="Paste YouTube URL or video ID…"
+                  className="flex-1 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] text-white placeholder-slate-500 outline-none focus:border-red-400/40"
+                />
+                <button
+                  onClick={handleLoadYouTube}
+                  className="shrink-0 rounded-lg border border-red-400/30 bg-red-500/[0.1] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-300 transition-all hover:bg-red-500/20"
+                >
+                  Load
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {/* embedded player */}
+                <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`}
+                    className="absolute inset-0 h-full w-full"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    title="YouTube player"
+                  />
+                </div>
+                {/* capture button */}
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => { loadYouTube(""); setYtInput(""); }}
+                    className="text-[10px] text-slate-500 hover:text-slate-300"
+                  >
+                    ← Change video
+                  </button>
+                  <button
+                    onClick={handleCaptureTab}
+                    disabled={capturing || tabCaptured}
+                    className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
+                      tabCaptured
+                        ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300"
+                        : capturing
+                          ? "border-yellow-400/40 bg-yellow-500/10 text-yellow-300 animate-pulse"
+                          : "border-cyan-400/30 bg-cyan-500/[0.1] text-cyan-300 hover:bg-cyan-500/20"
+                    }`}
+                  >
+                    {tabCaptured ? "✓ Captured" : capturing ? "Select tab…" : "🎙 Capture Tab Audio"}
+                  </button>
+                </div>
+                {tabCaptured && (
+                  <p className="text-center text-[9px] text-emerald-400/70">
+                    Audio captured — the visuals are now reacting to your stream.
+                  </p>
+                )}
+                {!tabCaptured && !capturing && (
+                  <p className="text-center text-[9px] text-slate-500">
+                    Click Capture, then select this tab with "Share tab audio" enabled.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* now playing */}
         <div className="mb-3 text-center">
@@ -423,10 +647,10 @@ export function DJOverlay() {
             ♫ Now Playing
           </p>
           <p className="font-display text-sm font-bold tracking-wide text-white/95">
-            Aplx Beats — Demo Track
+            {trackLabel}
           </p>
           <p className="text-[10px] text-cyan-400/70">
-            128 BPM · Electronic
+            {bpmLabel}
           </p>
         </div>
 
