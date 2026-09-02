@@ -551,12 +551,11 @@ export function DJOverlay() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [active, bassLevel, midLevel, highLevel]);
 
-  const handleLoadYouTube = () => {
+  const handleLoadYouTube = async () => {
     const id = extractYouTubeIdFromInput(ytInput.trim());
-    if (id) loadYouTube(id);
-  };
-
-  const handleCaptureTab = async () => {
+    if (!id) return;
+    loadYouTube(id);
+    // Auto-capture tab audio while still in user gesture context
     setCapturing(true);
     await captureTab();
     setCapturing(false);
@@ -655,22 +654,25 @@ export function DJOverlay() {
           </div>
         )}
 
-        {/* capture button row (shown when video is loaded) */}
+        {/* capture status (auto-triggered) */}
         {youtubeVideoId && (
           <div className="mb-3 flex items-center justify-center gap-2">
-            <button
-              onClick={handleCaptureTab}
-              disabled={capturing || tabCaptured}
-              className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                tabCaptured
-                  ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300"
-                  : capturing
-                    ? "border-yellow-400/40 bg-yellow-500/10 text-yellow-300 animate-pulse"
-                    : "border-cyan-400/30 bg-cyan-500/[0.1] text-cyan-300 hover:bg-cyan-500/20"
-              }`}
-            >
-              {tabCaptured ? "✓ Audio Captured" : capturing ? "Select this tab…" : "🎙 Capture Tab Audio"}
-            </button>
+            {tabCaptured ? (
+              <span className="rounded-full border border-emerald-400/50 bg-emerald-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                ✓ Audio Live
+              </span>
+            ) : capturing ? (
+              <span className="rounded-full border border-yellow-400/40 bg-yellow-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-300 animate-pulse">
+                Select this tab…
+              </span>
+            ) : (
+              <button
+                onClick={async () => { setCapturing(true); await captureTab(); setCapturing(false); }}
+                className="rounded-full border border-cyan-400/30 bg-cyan-500/[0.1] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-300 transition-all hover:bg-cyan-500/20"
+              >
+                🎙 Retry Capture
+              </button>
+            )}
             <button
               onClick={() => { loadYouTube(""); setYtInput(""); }}
               className="text-[10px] text-slate-500 hover:text-slate-300"
