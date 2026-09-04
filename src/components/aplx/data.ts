@@ -103,7 +103,7 @@ export const PROVIDERS: AplxProvider[] = [
   },
 ];
 
-export const LAUNCH_URL = "https://aplx-webapp.vercel.app";
+export const LAUNCH_URL = "https://aplx-web.vercel.app";
 export const GITHUB_URL = "https://github.com/Korentic/Aplx";
 
 export const TOTAL_MODELS = PROVIDERS.reduce((n, p) => n + p.models.length, 0);
