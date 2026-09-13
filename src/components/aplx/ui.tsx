@@ -77,6 +77,7 @@ export function GithubButton({
 }
 
 const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
+const PREVIEW_URL = "https://aplx-web.ai.studio";
 
 export function InstallWebsiteButton({ className }: { className?: string }) {
   const go = useNavigateAfterExplosion();
@@ -92,6 +93,25 @@ export function InstallWebsiteButton({ className }: { className?: string }) {
       )}
     >
       Install Website
+      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+    </button>
+  );
+}
+
+export function PreviewButton({ className }: { className?: string }) {
+  const go = useNavigateAfterExplosion();
+  return (
+    <button
+      onClick={() => go(PREVIEW_URL)}
+      className={cn(
+        "group pointer-events-auto inline-flex items-center gap-2 rounded-full px-6 py-3",
+        "border border-violet-400/30 bg-violet-500/[0.1] backdrop-blur-xl font-medium tracking-wide text-violet-200",
+        "shadow-[inset_0_1px_0_rgba(196,181,253,0.15)]",
+        "transition-all duration-300 hover:bg-violet-500/[0.2] hover:border-violet-400/50 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(196,181,253,0.2)]",
+        className,
+      )}
+    >
+      Preview the new updates
       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
     </button>
   );

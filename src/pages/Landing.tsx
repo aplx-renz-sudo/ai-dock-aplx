@@ -29,6 +29,7 @@ import {
   LaunchButton,
   GithubButton,
   InstallWebsiteButton,
+  PreviewButton,
   Navbar,
   SectionHeading,
 } from "@/components/aplx/ui";
@@ -177,12 +178,11 @@ function LandingInner() {
 
             <p className="mx-auto mt-3 max-w-lg text-xs text-slate-400/80">
               ~11 providers&ensp;•&ensp;Multiple models&ensp;•&ensp;Open source&ensp;•&ensp;1 M-parameter Nano Model
-            </p>
-
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            </p>              <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <LaunchButton />
               <GithubButton />
               <InstallWebsiteButton />
+              <PreviewButton />
             </div>
           </motion.div>
 
@@ -422,6 +422,7 @@ function LandingInner() {
               <LaunchButton />
               <GithubButton label="Explore the source" />
               <InstallWebsiteButton />
+              <PreviewButton />
             </div>
           </motion.div>
         </section>
@@ -646,6 +647,12 @@ function FooterLinks() {
         className="transition-colors hover:text-white"
       >
         GitHub
+      </button>
+      <button
+        onClick={() => go("https://aplx-web.ai.studio")}
+        className="transition-colors hover:text-white"
+      >
+        Preview updates
       </button>
       <span>MIT License</span>
     </div>
