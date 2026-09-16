@@ -649,7 +649,7 @@ function FooterLinks() {
         GitHub
       </button>
       <button
-        onClick={() => go("https://aplx-web.ai.studio")}
+        onClick={() => go("https://aplx-preview.vercel.app/")}
         className="transition-colors hover:text-white"
       >
         Preview updates

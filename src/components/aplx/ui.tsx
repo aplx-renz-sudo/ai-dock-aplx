@@ -77,7 +77,7 @@ export function GithubButton({
 }
 
 const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
-const PREVIEW_URL = "https://aplx-web.ai.studio";
+const PREVIEW_URL = "https://aplx-preview.vercel.app/";
 
 export function InstallWebsiteButton({ className }: { className?: string }) {
   const go = useNavigateAfterExplosion();
