@@ -13,7 +13,9 @@ const corsHeaders: Record<string, string> = {
 http.route({
   path: "/audio-proxy",
   method: "OPTIONS",
-  handler: httpActionGeneric(async () => new Response(null, { status: 204, headers: corsHeaders })),
+  handler: httpActionGeneric(async (_ctx, request) => {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }),
 });
 
 // Proxy remote audio (incl. YouTube) so the DJ overlay can analyse real
@@ -21,7 +23,7 @@ http.route({
 http.route({
   path: "/audio-proxy",
   method: "GET",
-  handler: httpActionGeneric(async (_ctx, request) => {
+  handler: httpActionGeneric(async (ctx, request) => {
     const url = new URL(request.url).searchParams.get("url");
     if (!url || !/^https:\/\//i.test(url)) {
       return new Response("missing or invalid url", { status: 400, headers: corsHeaders });
@@ -34,7 +36,6 @@ http.route({
       headers.set("cache-control", "no-store");
       return new Response(upstream.body, { headers });
     } catch (err) {
-      console.error("audio-proxy error:", err);
       return new Response("failed to fetch audio", { status: 502, headers: corsHeaders });
     }
   }),
