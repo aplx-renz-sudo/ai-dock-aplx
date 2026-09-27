@@ -30,7 +30,7 @@ import {
   openLink,
   PREVIEW_URL,
 } from "@/components/aplx/ui";
-import { CostChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
+import { DownloadChart, RunChart, SetupChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
 import { ScrollFade } from "@/components/aplx/scroll";
 
@@ -261,10 +261,10 @@ function ProductShot() {
 /* ============================================================ FREE FOREVER */
 
 const STATS = [
-  { value: "$0", label: "Cost to use" },
   { value: "$0", label: "Cost to download" },
+  { value: "$0", label: "Cost to run" },
+  { value: "2 min", label: "Setup time" },
   { value: "0", label: "Ads, forever" },
-  { value: "100%", label: "Features unlocked" },
 ];
 
 function FreeForever() {
@@ -274,7 +274,7 @@ function FreeForever() {
         <SectionHeading
           kicker="Pricing"
           title="APLX V2 is completely free."
-          subtitle="No subscription, no paywall, no ads. Use it, download it, and run it for as long as you want — the numbers below speak for themselves."
+          subtitle="APLX is the dock that runs your AI — it costs nothing to download, nothing to run, and gets you set up in a couple of minutes. No subscription, no paywall, no ads."
         />
       </ScrollFade>
 
@@ -293,10 +293,25 @@ function FreeForever() {
 
       <ScrollFade className="mx-auto mt-6 grid max-w-5xl gap-4 lg:grid-cols-2">
         <ChartPanel
-          title="Monthly cost"
-          caption="APLX V2 vs typical AI subscriptions (USD / month)"
+          title="Cost to download"
+          caption="One-time price to get the software (USD)"
         >
-          <CostChart />
+          <DownloadChart />
+        </ChartPanel>
+        <ChartPanel
+          title="Cost to run"
+          caption="Monthly cost to keep the dock running (USD / month)"
+        >
+          <RunChart />
+        </ChartPanel>
+      </ScrollFade>
+
+      <ScrollFade className="mx-auto mt-4 grid max-w-5xl gap-4 lg:grid-cols-2">
+        <ChartPanel
+          title="Setup time"
+          caption="From download to first run — lower is easier (minutes)"
+        >
+          <SetupChart />
         </ChartPanel>
         <ChartPanel
           title="Ads served"
@@ -309,7 +324,7 @@ function FreeForever() {
       <ScrollFade className="mx-auto mt-4 max-w-5xl">
         <ChartPanel
           title="12-month spend"
-          caption="What you pay over a year with APLX V2 versus a typical subscription"
+          caption="What running your AI costs over a year with APLX Dock versus a typical paid setup"
         >
           <SpendChart />
         </ChartPanel>
@@ -342,7 +357,7 @@ function ChartPanel({
           <p className="mt-0.5 text-[12px] text-neutral-500">{caption}</p>
         </div>
         <span className="shrink-0 rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
-          APLX V2 $0
+          APLX Dock $0
         </span>
       </div>
       {children}

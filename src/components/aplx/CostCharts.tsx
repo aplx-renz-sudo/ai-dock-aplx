@@ -1,7 +1,10 @@
 /**
- * Cost & ads charts for APLX V2.
- * Data visualisations showing APLX V2 is free to use, free to download,
- * and serves zero ads compared with typical alternatives.
+ * Cost, setup & ads charts for APLX Dock.
+ *
+ * APLX is a *dock* — a place to run your AI — not an AI model itself. These
+ * charts show the dock costs $0 to download, $0 to run, gets you set up in
+ * minutes, and serves zero ads, compared with the usual ways of wiring AI
+ * tools together.
  */
 import {
   Area,
@@ -33,21 +36,37 @@ const tooltipStyle = {
 
 /* -------------------------------- data ---------------------------------- */
 
-// Monthly subscription cost (USD) for comparable AI tools.
-const COST_DATA = [
-  { name: "APLX V2", cost: 0 },
-  { name: "GPT Plus", cost: 20 },
-  { name: "Claude Pro", cost: 20 },
-  { name: "Gemini Adv.", cost: 20 },
-  { name: "Copilot Pro", cost: 10 },
+type Datum = { name: string; value: number };
+
+// Is this the dock's own bar? (Highlighted in emerald.)
+const isDock = (d: Datum) => d.name.startsWith("APLX");
+
+// One-time cost to download / install the software (USD).
+const DOWNLOAD_DATA: Datum[] = [
+  { name: "APLX Dock", value: 0 },
+  { name: "Paid AI apps", value: 25 },
+  { name: "Premium suites", value: 60 },
+];
+
+// Monthly cost to keep everything running (USD / month).
+const RUN_DATA: Datum[] = [
+  { name: "APLX Dock", value: 0 },
+  { name: "Single AI app", value: 20 },
+  { name: "Stacked AI apps", value: 40 },
+];
+
+// Time from download to first run (minutes — lower is easier).
+const SETUP_DATA: Datum[] = [
+  { name: "APLX Dock", value: 2 },
+  { name: "Typical AI app", value: 30 },
+  { name: "Self-host stack", value: 120 },
 ];
 
 // Ads served per active session across common free tools.
-const ADS_DATA = [
-  { name: "APLX V2", ads: 0 },
-  { name: "Free AI apps", ads: 14 },
-  { name: "Web tools", ads: 9 },
-  { name: "Mobile apps", ads: 18 },
+const ADS_DATA: Datum[] = [
+  { name: "APLX Dock", value: 0 },
+  { name: "Free AI apps", value: 14 },
+  { name: "Web tools", value: 9 },
 ];
 
 // Cumulative 12-month spend once you start using the dock.
@@ -57,12 +76,22 @@ const SPEND_DATA = Array.from({ length: 12 }, (_, i) => ({
   typical: (i + 1) * 20,
 }));
 
-/* ------------------------------- charts --------------------------------- */
+/* ------------------------------ bar chart -------------------------------- */
 
-export function CostChart() {
+function CostBars({
+  data,
+  unit,
+  yTick,
+  tooltipLabel,
+}: {
+  data: Datum[];
+  unit: "usd" | "minutes" | "ads";
+  yTick: (v: number) => string;
+  tooltipLabel: string;
+}) {
   return (
     <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={COST_DATA} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
         <XAxis
           dataKey="name"
@@ -75,18 +104,21 @@ export function CostChart() {
           tick={{ fill: AXIS, fontSize: 11 }}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(v: number) => `$${v}`}
+          tickFormatter={yTick}
         />
         <Tooltip
           contentStyle={tooltipStyle}
           labelStyle={{ color: "#a1a1aa", marginBottom: 2 }}
           itemStyle={{ color: "#fafafa" }}
           cursor={{ fill: "rgba(255,255,255,0.04)" }}
-          formatter={(value: number) => [`$${value}`, "Monthly cost"]}
+          formatter={(value: number) => [
+            unit === "usd" ? `$${value}` : unit === "minutes" ? `${value} min` : `${value}`,
+            tooltipLabel,
+          ]}
         />
-        <Bar dataKey="cost" radius={[4, 4, 0, 0]} maxBarSize={44}>
-          {COST_DATA.map((d) => (
-            <Cell key={d.name} fill={d.cost === 0 ? EMERALD : MUTED} />
+        <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
+          {data.map((d) => (
+            <Cell key={d.name} fill={isDock(d) ? EMERALD : MUTED} />
           ))}
         </Bar>
       </BarChart>
@@ -94,33 +126,49 @@ export function CostChart() {
   );
 }
 
+/* ------------------------------- charts --------------------------------- */
+
+export function DownloadChart() {
+  return (
+    <CostBars
+      data={DOWNLOAD_DATA}
+      unit="usd"
+      yTick={(v) => `$${v}`}
+      tooltipLabel="Cost to download"
+    />
+  );
+}
+
+export function RunChart() {
+  return (
+    <CostBars
+      data={RUN_DATA}
+      unit="usd"
+      yTick={(v) => `$${v}`}
+      tooltipLabel="Monthly cost to run"
+    />
+  );
+}
+
+export function SetupChart() {
+  return (
+    <CostBars
+      data={SETUP_DATA}
+      unit="minutes"
+      yTick={(v) => `${v}m`}
+      tooltipLabel="Setup time"
+    />
+  );
+}
+
 export function AdsChart() {
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={ADS_DATA} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-        <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis
-          dataKey="name"
-          tick={{ fill: AXIS, fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-          interval={0}
-        />
-        <YAxis tick={{ fill: AXIS, fontSize: 11 }} axisLine={false} tickLine={false} />
-        <Tooltip
-          contentStyle={tooltipStyle}
-          labelStyle={{ color: "#a1a1aa", marginBottom: 2 }}
-          itemStyle={{ color: "#fafafa" }}
-          cursor={{ fill: "rgba(255,255,255,0.04)" }}
-          formatter={(value: number) => [`${value}`, "Ads per session"]}
-        />
-        <Bar dataKey="ads" radius={[4, 4, 0, 0]} maxBarSize={44}>
-          {ADS_DATA.map((d) => (
-            <Cell key={d.name} fill={d.ads === 0 ? EMERALD : MUTED} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <CostBars
+      data={ADS_DATA}
+      unit="ads"
+      yTick={(v) => `${v}`}
+      tooltipLabel="Ads per session"
+    />
   );
 }
 
@@ -153,7 +201,7 @@ export function SpendChart() {
           itemStyle={{ color: "#fafafa" }}
           formatter={(value: number, name: string) => [
             `$${value}`,
-            name === "aplx" ? "APLX V2" : "Typical subscription",
+            name === "aplx" ? "APLX Dock" : "Typical paid setup",
           ]}
         />
         <Area
