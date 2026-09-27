@@ -136,6 +136,16 @@ export function SectionHeading({
       <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-[2.75rem]">
         {title}
       </h2>
+      <motion.span
+        initial={{ scaleX: 0, opacity: 0 }}
+        whileInView={{ scaleX: 1, opacity: 1 }}
+        viewport={{ once: false, margin: "-80px" }}
+        transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
+        className={cn(
+          "mt-5 block h-px w-20 bg-gradient-to-r from-emerald-400/0 via-emerald-400 to-emerald-400/0",
+          align === "center" ? "mx-auto" : "origin-left",
+        )}
+      />
       {subtitle && (
         <p className="mt-4 text-base leading-relaxed text-neutral-400 sm:text-lg">
           {subtitle}

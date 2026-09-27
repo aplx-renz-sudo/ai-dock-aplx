@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
   Box,
@@ -32,7 +32,7 @@ import {
 } from "@/components/aplx/ui";
 import { DownloadChart, RunChart, SetupChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
-import { ScrollFade } from "@/components/aplx/scroll";
+import { ScrollFade, ScrollProgress } from "@/components/aplx/scroll";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -77,6 +77,7 @@ function LandingInner() {
         }}
       />
 
+      <ScrollProgress />
       <Navbar />
       <DJOverlay />
 
@@ -101,11 +102,30 @@ function LandingInner() {
 /* ============================================================ HERO */
 
 function Hero() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  // Gentle depth: the mock window drifts up faster than the copy, and the
+  // hero glow dims away as the section leaves the viewport.
+  const shotY = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const glowOpacity = useTransform(scrollYProgress, [0, 0.5], [0.6, 0]);
+
   return (
     <section
       id="top"
+      ref={heroRef}
       className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pb-24 pt-32"
     >
+      <motion.div
+        aria-hidden
+        style={{ opacity: glowOpacity }}
+        className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
+      >
+        <div className="absolute left-1/2 top-[-180px] h-[560px] w-[860px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.18),transparent_65%)] blur-2xl" />
+      </motion.div>
+
       <ScrollFade className="w-full" distance={32}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -114,7 +134,10 @@ function Hero() {
           className="mx-auto w-full max-w-4xl text-center"
         >
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-[12px] font-medium text-neutral-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          </span>
           APLX version: V2
           <span className="text-white/20">|</span>
           <span className="text-emerald-400">Free forever · 0 ads</span>
@@ -155,7 +178,9 @@ function Hero() {
           transition={{ duration: 0.9, ease: "easeOut", delay: 0.15 }}
           className="mx-auto mt-16 w-full max-w-4xl"
         >
-          <ProductShot />
+          <motion.div style={{ y: shotY }}>
+            <ProductShot />
+          </motion.div>
         </motion.div>
       </ScrollFade>
 
@@ -185,6 +210,7 @@ function ProductShot() {
         <div className="mx-auto flex items-center gap-2 rounded-md border border-white/[0.07] bg-black/40 px-3 py-1 text-[11px] text-neutral-500">
           <Shield className="h-3 w-3 text-emerald-400/70" />
           aplx.app/dock
+          <span className="ml-0.5 inline-block h-3 w-1 animate-pulse rounded-[1px] bg-emerald-400/70" />
         </div>
       </div>
 
@@ -274,14 +300,14 @@ function FreeForever() {
         <SectionHeading
           kicker="Pricing"
           title="APLX V2 is completely free."
-          subtitle="APLX is the dock that runs your AI — it costs nothing to download, nothing to run, and gets you set up in a couple of minutes. No subscription, no paywall, no ads."
+          subtitle="APLX is the dock that runs your AI without taking your data — just basic setup: download, run it locally (available now), and you're set up in a couple of minutes. Because APLX focuses on user comfort rather than payments."
         />
       </ScrollFade>
 
       <div className="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {STATS.map((s, i) => (
           <ScrollFade key={s.label} delay={i * 0.06}>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.04]">
               <div className="font-display text-3xl font-bold tracking-tight text-emerald-400 sm:text-4xl">
                 {s.value}
               </div>
@@ -620,6 +646,10 @@ function OpenSource() {
             ].map((line, i) => (
               <div key={i}>{line}</div>
             ))}
+            <div className="flex items-center gap-1 pt-1 text-emerald-400/80">
+              <span>aplx-dock $</span>
+              <span className="inline-block h-3.5 w-1.5 animate-pulse rounded-[1px] bg-emerald-400/80" />
+            </div>
           </div>
           <div className="flex items-center gap-2 border-t border-white/[0.07] bg-white/[0.015] px-5 py-2.5">
             <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
