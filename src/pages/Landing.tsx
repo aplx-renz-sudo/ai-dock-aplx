@@ -22,6 +22,8 @@ import {
 import { PROVIDERS, LAUNCH_URL, GITHUB_URL, type AplxProvider } from "@/components/aplx/data";
 import {
   GlassPanel,
+  DotField,
+  DotRule,
   LaunchButton,
   GithubButton,
   InstallWebsiteButton,
@@ -193,6 +195,8 @@ function Hero() {
         <span className="text-[10px] uppercase tracking-[0.2em]">Scroll</span>
         <ChevronDown className="h-4 w-4" />
       </motion.div>
+
+      <DotRule className="mt-10 w-full max-w-3xl opacity-50" />
     </section>
   );
 }
@@ -297,6 +301,7 @@ const STATS = [
 function FreeForever() {
   return (
     <section id="free" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
+      <DotField className="opacity-70" />
       <ScrollFade distance={24}>
         <SectionHeading
           kicker="Pricing"
@@ -491,6 +496,7 @@ function ProviderCatalog() {
 
   return (
     <section id="catalog" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
+      <DotField className="opacity-70" />
       <ScrollFade distance={24}>
         <SectionHeading
           kicker="Provider Catalog"
@@ -820,6 +826,8 @@ function FinalCta() {
           <PreviewButton />
         </div>
       </ScrollFade>
+
+      <DotRule className="mt-14 w-full max-w-3xl opacity-50" />
     </section>
   );
 }

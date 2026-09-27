@@ -128,6 +128,52 @@ export function GlassPanel({
   );
 }
 
+/* --------------------------------- dots ----------------------------------- */
+
+/**
+ * A very faint dot grid that drifts diagonally. Purely decorative texture —
+ * keep it masked and low-opacity so it reads as paper grain, not polka dots.
+ */
+export function DotField({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-0 animate-[dot-drift_26s_linear_infinite]",
+        className,
+      )}
+      style={{
+        backgroundImage:
+          "radial-gradient(rgba(255,255,255,0.13) 1px, transparent 1px)",
+        backgroundSize: "26px 26px",
+        maskImage:
+          "radial-gradient(ellipse 58% 52% at 50% 50%, #000 12%, transparent 72%)",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 58% 52% at 50% 50%, #000 12%, transparent 72%)",
+      }}
+    />
+  );
+}
+
+/** A single row of dots that fades out toward both ends. */
+export function DotRule({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={cn("h-2 w-full", className)}
+      style={{
+        backgroundImage:
+          "radial-gradient(rgba(255,255,255,0.28) 1px, transparent 1.5px)",
+        backgroundSize: "8px 8px",
+        maskImage:
+          "linear-gradient(to right, transparent, #000 28%, #000 72%, transparent)",
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent, #000 28%, #000 72%, transparent)",
+      }}
+    />
+  );
+}
+
 /* ----------------------------- section heading ---------------------------- */
 
 export function SectionHeading({

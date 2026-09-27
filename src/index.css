@@ -138,6 +138,17 @@ body {
   font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ---- dotted texture ---- */
+/* One tile = one dot cell, so the loop is seamless. */
+@keyframes dot-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 26px 26px;
+  }
+}
+
 /* ---- recharts tooltip ---- */
 .recharts-tooltip-wrapper {
   outline: none;
