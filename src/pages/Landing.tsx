@@ -10,6 +10,7 @@ import {
   ExternalLink,
   FileCode,
   Globe,
+  Info,
   KeyRound,
   Layers,
   Search,
@@ -361,6 +362,20 @@ function FreeForever() {
           You only ever pay your own model provider for usage — APLX itself adds no
           fee, no markup, and never shows an ad.
         </p>
+      </ScrollFade>
+
+      <ScrollFade className="mx-auto mt-4 max-w-3xl" distance={16}>
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.015] px-5 py-4">
+          <div className="flex items-start gap-3">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-600" />
+            <p className="text-[11px] font-medium uppercase leading-relaxed tracking-[0.12em] text-neutral-600">
+              Display notice — this is just for display to show that APLX is a free
+              source, non-paid dock. This does not compare to any real apps or
+              services. Do not take these graphs seriously — this is true, but is
+              meant for display purposes only.
+            </p>
+          </div>
+        </div>
       </ScrollFade>
     </section>
   );
