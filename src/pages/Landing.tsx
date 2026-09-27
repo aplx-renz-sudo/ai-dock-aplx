@@ -299,7 +299,7 @@ function FreeForever() {
       <ScrollFade distance={24}>
         <SectionHeading
           kicker="Pricing"
-          title="APLX V2 is completely free."
+          title="Free, local, and private by default."
           subtitle="APLX is the dock that runs your AI without taking your data — just basic setup: download, run it locally (available now), and you're set up in a couple of minutes. Because APLX focuses on user comfort rather than payments."
         />
       </ScrollFade>
@@ -307,12 +307,12 @@ function FreeForever() {
       <div className="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {STATS.map((s, i) => (
           <ScrollFade key={s.label} delay={i * 0.06}>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.04]">
+            <GlassPanel className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20">
               <div className="font-display text-3xl font-bold tracking-tight text-emerald-400 sm:text-4xl">
                 {s.value}
               </div>
               <p className="mt-1 text-[13px] text-neutral-400">{s.label}</p>
-            </div>
+            </GlassPanel>
           </ScrollFade>
         ))}
       </div>

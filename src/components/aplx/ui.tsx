@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, Github, Menu, Music, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -95,14 +95,35 @@ export function GlassPanel({
   children: React.ReactNode;
   className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // A faint emerald highlight that tracks the pointer across the panel.
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--glow-x", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--glow-y", `${e.clientY - rect.top}px`);
+  };
+
   return (
     <div
+      ref={ref}
+      onMouseMove={handleMouseMove}
       className={cn(
-        "relative rounded-2xl border border-white/10 bg-white/[0.025]",
+        "group/panel relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]",
         className,
       )}
     >
-      {children}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/panel:opacity-100"
+        style={{
+          background:
+            "radial-gradient(240px circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(52,211,153,0.10), transparent 70%)",
+        }}
+      />
+      <div className="relative">{children}</div>
     </div>
   );
 }
