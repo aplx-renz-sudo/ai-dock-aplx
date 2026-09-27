@@ -32,6 +32,7 @@ import {
 } from "@/components/aplx/ui";
 import { CostChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
+import { ScrollFade } from "@/components/aplx/scroll";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -47,15 +48,6 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
   perplexity: <Search className="h-5 w-5" />,
   groq: <Server className="h-5 w-5" />,
   ollama: <Shield className="h-5 w-5" />,
-};
-
-/* ------------------------------ fade in up -------------------------------- */
-
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" } as const,
-  transition: { duration: 0.6, ease: "easeOut" } as const,
 };
 
 /* ============================== LANDING ================================== */
@@ -114,12 +106,13 @@ function Hero() {
       id="top"
       className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pb-24 pt-32"
     >
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="mx-auto w-full max-w-4xl text-center"
-      >
+      <ScrollFade className="w-full" distance={32}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mx-auto w-full max-w-4xl text-center"
+        >
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-[12px] font-medium text-neutral-300">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
           APLX version: V2
@@ -152,16 +145,19 @@ function Hero() {
             </span>
           ))}
         </div>
-      </motion.div>
+        </motion.div>
+      </ScrollFade>
 
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, ease: "easeOut", delay: 0.15 }}
-        className="mx-auto mt-16 w-full max-w-4xl"
-      >
-        <ProductShot />
-      </motion.div>
+      <ScrollFade className="w-full" distance={48}>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut", delay: 0.15 }}
+          className="mx-auto mt-16 w-full max-w-4xl"
+        >
+          <ProductShot />
+        </motion.div>
+      </ScrollFade>
 
       <motion.div
         animate={{ y: [0, 6, 0] }}
@@ -274,26 +270,28 @@ const STATS = [
 function FreeForever() {
   return (
     <section id="free" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <SectionHeading
-        kicker="Pricing"
-        title="APLX V2 is completely free."
-        subtitle="No subscription, no paywall, no ads. Use it, download it, and run it for as long as you want — the numbers below speak for themselves."
-      />
+      <ScrollFade distance={24}>
+        <SectionHeading
+          kicker="Pricing"
+          title="APLX V2 is completely free."
+          subtitle="No subscription, no paywall, no ads. Use it, download it, and run it for as long as you want — the numbers below speak for themselves."
+        />
+      </ScrollFade>
 
       <div className="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {STATS.map((s, i) => (
-          <motion.div key={s.label} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }}>
+          <ScrollFade key={s.label} delay={i * 0.06}>
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
               <div className="font-display text-3xl font-bold tracking-tight text-emerald-400 sm:text-4xl">
                 {s.value}
               </div>
               <p className="mt-1 text-[13px] text-neutral-400">{s.label}</p>
             </div>
-          </motion.div>
+          </ScrollFade>
         ))}
       </div>
 
-      <motion.div {...fadeUp} className="mx-auto mt-6 grid max-w-5xl gap-4 lg:grid-cols-2">
+      <ScrollFade className="mx-auto mt-6 grid max-w-5xl gap-4 lg:grid-cols-2">
         <ChartPanel
           title="Monthly cost"
           caption="APLX V2 vs typical AI subscriptions (USD / month)"
@@ -306,21 +304,23 @@ function FreeForever() {
         >
           <AdsChart />
         </ChartPanel>
-      </motion.div>
+      </ScrollFade>
 
-      <motion.div {...fadeUp} className="mx-auto mt-4 max-w-5xl">
+      <ScrollFade className="mx-auto mt-4 max-w-5xl">
         <ChartPanel
           title="12-month spend"
           caption="What you pay over a year with APLX V2 versus a typical subscription"
         >
           <SpendChart />
         </ChartPanel>
-      </motion.div>
+      </ScrollFade>
 
-      <motion.p {...fadeUp} className="mx-auto mt-6 max-w-2xl text-center text-[13px] text-neutral-500">
-        You only ever pay your own model provider for usage — APLX itself adds no
-        fee, no markup, and never shows an ad.
-      </motion.p>
+      <ScrollFade className="mx-auto mt-6 max-w-2xl">
+        <p className="text-center text-[13px] text-neutral-500">
+          You only ever pay your own model provider for usage — APLX itself adds no
+          fee, no markup, and never shows an ad.
+        </p>
+      </ScrollFade>
     </section>
   );
 }
@@ -388,15 +388,17 @@ function DockFeatures() {
 
   return (
     <section id="dock" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <SectionHeading
-        kicker="The Dock"
-        title="Everything docks here."
-        subtitle="One interface to plug in your API keys, browse the catalog, and run agents across any supported provider."
-      />
+      <ScrollFade distance={24}>
+        <SectionHeading
+          kicker="The Dock"
+          title="Everything docks here."
+          subtitle="One interface to plug in your API keys, browse the catalog, and run agents across any supported provider."
+        />
+      </ScrollFade>
 
       <div className="mx-auto mt-14 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => (
-          <motion.div key={f.title} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.05 }}>
+          <ScrollFade key={f.title} delay={i * 0.05} className="h-full">
             <GlassPanel className="h-full p-6 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.04]">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-300">
                 {f.icon}
@@ -406,7 +408,7 @@ function DockFeatures() {
               </h3>
               <p className="mt-1.5 text-sm leading-relaxed text-neutral-400">{f.body}</p>
             </GlassPanel>
-          </motion.div>
+          </ScrollFade>
         ))}
       </div>
     </section>
@@ -433,25 +435,29 @@ function ProviderCatalog() {
 
   return (
     <section id="catalog" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <SectionHeading
-        kicker="Provider Catalog"
-        title="Browse every docked provider."
-        subtitle="Search the catalog to discover available providers, models, and integrations — then launch directly into the dock."
-      />
+      <ScrollFade distance={24}>
+        <SectionHeading
+          kicker="Provider Catalog"
+          title="Browse every docked provider."
+          subtitle="Search the catalog to discover available providers, models, and integrations — then launch directly into the dock."
+        />
+      </ScrollFade>
 
       <div className="mx-auto mt-12 max-w-5xl">
-        <div className="relative mx-auto mb-8 max-w-md">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search providers or models…"
-            className="w-full rounded-lg border border-white/10 bg-white/[0.03] py-2.5 pl-10 pr-4 text-sm text-white placeholder-neutral-500 outline-none transition-colors focus:border-white/25 focus:bg-white/[0.05]"
-          />
-        </div>
+        <ScrollFade distance={24}>
+          <div className="relative mx-auto mb-8 max-w-md">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+            <input
+              type="text"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search providers or models…"
+              className="w-full rounded-lg border border-white/10 bg-white/[0.03] py-2.5 pl-10 pr-4 text-sm text-white placeholder-neutral-500 outline-none transition-colors focus:border-white/25 focus:bg-white/[0.05]"
+            />
+          </div>
+        </ScrollFade>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ScrollFade className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((p) => (
               <ProviderCard
@@ -462,7 +468,7 @@ function ProviderCatalog() {
               />
             ))}
           </AnimatePresence>
-        </div>
+        </ScrollFade>
 
         {filtered.length === 0 && (
           <p className="mt-8 text-center text-sm text-neutral-500">
@@ -470,9 +476,11 @@ function ProviderCatalog() {
           </p>
         )}
 
-        <p className="mt-6 text-center text-xs text-neutral-600">
-          {filtered.length} provider{filtered.length !== 1 && "s"} · {modelCount} models available
-        </p>
+        <ScrollFade className="mt-6">
+          <p className="text-center text-xs text-neutral-600">
+            {filtered.length} provider{filtered.length !== 1 && "s"} · {modelCount} models available
+          </p>
+        </ScrollFade>
       </div>
     </section>
   );
@@ -554,13 +562,15 @@ function ProviderCard({
 function OpenSource() {
   return (
     <section id="source" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <SectionHeading
-        kicker="Open Source"
-        title="Open by design."
-        subtitle="Built for transparency, experimentation, and community contribution."
-      />
+      <ScrollFade distance={24}>
+        <SectionHeading
+          kicker="Open Source"
+          title="Open by design."
+          subtitle="Built for transparency, experimentation, and community contribution."
+        />
+      </ScrollFade>
 
-      <motion.div {...fadeUp} className="mx-auto mt-14 grid max-w-5xl items-start gap-8 lg:grid-cols-2">
+      <ScrollFade className="mx-auto mt-14 grid max-w-5xl items-start gap-8 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-base leading-relaxed text-neutral-400">
             APLX Dock is fully open source. Every integration, routing layer, and
@@ -601,7 +611,7 @@ function OpenSource() {
             <span className="text-[11px] text-neutral-500">MIT License — free for everyone</span>
           </div>
         </GlassPanel>
-      </motion.div>
+      </ScrollFade>
     </section>
   );
 }
@@ -617,13 +627,15 @@ function NanoModel() {
   ];
   return (
     <section id="nano" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <SectionHeading
-        kicker="APLX Nano"
-        title="Tiny model. Zero cost."
-        subtitle="A lightweight 1M-parameter model built into the dock for local inference and experimentation."
-      />
+      <ScrollFade distance={24}>
+        <SectionHeading
+          kicker="APLX Nano"
+          title="Tiny model. Zero cost."
+          subtitle="A lightweight 1M-parameter model built into the dock for local inference and experimentation."
+        />
+      </ScrollFade>
 
-      <motion.div {...fadeUp} className="mx-auto mt-14 grid max-w-5xl items-center gap-8 lg:grid-cols-2">
+      <ScrollFade className="mx-auto mt-14 grid max-w-5xl items-center gap-8 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-base leading-relaxed text-neutral-400">
             APLX Dock ships with its own Nano Model — a compact, 1M-parameter
@@ -657,7 +669,7 @@ function NanoModel() {
             ))}
           </div>
         </GlassPanel>
-      </motion.div>
+      </ScrollFade>
     </section>
   );
 }
@@ -678,13 +690,15 @@ function Credits() {
   ];
   return (
     <section className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <SectionHeading
-        kicker="Credits"
-        title="Built by a 15-year-old."
-        subtitle="APLX Dock is an ongoing project by R3nz — developed with the help of AI and the open-source community."
-      />
+      <ScrollFade distance={24}>
+        <SectionHeading
+          kicker="Credits"
+          title="Built by a 15-year-old."
+          subtitle="APLX Dock is an ongoing project by R3nz — developed with the help of AI and the open-source community."
+        />
+      </ScrollFade>
 
-      <motion.div {...fadeUp} className="mx-auto mt-14 max-w-3xl">
+      <ScrollFade className="mx-auto mt-14 max-w-3xl">
         <GlassPanel className="p-8 sm:p-10">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] font-display text-base font-bold text-white">
@@ -722,7 +736,7 @@ function Credits() {
             </p>
           </div>
         </GlassPanel>
-      </motion.div>
+      </ScrollFade>
     </section>
   );
 }
@@ -732,7 +746,7 @@ function Credits() {
 function FinalCta() {
   return (
     <section className="relative border-t border-white/[0.06] px-6 py-28 text-center sm:py-32">
-      <motion.div {...fadeUp} className="mx-auto max-w-xl">
+      <ScrollFade className="mx-auto max-w-xl">
         <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
           Everything you need. One dock.
         </h2>
@@ -745,7 +759,7 @@ function FinalCta() {
           <InstallWebsiteButton />
           <PreviewButton />
         </div>
-      </motion.div>
+      </ScrollFade>
     </section>
   );
 }
