@@ -10,13 +10,11 @@ import {
   ArrowRight,
   Box,
   Brain,
-  Check,
   ChevronDown,
   Cpu,
   ExternalLink,
   FileCode,
   Globe,
-  Info,
   KeyRound,
   Layers,
   Search,
@@ -25,7 +23,13 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { PROVIDERS, LAUNCH_URL, GITHUB_URL, type AplxProvider } from "@/components/aplx/data";
+import {
+  PROVIDERS,
+  TOTAL_MODELS,
+  LAUNCH_URL,
+  GITHUB_URL,
+  type AplxProvider,
+} from "@/components/aplx/data";
 import {
   GlassPanel,
   DotField,
@@ -33,13 +37,13 @@ import {
   LaunchButton,
   GithubButton,
   InstallWebsiteButton,
-  PreviewButton,
   Navbar,
   SectionHeading,
   openLink,
+  INSTALL_WEBSITE_URL,
   PREVIEW_URL,
 } from "@/components/aplx/ui";
-import { DownloadChart, RunChart, SetupChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
+import { SpendChart } from "@/components/aplx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
 import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/aplx/scroll";
 import { AplxMark3D } from "@/components/aplx/AplxMark3D";
@@ -97,12 +101,14 @@ function LandingInner() {
         style={{ opacity: djActive ? 0 : 1, pointerEvents: djActive ? "none" : "auto" }}
       >
         <Hero />
-        <FreeForever />
+        <ProviderStrip />
         <DockFeatures />
+        <HowItWorks />
         <ProviderCatalog />
+        <Cost />
         <OpenSource />
         <NanoModel />
-        <Credits />
+        <Maintainer />
         <FinalCta />
         <Footer />
       </main>
@@ -176,25 +182,27 @@ function Hero() {
 
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
           APLX Dock unifies 11+ AI providers, their models, and your own API keys
-          behind a single, clean interface. Bring your keys, run your agents —
-          free to use, free to download, with zero ads.
+          behind a single, clean interface. Bring your keys, run your agents.
         </p>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <LaunchButton />
-          <GithubButton />
-          <InstallWebsiteButton />
-          <PreviewButton />
+          <button
+            onClick={() => openLink(GITHUB_URL)}
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white"
+          >
+            Read the source
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
+          </button>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13px] text-neutral-500">
-          {["11+ providers", "$0 forever", "0 ads", "Open source", "1M-param Nano"].map((s) => (
-            <span key={s} className="inline-flex items-center gap-2">
-              <Check className="h-3.5 w-3.5 text-emerald-400/80" />
-              {s}
-            </span>
-          ))}
-        </div>
+        {/* Derived from the provider data so this line can never drift from the
+            catalog below it. */}
+        <p className="mt-10 font-mono text-[11px] tracking-tight text-neutral-600">
+          {PROVIDERS.length} providers <span className="text-white/15">·</span>{" "}
+          {TOTAL_MODELS} models <span className="text-white/15">·</span> 1M-param local
+          Nano <span className="text-white/15">·</span> MIT licensed
+        </p>
         </motion.div>
       </ScrollFade>
 
@@ -239,6 +247,91 @@ function Hero() {
   );
 }
 
+/* ---------------------------------------------------------- provider strip */
+
+/**
+ * The integration list that belongs directly under a hero: it answers "does
+ * this work with what I already use?" before the reader has to scroll for it.
+ */
+function ProviderStrip() {
+  return (
+    <section className="relative border-t border-white/[0.06] px-6 py-7">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-8">
+        <p className="shrink-0 pt-0.5 text-[10px] font-medium uppercase tracking-[0.28em] text-neutral-600">
+          Docked today
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 sm:justify-start">
+          {PROVIDERS.map((p) => (
+            <span
+              key={p.id}
+              className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 transition-colors hover:text-neutral-300"
+            >
+              {p.name}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------ how it works */
+
+/**
+ * The three-step setup, numbered rather than iconographed. Real products
+ * explain the path in; leaving it out is what makes a page feel like a
+ * brochure instead of a product.
+ */
+function HowItWorks() {
+  const steps = [
+    {
+      title: "Download the dock",
+      body: "Grab the build for your platform. No account to create, no card, no sales call.",
+    },
+    {
+      title: "Connect your own keys",
+      body: "Add the provider keys you already own. They stay on your machine, under your control.",
+    },
+    {
+      title: "Work from one place",
+      body: "Route prompts and agents across every docked provider without switching tabs.",
+    },
+  ];
+
+  return (
+    <section className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+      <div className="mx-auto max-w-5xl">
+        <ScrollFade distance={24}>
+          <SectionHeading
+            align="left"
+            kicker="Setup"
+            title="Running in about two minutes."
+            subtitle="Installing the dock is most of the work. There is nothing to configure on a server and nothing to subscribe to."
+          />
+        </ScrollFade>
+
+        <div className="mt-14 grid max-w-5xl gap-x-6 gap-y-10 sm:grid-cols-3">
+          {steps.map((step, i) => (
+            <ScrollFade key={step.title} delay={i * 0.08}>
+              <div className="border-t border-white/10 pt-6">
+                <span className="font-mono text-[11px] font-semibold tracking-[0.16em] text-emerald-400/80">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="mt-3 font-display text-[15px] font-semibold tracking-tight text-white">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+                  {step.body}
+                </p>
+              </div>
+            </ScrollFade>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* --------------------------- product mock window -------------------------- */
 
 function ProductShot() {
@@ -249,10 +342,9 @@ function ProductShot() {
       <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.02] px-4 py-3">
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
-        <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
-        <div className="mx-auto flex items-center gap-2 rounded-md border border-white/[0.07] bg-black/40 px-3 py-1 text-[11px] text-neutral-500">
+        <div className="h-2.5 w-2.5 rounded-full bg-white/15" />            <div className="mx-auto flex items-center gap-2 rounded-md border border-white/[0.07] bg-black/40 px-3 py-1 text-[11px] text-neutral-500">
           <Shield className="h-3 w-3 text-emerald-400/70" />
-          aplx.app/dock
+          APLX Dock — Local
           <span className="ml-0.5 inline-block h-3 w-1 animate-pulse rounded-[1px] bg-emerald-400/70" />
         </div>
       </div>
@@ -327,99 +419,64 @@ function ProductShot() {
   );
 }
 
-/* ============================================================ FREE FOREVER */
+/* =================================================================== COST */
 
-const STATS = [
-  { value: "$0", label: "Cost to download" },
-  { value: "$0", label: "Cost to run" },
-  { value: "2 min", label: "Setup time" },
-  { value: "0", label: "Ads, forever" },
+/**
+ * Four non-overlapping facts rather than four ways of writing "$0".
+ */
+const TERMS = [
+  { value: "$0", label: "Licence", note: "MIT, no paid tier" },
+  { value: "$0", label: "Markup", note: "you pay providers at cost" },
+  { value: "Local", label: "Execution", note: "your keys never leave" },
+  { value: "None", label: "Ads or tracking", note: "nothing to opt out of" },
 ];
 
-function FreeForever() {
+function Cost() {
   return (
-    <section id="free" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
+    <section id="free" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
       <DotField className="opacity-70" />
-      <ScrollFade distance={24}>
-        <SectionHeading
-          kicker="Pricing"
-          title="Free, local, and private by default."
-          subtitle="APLX is the dock that runs your AI without taking your data — just basic setup: download, run it locally (available now), and you're set up in a couple of minutes. Because APLX focuses on user comfort rather than payments."
-        />
-      </ScrollFade>
+      <div className="mx-auto max-w-5xl">
+        <ScrollFade distance={24}>
+          <SectionHeading
+            align="left"
+            kicker="Cost"
+            title="You pay your provider. Nothing else."
+            subtitle="APLX Dock is a local app under the MIT licence. There is no seat price, no usage markup, and no ad inventory — the only invoice is the one your model provider already sends you."
+          />
+        </ScrollFade>
 
-      <div className="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {STATS.map((s, i) => (
-          <ScrollFade key={s.label} delay={i * 0.08}>
-            <GlassPanel className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20">
-              <div className="font-display text-3xl font-bold tracking-tight text-emerald-400 sm:text-4xl">
-                {s.value}
-              </div>
-              <p className="mt-1 text-[13px] text-neutral-400">{s.label}</p>
-            </GlassPanel>
-          </ScrollFade>
-        ))}
-      </div>
-
-      <ScrollFade className="mx-auto mt-6 grid max-w-5xl gap-4 lg:grid-cols-2">
-        <ChartPanel
-          title="Cost to download"
-          caption="One-time price to get the software (USD)"
-        >
-          <DownloadChart />
-        </ChartPanel>
-        <ChartPanel
-          title="Cost to run"
-          caption="Monthly cost to keep the dock running (USD / month)"
-        >
-          <RunChart />
-        </ChartPanel>
-      </ScrollFade>
-
-      <ScrollFade className="mx-auto mt-4 grid max-w-5xl gap-4 lg:grid-cols-2">
-        <ChartPanel
-          title="Setup time"
-          caption="From download to first run — lower is easier (minutes)"
-        >
-          <SetupChart />
-        </ChartPanel>
-        <ChartPanel
-          title="Ads served"
-          caption="Average ads shown per session across free tools"
-        >
-          <AdsChart />
-        </ChartPanel>
-      </ScrollFade>
-
-      <ScrollFade className="mx-auto mt-4 max-w-5xl">
-        <ChartPanel
-          title="12-month spend"
-          caption="What running your AI costs over a year with APLX Dock versus a typical paid setup"
-        >
-          <SpendChart />
-        </ChartPanel>
-      </ScrollFade>
-
-      <ScrollFade className="mx-auto mt-6 max-w-2xl">
-        <p className="text-center text-[13px] text-neutral-500">
-          You only ever pay your own model provider for usage — APLX itself adds no
-          fee, no markup, and never shows an ad.
-        </p>
-      </ScrollFade>
-
-      <ScrollFade className="mx-auto mt-4 max-w-3xl" distance={16}>
-        <div className="rounded-xl border border-white/[0.07] bg-white/[0.015] px-5 py-4">
-          <div className="flex items-start gap-3">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-600" />
-            <p className="text-[11px] font-medium uppercase leading-relaxed tracking-[0.12em] text-neutral-600">
-              Display notice — this is just for display to show that APLX is a free
-              source, non-paid dock. This does not compare to any real apps or
-              services. Do not take these graphs seriously — this is true, but is
-              meant for display purposes only.
-            </p>
-          </div>
+        <div className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {TERMS.map((t, i) => (
+            <ScrollFade key={t.label} delay={i * 0.08}>
+              <GlassPanel tilt className="h-full p-5 hover:border-white/20">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-neutral-500">
+                  {t.label}
+                </p>
+                <div className="mt-2 font-display text-2xl font-bold tracking-tight text-emerald-400 sm:text-3xl">
+                  {t.value}
+                </div>
+                <p className="mt-2 text-[12px] leading-relaxed text-neutral-500">{t.note}</p>
+              </GlassPanel>
+            </ScrollFade>
+          ))}
         </div>
-      </ScrollFade>
+
+        <ScrollFade className="mt-4">
+          <ChartPanel
+            title="Software cost over 12 months"
+            caption="Cumulative. The grey line models a $20/month subscription — a round number, not a measured competitor."
+          >
+            <SpendChart />
+          </ChartPanel>
+        </ScrollFade>
+
+        <ScrollFade className="mt-6 max-w-2xl">
+          <p className="text-[13px] leading-relaxed text-neutral-500">
+            Model usage is billed by whichever provider you connect, at their
+            published rates. APLX sits in front of that and adds nothing to it.
+          </p>
+        </ScrollFade>
+      </div>
     </section>
   );
 }
@@ -441,7 +498,7 @@ function ChartPanel({
           <p className="mt-0.5 text-[12px] text-neutral-500">{caption}</p>
         </div>
         <span className="shrink-0 rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
-          APLX Dock $0
+          MIT · no licence fee
         </span>
       </div>
       {children}
@@ -486,23 +543,23 @@ function DockFeatures() {
   ];
 
   return (
-    <section id="dock" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
+    <section id="dock" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+      <div className="mx-auto max-w-5xl">
       <ScrollFade distance={24}>
         <SectionHeading
+          align="left"
           kicker="The Dock"
-          title="Everything docks here."
-          subtitle="One interface to plug in your API keys, browse the catalog, and run agents across any supported provider."
+          title="One interface for every provider."
+          subtitle="Plug in your API keys once, browse the catalog, and run agents across any supported provider without leaving the window."
         />
       </ScrollFade>
 
       {/* The real interface, shown right under the claim it belongs to. */}
       <ScrollFade className="mx-auto mt-14 max-w-4xl">
         <ProductShot />
-      </ScrollFade>
-
-      <div className="mx-auto mt-12 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      </ScrollFade>      <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => (
-          <ScrollFade key={f.title} delay={i * 0.07} className="h-full">
+            <ScrollFade key={f.title} delay={i * 0.07} className="h-full">
             <GlassPanel tilt className="h-full p-6 hover:border-white/20 hover:bg-white/[0.04]">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-300">
                 {f.icon}
@@ -514,6 +571,7 @@ function DockFeatures() {
             </GlassPanel>
           </ScrollFade>
         ))}
+      </div>
       </div>
     </section>
   );
@@ -666,16 +724,18 @@ function ProviderCard({
 
 function OpenSource() {
   return (
-    <section id="source" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
+    <section id="source" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+      <div className="mx-auto max-w-5xl">
       <ScrollFade distance={24}>
         <SectionHeading
+          align="left"
           kicker="Open Source"
-          title="Open by design."
-          subtitle="Built for transparency, experimentation, and community contribution."
+          title="Read every line before you trust it."
+          subtitle="The dock is MIT licensed and developed in public. Every integration, routing rule, and agent pipeline is inspectable — and forkable if you want to run it yourself."
         />
       </ScrollFade>
 
-      <ScrollFade className="mx-auto mt-14 grid max-w-5xl items-start gap-8 lg:grid-cols-2">
+      <ScrollFade className="mt-14 grid items-start gap-8 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-base leading-relaxed text-neutral-400">
             APLX Dock is fully open source. Every integration, routing layer, and
@@ -721,6 +781,7 @@ function OpenSource() {
           </div>
         </GlassPanel>
       </ScrollFade>
+      </div>
     </section>
   );
 }
@@ -730,17 +791,17 @@ function OpenSource() {
 function NanoModel() {
   const facts = [
     { k: "Parameters", v: "1 M" },
-    { k: "Runs", v: "Locally" },
-    { k: "Cost", v: "$0" },
-    { k: "Footprint", v: "Tiny" },
+    { k: "Weights", v: "≈ 4 MB" },
+    { k: "Runtime", v: "Local CPU" },
+    { k: "Connection", v: "Not required" },
   ];
   return (
-    <section id="nano" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
+    <section id="nano" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
       <ScrollFade distance={24}>
         <SectionHeading
           kicker="APLX Nano"
-          title="Tiny model. Zero cost."
-          subtitle="A lightweight 1M-parameter model built into the dock for local inference and experimentation."
+          title="A model that never leaves the machine."
+          subtitle="A compact 1M-parameter model bundled with the dock, for low-latency tasks and offline experimentation when a hosted provider is the wrong tool."
         />
       </ScrollFade>
 
@@ -754,8 +815,8 @@ function NanoModel() {
             than raw capability.
           </p>
           <p className="text-base leading-relaxed text-neutral-400">
-            Because it runs locally, the Nano model costs nothing to run and
-            works without a connection.
+            It runs on the same machine as the dock: no request leaves the
+            device, and it keeps working with the network unplugged.
           </p>
         </div>
 
@@ -765,7 +826,7 @@ function NanoModel() {
               <Box className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-display text-sm font-semibold text-white">Aplx Nano</p>
+              <p className="font-display text-sm font-semibold text-white">APLX Nano</p>
               <p className="text-[11px] text-neutral-500">Local inference component</p>
             </div>
           </div>
@@ -785,67 +846,65 @@ function NanoModel() {
 
 /* ============================================================ CREDITS */
 
-function Credits() {
-  const tools = [
-    "Claude Opus",
-    "Sonnet 4.6",
-    "Haiku 4.5",
-    "GPT-5.6",
-    "GPT-4",
-    "Gemini 3.7",
-    "Gemini 3.1 Pro",
-    "GitHub Copilot",
-    "Ollama",
+function Maintainer() {
+  const facts = [
+    { k: "Maintained by", v: "R3nz" },
+    { k: "Status", v: "Active" },
+    { k: "Licence", v: "MIT" },
+    { k: "Contributions", v: "Open" },
   ];
   return (
-    <section className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
-      <ScrollFade distance={24}>
-        <SectionHeading
-          kicker="Credits"
-          title="Built by a 15-year-old."
-          subtitle="APLX Dock is an ongoing project by R3nz — developed with the help of AI and the open-source community."
-        />
-      </ScrollFade>
+    <section className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+      <div className="mx-auto max-w-5xl">
+        <ScrollFade distance={24}>
+          <SectionHeading
+            align="left"
+            kicker="About"
+            title="Small project. Public process."
+            subtitle="APLX Dock is built and maintained in the open. The roadmap, the issues, and the commit history are all readable in the same place."
+          />
+        </ScrollFade>
 
-      <ScrollFade className="mx-auto mt-14 max-w-3xl">
-        <GlassPanel className="p-8 sm:p-10">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] font-display text-base font-bold text-white">
-              R3
-            </div>
-            <div>
-              <h4 className="font-display text-base font-semibold text-white">
-                R3nz <span className="font-normal text-neutral-500">— Developer</span>
-              </h4>
-              <p className="mt-1 text-sm leading-relaxed text-neutral-400">
-                APLX Dock is a solo project by a 15-year-old developer, built out
-                of genuine curiosity about what a unified AI dock could look like.
-                It is still actively under development — new providers, models,
-                and features are being added regularly.
-              </p>
-            </div>
-          </div>
-
-          <div className="my-6 h-px w-full bg-white/[0.07]" />
-
-          <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-white">Built with</h4>
-            <div className="flex flex-wrap gap-2">
-              {tools.map((tool) => (
-                <span
-                  key={tool}
-                  className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] font-medium text-neutral-300"
-                >
-                  {tool}
-                </span>
-              ))}
-            </div>
-            <p className="mt-3 text-xs text-neutral-500">
-              …and many more tools, models, and community contributions.
+        <ScrollFade className="mt-14 grid items-start gap-6 lg:grid-cols-[1.15fr_1fr]">
+          <GlassPanel className="p-7 sm:p-8">
+            <p className="text-[15px] leading-relaxed text-neutral-300">
+              The dock started as a personal answer to a mundane problem: a dozen
+              AI tools, a dozen browser tabs, a dozen places for an API key to end
+              up. It stays deliberately small — a local app that routes to
+              providers you already pay for, rather than another platform holding
+              your keys and your data.
             </p>
-          </div>
-        </GlassPanel>
-      </ScrollFade>
+            <p className="mt-5 text-[15px] leading-relaxed text-neutral-400">
+              Scope is set in public. Provider integrations ship when they are
+              tested against the real API, not when they appear on a roadmap, and
+              anything that would require sending your keys to a server is out of
+              scope by design.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <InstallWebsiteButton />
+              <GithubButton label="Follow the project" className="border-transparent bg-transparent px-0" />
+            </div>
+          </GlassPanel>
+
+          <GlassPanel className="p-7 sm:p-8">
+            <dl className="space-y-4">
+              {facts.map((f) => (
+                <div
+                  key={f.k}
+                  className="flex items-baseline justify-between gap-6 border-b border-white/[0.06] pb-4 last:border-b-0 last:pb-0"
+                >
+                  <dt className="text-[12px] uppercase tracking-[0.16em] text-neutral-500">
+                    {f.k}
+                  </dt>
+                  <dd className="font-display text-sm font-semibold text-white">
+                    {f.v}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </GlassPanel>
+        </ScrollFade>
+      </div>
     </section>
   );
 }
@@ -857,16 +916,20 @@ function FinalCta() {
     <section className="relative border-t border-white/[0.06] px-6 py-28 text-center sm:py-32">
       <ScrollFade className="mx-auto max-w-xl">
         <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
-          Everything you need. One dock.
+          One dock. Your keys.
         </h2>
         <p className="mt-4 text-base text-neutral-400">
-          Free to use. Free to download. Zero ads.
+          Download it, connect a provider, and run your first prompt tonight.
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <LaunchButton />
-          <GithubButton label="Explore the source" />
-          <InstallWebsiteButton />
-          <PreviewButton />
+          <button
+            onClick={() => openLink(GITHUB_URL)}
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white"
+          >
+            Read the source
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
+          </button>
         </div>
       </ScrollFade>
 
@@ -877,34 +940,102 @@ function FinalCta() {
 
 /* ============================================================ FOOTER */
 
+const FOOTER_COLUMNS = [
+  {
+    heading: "Product",
+    links: [
+      { label: "Overview", href: "#top" },
+      { label: "The dock", href: "#dock" },
+      { label: "Provider catalog", href: "#catalog" },
+      { label: "APLX Nano", href: "#nano" },
+    ],
+  },
+  {
+    heading: "Developers",
+    links: [
+      { label: "Source code", href: GITHUB_URL, external: true },
+      { label: "Install guide", href: INSTALL_WEBSITE_URL, external: true },
+      { label: "Preview builds", href: PREVIEW_URL, external: true },
+      { label: "Open source", href: "#source" },
+    ],
+  },
+  {
+    heading: "Resources",
+    links: [
+      { label: "Cost", href: "#free" },
+      { label: "Setup", href: "#top" },
+      { label: "About", href: "#top" },
+      { label: "Report an issue", href: GITHUB_URL, external: true },
+    ],
+  },
+];
+
 function Footer() {
   return (
-    <footer className="relative border-t border-white/[0.06] px-6 py-8">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white text-[11px] font-bold text-black">
-            A
-          </span>
-          <span className="font-display text-sm font-medium tracking-tight text-neutral-400">
-            APLX V2 · free forever
-          </span>
+    <footer className="relative border-t border-white/[0.06] px-6 pb-10 pt-16">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white text-[13px] font-bold text-black">
+                A
+              </span>
+              <span className="font-display text-[15px] font-semibold tracking-tight text-white">
+                APLX
+              </span>
+            </div>
+            <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-neutral-500">
+              A local dock for the AI tools you already pay for. Your keys, your
+              machine, no markup.
+            </p>
+            <div className="mt-5 inline-flex items-center gap-2 rounded-md border border-white/[0.07] bg-white/[0.02] px-2.5 py-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="text-[11px] font-medium text-neutral-400">
+                All systems operational
+              </span>
+            </div>
+          </div>
+
+          {FOOTER_COLUMNS.map((col) => (
+            <div key={col.heading}>
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                {col.heading}
+              </h4>
+              <ul className="mt-4 space-y-2.5">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    {link.external ? (
+                      <button
+                        onClick={() => openLink(link.href)}
+                        className="text-[13px] text-neutral-400 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </button>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="text-[13px] text-neutral-400 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-neutral-500">
-          <button onClick={() => openLink(LAUNCH_URL)} className="transition-colors hover:text-white">
-            Launch
-          </button>
-          <button onClick={() => openLink(GITHUB_URL)} className="transition-colors hover:text-white">
-            GitHub
-          </button>
-          <button onClick={() => openLink(PREVIEW_URL)} className="transition-colors hover:text-white">
-            Preview updates
-          </button>
-          <a href="#free" className="transition-colors hover:text-white">
-            Pricing
-          </a>
-          <span>MIT License</span>
+
+        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center">
+          <p className="text-xs text-neutral-600">
+            © {new Date().getFullYear()} APLX Dock — released under the MIT licence.
+          </p>
+          <p className="text-xs text-neutral-600">
+            Built with the open-source community.
+          </p>
         </div>
       </div>
     </footer>
   );
 }
+

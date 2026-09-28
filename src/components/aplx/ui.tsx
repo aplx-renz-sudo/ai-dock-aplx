@@ -25,7 +25,7 @@ export function LaunchButton({ className }: { className?: string }) {
         className,
       )}
     >
-      Launch Aplx
+      Launch APLX
       <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
@@ -263,11 +263,11 @@ export function SectionHeading({
 /* --------------------------------- navbar --------------------------------- */
 
 const NAV_LINKS = [
-  { label: "Free", href: "#free" },
   { label: "Dock", href: "#dock" },
   { label: "Catalog", href: "#catalog" },
+  { label: "Cost", href: "#free" },
   { label: "Nano", href: "#nano" },
-  { label: "Open Source", href: "#source" },
+  { label: "Source", href: "#source" },
 ];
 
 export function Navbar() {
@@ -282,7 +282,6 @@ export function Navbar() {
           </span>
           <span className="font-display text-[15px] font-semibold tracking-tight text-white">
             APLX
-            <span className="ml-1.5 text-[11px] font-medium text-white/40">V2</span>
           </span>
         </a>
 
@@ -343,7 +342,7 @@ export function Navbar() {
             }}
             className="block w-full px-5 py-3 text-left text-sm font-semibold text-white"
           >
-            Launch Aplx →
+            Launch APLX →
           </button>
         </div>
       )}
