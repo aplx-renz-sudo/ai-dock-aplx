@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
+import { PROVIDERS } from "./data";
 
 /* -------------------------------------------------------------------------- */
 /*  Letterform geometry                                                        */
@@ -300,26 +301,27 @@ function Halo() {
 /*  Provider field                                                             */
 /* -------------------------------------------------------------------------- */
 
-const CHIP_COUNT = 11;
+const CHIP_COUNT = PROVIDERS.length;
 
 /**
- * The 11 docked providers, as chips drifting in the space behind the mark.
- * They sit strictly behind the wordmark so perspective can never push one out
- * of frame or in front of a letterform.
+ * One chip per docked provider, drifting in the space behind the mark. The
+ * count is read from the provider data so the field can never disagree with
+ * the catalog below it. Chips sit strictly behind the wordmark, so perspective
+ * can never push one out of frame or in front of a letterform.
  */
 function ProviderField({ dim }: { dim: boolean }) {
   const field = useRef<THREE.Group>(null);
 
   const chips = useMemo(() => {
-    const columns = [-1.85, -1.2, -0.55, 0.55, 1.2, 1.85];
     return Array.from({ length: CHIP_COUNT }, (_, i) => {
-      const back = (i * 7) % 4; // deterministic scatter across four depth rows
-      const topRow = i % columns.length < 3;
+      // Even spread across a shallow arc, with alternating depth rows.
+      const t = CHIP_COUNT === 1 ? 0.5 : i / (CHIP_COUNT - 1);
+      const back = (i * 7) % 4;
       return {
         key: i,
         pos: [
-          columns[i % columns.length] + Math.sin(i * 1.3) * 0.16,
-          (topRow ? 0.62 : -0.46) + Math.sin(i * 2.1) * 0.2,
+          -1.85 + t * 3.7,
+          (i % 2 === 0 ? 0.6 : -0.44) + Math.sin(i * 2.1) * 0.18,
           -0.95 - back * 0.5,
         ] as [number, number, number],
         rot: [0, Math.sin(i) * 0.28, Math.sin(i * 0.9) * 0.05] as [

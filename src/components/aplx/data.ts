@@ -3,8 +3,14 @@ export interface AplxProvider {
   name: string;
   /** Accent color used in the catalog UI */
   color: string;
-  /** Example models available through this provider */
+  /**
+   * One flagship model per provider. The catalog is intentionally curated
+   * rather than exhaustive: a short list of names people already recognise
+   * communicates what the dock does faster than a long list of SKUs does.
+   */
   models: string[];
+  /** True when the provider publishes open weights you can run yourself. */
+  open?: boolean;
 }
 
 export const PROVIDERS: AplxProvider[] = [
@@ -12,67 +18,53 @@ export const PROVIDERS: AplxProvider[] = [
     id: "openai",
     name: "OpenAI",
     color: "#34d399",
-    models: ["GPT-5", "GPT-4o", "o3", "GPT-4.1"],
+    models: ["GPT-4o"],
   },
   {
     id: "anthropic",
     name: "Anthropic",
     color: "#a1a1aa",
-    models: ["Claude Opus 4", "Claude Sonnet 4", "Claude Haiku 3.5"],
+    models: ["Claude Sonnet 4"],
   },
   {
     id: "google",
     name: "Google",
     color: "#a1a1aa",
-    models: ["Gemini 2.5 Pro", "Gemini 2.5 Flash"],
+    models: ["Gemini 2.5 Pro"],
   },
   {
     id: "meta",
     name: "Meta",
     color: "#a1a1aa",
-    models: ["Llama 4 Maverick", "Llama 3.3 70B"],
-  },
-  {
-    id: "mistral",
-    name: "Mistral",
-    color: "#a1a1aa",
-    models: ["Mistral Large", "Codestral", "Mistral Small"],
-  },
-  {
-    id: "xai",
-    name: "xAI",
-    color: "#a1a1aa",
-    models: ["Grok 4", "Grok 3 Mini"],
+    open: true,
+    models: ["Llama 4"],
   },
   {
     id: "deepseek",
     name: "DeepSeek",
     color: "#a1a1aa",
-    models: ["DeepSeek V3", "DeepSeek R1"],
+    open: true,
+    models: ["DeepSeek R1"],
   },
   {
-    id: "cohere",
-    name: "Cohere",
+    id: "mistral",
+    name: "Mistral",
     color: "#a1a1aa",
-    models: ["Command R+", "Embed v3"],
+    open: true,
+    models: ["Mistral Large"],
   },
   {
-    id: "perplexity",
-    name: "Perplexity",
+    id: "xai",
+    name: "xAI",
     color: "#a1a1aa",
-    models: ["Sonar Pro", "Sonar Reasoning"],
-  },
-  {
-    id: "groq",
-    name: "Groq",
-    color: "#a1a1aa",
-    models: ["Llama 70B (speed)", "Mixtral (speed)"],
+    models: ["Grok 4"],
   },
   {
     id: "ollama",
     name: "Ollama",
     color: "#a1a1aa",
-    models: ["Local models", "Custom GGUF"],
+    open: true,
+    models: ["Local GGUF"],
   },
 ];
 
@@ -80,3 +72,4 @@ export const LAUNCH_URL = "https://aplx-web.vercel.app";
 export const GITHUB_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
 
 export const TOTAL_MODELS = PROVIDERS.reduce((n, p) => n + p.models.length, 0);
+export const OPEN_PROVIDERS = PROVIDERS.filter((p) => p.open).length;

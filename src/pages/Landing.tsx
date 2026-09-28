@@ -18,7 +18,6 @@ import {
   KeyRound,
   Layers,
   Search,
-  Server,
   Shield,
   Sparkles,
   Zap,
@@ -26,6 +25,7 @@ import {
 import {
   PROVIDERS,
   TOTAL_MODELS,
+  OPEN_PROVIDERS,
   LAUNCH_URL,
   GITHUB_URL,
   type AplxProvider,
@@ -55,12 +55,9 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
   anthropic: <Brain className="h-5 w-5" />,
   google: <Globe className="h-5 w-5" />,
   meta: <Layers className="h-5 w-5" />,
+  deepseek: <Cpu className="h-5 w-5" />,
   mistral: <Zap className="h-5 w-5" />,
   xai: <Box className="h-5 w-5" />,
-  deepseek: <Cpu className="h-5 w-5" />,
-  cohere: <FileCode className="h-5 w-5" />,
-  perplexity: <Search className="h-5 w-5" />,
-  groq: <Server className="h-5 w-5" />,
   ollama: <Shield className="h-5 w-5" />,
 };
 
@@ -181,8 +178,8 @@ function Hero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
-          APLX Dock unifies 11+ AI providers, their models, and your own API keys
-          behind a single, clean interface. Bring your keys, run your agents.
+          APLX Dock brings the major AI providers — OpenAI, Anthropic, Google,
+          Meta and more — behind one interface, running on your own API keys.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
@@ -200,7 +197,7 @@ function Hero() {
             catalog below it. */}
         <p className="mt-10 font-mono text-[11px] tracking-tight text-neutral-600">
           {PROVIDERS.length} providers <span className="text-white/15">·</span>{" "}
-          {TOTAL_MODELS} models <span className="text-white/15">·</span> 1M-param local
+          {TOTAL_MODELS}+ models <span className="text-white/15">·</span> 1M-param local
           Nano <span className="text-white/15">·</span> MIT licensed
         </p>
         </motion.div>
@@ -227,7 +224,7 @@ function Hero() {
               reads as light coming off the letters rather than a sticker. */}
           <div className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto max-w-3xl px-6 text-center">
             <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-600">
-              11+ providers docked
+              {PROVIDERS.length} providers docked
             </p>
           </div>
         </motion.div>
@@ -299,7 +296,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+    <section id="setup" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-5xl">
         <ScrollFade distance={24}>
           <SectionHeading
@@ -512,13 +509,13 @@ function DockFeatures() {
   const features = [
     {
       icon: <Globe className="h-5 w-5" />,
-      title: "Multiple providers",
-      body: "Connect 11+ AI providers through a single, unified hub.",
+      title: "Every major provider",
+      body: "One hub instead of a bookmarks bar full of separate chat apps.",
     },
     {
       icon: <Layers className="h-5 w-5" />,
-      title: "Multiple models",
-      body: "Browse and switch between models without leaving the platform.",
+      title: "Famous models, or your own",
+      body: "Reach for a flagship when you need it, or an open-weight model when you don't.",
     },
     {
       icon: <KeyRound className="h-5 w-5" />,
@@ -593,7 +590,7 @@ function ProviderCatalog() {
     );
   }, [q]);
 
-  const modelCount = PROVIDERS.reduce((n, p) => n + p.models.length, 0);
+  const modelCount = TOTAL_MODELS;
 
   return (
     <section id="catalog" className="relative border-t border-white/[0.06] px-6 py-28 sm:py-32">
@@ -601,8 +598,8 @@ function ProviderCatalog() {
       <ScrollFade distance={24}>
         <SectionHeading
           kicker="Provider Catalog"
-          title="Browse every docked provider."
-          subtitle="Search the catalog to discover available providers, models, and integrations — then launch directly into the dock."
+          title="The names you already know."
+          subtitle="One flagship model per provider, so the catalog stays readable. Providers marked open publish weights you can run yourself."
         />
       </ScrollFade>
 
@@ -640,8 +637,9 @@ function ProviderCatalog() {
         )}
 
         <ScrollFade className="mt-6">
-          <p className="text-center text-xs text-neutral-600">
-            {filtered.length} provider{filtered.length !== 1 && "s"} · {modelCount} models available
+          <p className="text-center font-mono text-[11px] tracking-tight text-neutral-600">
+            {filtered.length} provider{filtered.length !== 1 && "s"} · {modelCount} models ·{" "}
+            {OPEN_PROVIDERS} open-weight
           </p>
         </ScrollFade>
       </div>
@@ -675,9 +673,18 @@ function ProviderCard({
             {PROVIDER_ICONS[provider.id] ?? <Sparkles className="h-5 w-5" />}
           </div>
           <div className="flex-1">
-            <h4 className="font-display text-sm font-semibold text-white">{provider.name}</h4>
+            <div className="flex items-center gap-2">
+              <h4 className="font-display text-sm font-semibold text-white">
+                {provider.name}
+              </h4>
+              {provider.open && (
+                <span className="rounded border border-emerald-400/25 bg-emerald-400/[0.07] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-400/90">
+                  Open
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-neutral-500">
-              {provider.models.length} model{provider.models.length !== 1 && "s"}
+              {provider.open ? "Open weights" : "Hosted API"}
             </p>
           </div>
           <ChevronDown
@@ -704,6 +711,9 @@ function ProviderCard({
                   >
                     <span className="h-1 w-1 rounded-full bg-emerald-400/70" />
                     {m}
+                    <span className="ml-auto text-[10px] uppercase tracking-wider text-neutral-600">
+                      Flagship
+                    </span>
                   </div>
                 ))}
               </div>
@@ -761,7 +771,7 @@ function OpenSource() {
           <div className="space-y-2 px-5 py-4 font-mono text-[13px] text-neutral-400">
             {[
               "aplx-dock/",
-              "├─ providers/        # 11 provider integrations",
+              `├─ providers/        # ${PROVIDERS.length} provider integrations`,
               "├─ agents/           # agent runner pipelines",
               "├─ keys/             # secure key management",
               "├─ catalog/          # model catalog & routing",
@@ -854,7 +864,7 @@ function Maintainer() {
     { k: "Contributions", v: "Open" },
   ];
   return (
-    <section className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+    <section id="about" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-5xl">
         <ScrollFade distance={24}>
           <SectionHeading
@@ -946,6 +956,7 @@ const FOOTER_COLUMNS = [
     links: [
       { label: "Overview", href: "#top" },
       { label: "The dock", href: "#dock" },
+      { label: "Setup", href: "#setup" },
       { label: "Provider catalog", href: "#catalog" },
       { label: "APLX Nano", href: "#nano" },
     ],
@@ -963,8 +974,8 @@ const FOOTER_COLUMNS = [
     heading: "Resources",
     links: [
       { label: "Cost", href: "#free" },
-      { label: "Setup", href: "#top" },
-      { label: "About", href: "#top" },
+      { label: "Setup", href: "#setup" },
+      { label: "About", href: "#about" },
       { label: "Report an issue", href: GITHUB_URL, external: true },
     ],
   },
