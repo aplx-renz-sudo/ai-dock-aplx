@@ -21,12 +21,12 @@ export function LaunchButton({ className }: { className?: string }) {
       onClick={() => openLink(LAUNCH_URL)}
       className={cn(
         "group inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold tracking-tight text-black",
-        "transition-colors duration-200 hover:bg-white/90",
+        "transition-all duration-300 ease-out hover:bg-white/90",
         className,
       )}
     >
       Launch Aplx
-      <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+      <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
 }
@@ -43,7 +43,7 @@ export function GithubButton({
       onClick={() => openLink(GITHUB_URL)}
       className={cn(
         "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium tracking-tight text-neutral-200",
-        "transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
+        "transition-all duration-300 ease-out hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
         className,
       )}
     >
@@ -65,7 +65,7 @@ export function InstallWebsiteButton({ className }: { className?: string }) {
       )}
     >
       Install Website
-      <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+      <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
 }
@@ -76,12 +76,12 @@ export function PreviewButton({ className }: { className?: string }) {
       onClick={() => openLink(PREVIEW_URL)}
       className={cn(
         "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium tracking-tight text-neutral-200",
-        "transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
+        "transition-all duration-300 ease-out hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
         className,
       )}
     >
       Preview updates
-      <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+      <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
 }
@@ -117,7 +117,7 @@ export function GlassPanel({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/panel:opacity-100"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-out group-hover/panel:opacity-100"
         style={{
           background:
             "radial-gradient(240px circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(52,211,153,0.10), transparent 70%)",
@@ -189,10 +189,15 @@ export function SectionHeading({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{
+        y: { type: "spring", stiffness: 110, damping: 22, mass: 0.9 },
+        opacity: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+        filter: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+      }}
+      style={{ willChange: "transform, opacity, filter" }}
       className={cn("max-w-2xl", align === "center" ? "mx-auto text-center" : "text-left")}
     >
       {kicker && (
@@ -207,7 +212,11 @@ export function SectionHeading({
         initial={{ scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}
         viewport={{ once: false, margin: "-80px" }}
-        transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
+        transition={{
+          scaleX: { type: "spring", stiffness: 70, damping: 18, mass: 0.8, delay: 0.15 },
+          opacity: { duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.15 },
+        }}
+        style={{ originX: align === "center" ? 0.5 : 0 }}
         className={cn(
           "mt-5 block h-px w-20 bg-gradient-to-r from-emerald-400/0 via-emerald-400 to-emerald-400/0",
           align === "center" ? "mx-auto" : "origin-left",

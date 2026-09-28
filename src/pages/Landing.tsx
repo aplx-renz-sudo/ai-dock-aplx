@@ -1,5 +1,13 @@
 import { useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionTemplate,
+  useScroll,
+  useSpring,
+  useTransform,
+  useVelocity,
+} from "framer-motion";
 import {
   ArrowRight,
   Box,
@@ -35,7 +43,7 @@ import {
 } from "@/components/aplx/ui";
 import { DownloadChart, RunChart, SetupChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
-import { ScrollFade, ScrollProgress } from "@/components/aplx/scroll";
+import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/aplx/scroll";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -81,6 +89,7 @@ function LandingInner() {
       />
 
       <ScrollProgress />
+      <MotionBlur />
       <Navbar />
       <DJOverlay />
 
@@ -112,8 +121,26 @@ function Hero() {
   });
   // Gentle depth: the mock window drifts up faster than the copy, and the
   // hero glow dims away as the section leaves the viewport.
-  const shotY = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const shotYRaw = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const shotY = useSpring(shotYRaw, { stiffness: 90, damping: 24, mass: 0.6 });
   const glowOpacity = useTransform(scrollYProgress, [0, 0.5], [0.6, 0]);
+
+  // Local motion blur on the mock window: it smears while the page is moving
+  // fast and sharpens up as the scroll settles, which sells the depth.
+  const { scrollY } = useScroll();
+  const velocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(velocity, {
+    stiffness: 110,
+    damping: 26,
+    mass: 0.5,
+    restDelta: 0.5,
+  });
+  const shotBlurRaw = useTransform(smoothVelocity, (v) => {
+    const t = Math.min(Math.abs(v) / 2200, 1);
+    return t * t * 5;
+  });
+  const shotBlur = useMotionTemplate`blur(${shotBlurRaw}px)`;
+  const shotScale = useTransform(shotBlurRaw, (b) => 1 + (b / 5) * 0.012);
 
   return (
     <section
@@ -181,7 +208,10 @@ function Hero() {
           transition={{ duration: 0.9, ease: "easeOut", delay: 0.15 }}
           className="mx-auto mt-16 w-full max-w-4xl"
         >
-          <motion.div style={{ y: shotY }}>
+          <motion.div
+            style={{ y: shotY, filter: shotBlur, scale: shotScale }}
+            className="will-change-transform"
+          >
             <ProductShot />
           </motion.div>
         </motion.div>
@@ -312,7 +342,7 @@ function FreeForever() {
 
       <div className="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {STATS.map((s, i) => (
-          <ScrollFade key={s.label} delay={i * 0.06}>
+          <ScrollFade key={s.label} delay={i * 0.08}>
             <GlassPanel className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20">
               <div className="font-display text-3xl font-bold tracking-tight text-emerald-400 sm:text-4xl">
                 {s.value}
@@ -459,7 +489,7 @@ function DockFeatures() {
 
       <div className="mx-auto mt-14 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => (
-          <ScrollFade key={f.title} delay={i * 0.05} className="h-full">
+          <ScrollFade key={f.title} delay={i * 0.07} className="h-full">
             <GlassPanel className="h-full p-6 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.04]">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-300">
                 {f.icon}
