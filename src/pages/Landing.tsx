@@ -148,7 +148,7 @@ function Hero() {
     <section
       id="top"
       ref={heroRef}
-      className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pb-24 pt-32"
+      className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pb-16 pt-28 sm:pb-24 sm:pt-32"
     >
       <motion.div
         aria-hidden
@@ -194,12 +194,20 @@ function Hero() {
         </div>
 
         {/* Derived from the provider data so this line can never drift from the
-            catalog below it. */}
-        <p className="mt-10 font-mono text-[11px] tracking-tight text-neutral-600">
-          {PROVIDERS.length} providers <span className="text-white/15">·</span>{" "}
-          {TOTAL_MODELS}+ models <span className="text-white/15">·</span> 1M-param local
-          Nano <span className="text-white/15">·</span> MIT licensed
-        </p>
+            catalog below it. Items wrap between entries, never mid-phrase. */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-mono text-[11px] tracking-tight text-neutral-600">
+          {[
+            `${PROVIDERS.length} providers`,
+            `${TOTAL_MODELS}+ models`,
+            "1M-param local Nano",
+            "MIT licensed",
+          ].map((item, i) => (
+            <span key={item} className="flex items-center gap-x-2.5">
+              {i > 0 && <span className="text-white/15">·</span>}
+              <span className="whitespace-nowrap">{item}</span>
+            </span>
+          ))}
+        </div>
         </motion.div>
       </ScrollFade>
 
@@ -445,11 +453,11 @@ function Cost() {
         <div className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {TERMS.map((t, i) => (
             <ScrollFade key={t.label} delay={i * 0.08}>
-              <GlassPanel tilt className="h-full p-5 hover:border-white/20">
-                <p className="text-[11px] uppercase tracking-[0.16em] text-neutral-500">
+              <GlassPanel tilt className="h-full p-4 sm:p-5">
+                <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-500 sm:text-[11px] sm:tracking-[0.16em]">
                   {t.label}
                 </p>
-                <div className="mt-2 font-display text-2xl font-bold tracking-tight text-emerald-400 sm:text-3xl">
+                <div className="mt-2 font-display text-xl font-bold tracking-tight text-emerald-400 sm:text-3xl">
                   {t.value}
                 </div>
                 <p className="mt-2 text-[12px] leading-relaxed text-neutral-500">{t.note}</p>
@@ -489,12 +497,12 @@ function ChartPanel({
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
-      <div className="mb-4 flex items-start justify-between gap-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <h3 className="font-display text-sm font-semibold text-white">{title}</h3>
           <p className="mt-0.5 text-[12px] text-neutral-500">{caption}</p>
         </div>
-        <span className="shrink-0 rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+        <span className="self-start whitespace-nowrap rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
           MIT · no licence fee
         </span>
       </div>
@@ -768,7 +776,9 @@ function OpenSource() {
             <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
             <span className="ml-2 text-[11px] font-medium text-neutral-500">source-core</span>
           </div>
-          <div className="space-y-2 px-5 py-4 font-mono text-[13px] text-neutral-400">
+          {/* The tree is wider than a phone, so it scrolls sideways inside its
+              own box rather than pushing the page out of shape. */}
+          <div className="space-y-2 overflow-x-auto px-4 py-4 font-mono text-[11px] text-neutral-400 sm:px-5 sm:text-[13px]">
             {[
               "aplx-dock/",
               `├─ providers/        # ${PROVIDERS.length} provider integrations`,
@@ -778,9 +788,11 @@ function OpenSource() {
               "├─ nano/             # 1M-param local model",
               "└─ web/              # unified dock interface",
             ].map((line, i) => (
-              <div key={i}>{line}</div>
+              <div key={i} className="whitespace-pre">
+                {line}
+              </div>
             ))}
-            <div className="flex items-center gap-1 pt-1 text-emerald-400/80">
+            <div className="flex items-center gap-1 whitespace-nowrap pt-1 text-emerald-400/80">
               <span>aplx-dock $</span>
               <span className="inline-block h-3.5 w-1.5 animate-pulse rounded-[1px] bg-emerald-400/80" />
             </div>
@@ -844,7 +856,9 @@ function NanoModel() {
             {facts.map((f) => (
               <div key={f.k} className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
                 <p className="text-[11px] text-neutral-500">{f.k}</p>
-                <p className="mt-0.5 font-display text-lg font-semibold text-white">{f.v}</p>
+                <p className="mt-0.5 font-display text-base font-semibold text-white sm:text-lg">
+                  {f.v}
+                </p>
               </div>
             ))}
           </div>
@@ -876,7 +890,7 @@ function Maintainer() {
         </ScrollFade>
 
         <ScrollFade className="mt-14 grid items-start gap-6 lg:grid-cols-[1.15fr_1fr]">
-          <GlassPanel className="p-7 sm:p-8">
+          <GlassPanel className="p-6 sm:p-8">
             <p className="text-[15px] leading-relaxed text-neutral-300">
               The dock started as a personal answer to a mundane problem: a dozen
               AI tools, a dozen browser tabs, a dozen places for an API key to end
@@ -896,7 +910,7 @@ function Maintainer() {
             </div>
           </GlassPanel>
 
-          <GlassPanel className="p-7 sm:p-8">
+          <GlassPanel className="p-6 sm:p-8">
             <dl className="space-y-4">
               {facts.map((f) => (
                 <div
@@ -985,8 +999,8 @@ function Footer() {
   return (
     <footer className="relative border-t border-white/[0.06] px-6 pb-10 pt-16">
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+          <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2.5">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white text-[13px] font-bold text-black">
                 A
@@ -1008,7 +1022,7 @@ function Footer() {
           </div>
 
           {FOOTER_COLUMNS.map((col) => (
-            <div key={col.heading}>
+            <div key={col.heading} className="min-w-0">
               <h4 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
                 {col.heading}
               </h4>
@@ -1037,7 +1051,7 @@ function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/[0.06] pt-6 sm:mt-14 sm:flex-row sm:items-center">
           <p className="text-xs text-neutral-600">
             © {new Date().getFullYear()} APLX Dock — released under the MIT licence.
           </p>

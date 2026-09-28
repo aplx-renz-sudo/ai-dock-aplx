@@ -456,6 +456,7 @@ export function AplxMark3D({ getProgress, className }: AplxMark3DProps) {
   const [supported, setSupported] = useState<boolean | null>(null);
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
+  const [lowPower, setLowPower] = useState(false);
 
   useEffect(() => {
     setSupported(hasWebGL());
@@ -464,6 +465,17 @@ export function AplxMark3D({ getProgress, className }: AplxMark3DProps) {
     const onChange = () => setReduced(mq.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // Phones get a lower device pixel ratio: the mark is decorative, and the
+  // smaller canvas already means less to fill.
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 767px), (hover: none)");
+    const update = () => setLowPower(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
   // Stop the render loop while the mark is off screen. With the capped DPR this
@@ -486,7 +498,7 @@ export function AplxMark3D({ getProgress, className }: AplxMark3DProps) {
       {live ? (
         <Canvas
           frameloop={animate ? "always" : "demand"}
-          dpr={[1, 1.75]}
+          dpr={[1, lowPower ? 1.25 : 1.75]}
           camera={{ position: [0, 0.14, 4.4], fov: 34 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         >

@@ -14,6 +14,26 @@ import {
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /**
+ * True when the device can't comfortably afford a blur kernel: narrow viewports
+ * and touch devices. Only blur is dropped there — translate and opacity are
+ * GPU transforms and stay, so phones still get the motion, just not the cost.
+ */
+function useLowPower() {
+  const [low, setLow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 767px), (hover: none)");
+    const update = () => setLow(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return low;
+}
+
+/**
  * A single shared, module-level scroll-direction store.
  *
  * We deliberately avoid React context here so that a direction change only
@@ -97,11 +117,12 @@ export function ScrollFade({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const direction = useScrollDirection();
-  const reduce = useReducedMotion();
+  const reduceMotion = useReducedMotion();
+  const lowPower = useLowPower();
   const inView = useInView(ref, { margin: "-12% 0px -12% 0px" });
 
   const hiddenY = direction === "down" ? -distance : distance;
-  const blurAmount = reduce || !blur ? 0 : 10;
+  const blurAmount = lowPower || reduceMotion || !blur ? 0 : 10;
 
   return (
     <motion.div
@@ -112,8 +133,8 @@ export function ScrollFade({
           ? { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
           : {
               opacity: 0,
-              y: reduce ? 0 : hiddenY,
-              scale: reduce ? 1 : 0.985,
+              y: reduceMotion ? 0 : hiddenY,
+              scale: reduceMotion ? 1 : 0.985,
               filter: `blur(${blurAmount}px)`,
             }
       }
@@ -143,7 +164,8 @@ export function ScrollFade({
  * during a fast flick and melts away over ~0.5s once the page settles.
  */
 export function MotionBlur({ max = 2.5 }: { max?: number }) {
-  const reduce = useReducedMotion();
+  const reduceMotion = useReducedMotion();
+  const lowPower = useLowPower();
   const { scrollY } = useScroll();
   const velocity = useVelocity(scrollY);
   const smooth = useSpring(velocity, {
@@ -161,7 +183,9 @@ export function MotionBlur({ max = 2.5 }: { max?: number }) {
   const opacity = useTransform(amount, (a) => (a / max) * 0.85);
   const filter = useMotionTemplate`blur(${amount}px)`;
 
-  if (reduce) return null;
+  // A full-screen backdrop filter is the most expensive thing on the page.
+  // It is a desktop nicety, so phones skip it entirely.
+  if (lowPower || reduceMotion) return null;
 
   return (
     <motion.div

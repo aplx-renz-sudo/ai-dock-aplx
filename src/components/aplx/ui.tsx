@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, Github, Menu, Music, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -101,6 +101,18 @@ export function GlassPanel({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Tilt is a pointer affordance. Touch devices get the flat card instead, so a
+  // stray tap can never leave a panel stuck at an odd angle.
+  const [tiltEnabled, setTiltEnabled] = useState(false);
+  useEffect(() => {
+    if (!tilt || typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setTiltEnabled(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [tilt]);
+
   // A faint emerald highlight that tracks the pointer across the panel, plus an
   // optional 3D tilt driven from the same coordinates.
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -111,7 +123,7 @@ export function GlassPanel({
     const y = e.clientY - rect.top;
     el.style.setProperty("--glow-x", `${x}px`);
     el.style.setProperty("--glow-y", `${y}px`);
-    if (tilt) {
+    if (tiltEnabled) {
       el.style.setProperty("--rx", `${((y / rect.height) - 0.5) * -6}deg`);
       el.style.setProperty("--ry", `${((x / rect.width) - 0.5) * 6}deg`);
     }
@@ -119,7 +131,7 @@ export function GlassPanel({
 
   const handleMouseLeave = () => {
     const el = ref.current;
-    if (!el || !tilt) return;
+    if (!el || !tiltEnabled) return;
     el.style.setProperty("--rx", "0deg");
     el.style.setProperty("--ry", "0deg");
   };
@@ -130,7 +142,7 @@ export function GlassPanel({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={
-        tilt
+        tiltEnabled
           ? {
               transform:
                 "perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))",

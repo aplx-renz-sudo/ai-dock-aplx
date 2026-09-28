@@ -585,7 +585,7 @@ export function DJOverlay() {
         }}
       >
         {/* header */}
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-300/90">
@@ -755,7 +755,7 @@ export function DJOverlay() {
     {/* ── YouTube PiP window (bottom-right corner) ── */}
     {youtubeVideoId && (
       <div
-        className="pointer-events-auto fixed bottom-20 right-4 z-50 overflow-hidden rounded-xl border border-red-400/25 bg-black/80 shadow-[0_0_40px_rgba(239,68,68,0.15)] backdrop-blur-xl"
+        className="pointer-events-auto fixed bottom-20 right-3 z-50 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-red-400/25 bg-black/80 shadow-[0_0_40px_rgba(239,68,68,0.15)] backdrop-blur-xl sm:right-4"
         style={{
           width: 220,
           transform: `scale(${1 + bassLevel * 0.03})`,
