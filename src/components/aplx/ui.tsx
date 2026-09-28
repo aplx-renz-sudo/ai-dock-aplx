@@ -91,25 +91,54 @@ export function PreviewButton({ className }: { className?: string }) {
 export function GlassPanel({
   children,
   className,
+  tilt = false,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Adds a small pointer-tracked 3D rotation. Keep the angle low — this is
+   *  depth, not a novelty. */
+  tilt?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  // A faint emerald highlight that tracks the pointer across the panel.
+  // A faint emerald highlight that tracks the pointer across the panel, plus an
+  // optional 3D tilt driven from the same coordinates.
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    el.style.setProperty("--glow-x", `${e.clientX - rect.left}px`);
-    el.style.setProperty("--glow-y", `${e.clientY - rect.top}px`);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    el.style.setProperty("--glow-x", `${x}px`);
+    el.style.setProperty("--glow-y", `${y}px`);
+    if (tilt) {
+      el.style.setProperty("--rx", `${((y / rect.height) - 0.5) * -6}deg`);
+      el.style.setProperty("--ry", `${((x / rect.width) - 0.5) * 6}deg`);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    const el = ref.current;
+    if (!el || !tilt) return;
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
   };
 
   return (
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={
+        tilt
+          ? {
+              transform:
+                "perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))",
+              transition:
+                "transform 450ms cubic-bezier(0.16,1,0.3,1), border-color 250ms ease, background-color 250ms ease",
+            }
+          : undefined
+      }
       className={cn(
         "group/panel relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]",
         className,

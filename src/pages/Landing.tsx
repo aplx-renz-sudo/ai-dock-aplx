@@ -1,6 +1,4 @@
-import { useMemo, useRef, useState } from "react";
-import {
-  motion,
+import { useMemo, useRef, useState } from "react";import { motion,
   AnimatePresence,
   useMotionTemplate,
   useScroll,
@@ -44,6 +42,7 @@ import {
 import { DownloadChart, RunChart, SetupChart, AdsChart, SpendChart } from "@/components/aplx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
 import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/aplx/scroll";
+import { AplxMark3D } from "@/components/aplx/AplxMark3D";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -163,15 +162,13 @@ function Hero() {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="mx-auto w-full max-w-4xl text-center"
         >
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-[12px] font-medium text-neutral-300">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          </span>
-          APLX version: V2
-          <span className="text-white/20">|</span>
-          <span className="text-emerald-400">Free forever · 0 ads</span>
-        </div>
+        <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
+          <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/25" />
+          APLX V2
+          <span className="text-white/20">/</span>
+          <span className="text-emerald-400/90">Free forever</span>
+          <span className="h-px w-8 bg-gradient-to-l from-transparent to-white/25" />
+        </p>
 
         <h1 className="font-display text-5xl font-bold tracking-tight text-white sm:text-6xl md:text-7xl">
           Your AI. One dock.
@@ -206,14 +203,25 @@ function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: "easeOut", delay: 0.15 }}
-          className="mx-auto mt-16 w-full max-w-4xl"
+          className="relative mx-auto mt-4 w-full max-w-4xl"
         >
           <motion.div
             style={{ y: shotY, filter: shotBlur, scale: shotScale }}
             className="will-change-transform"
           >
-            <ProductShot />
+            <AplxMark3D
+              getProgress={() => scrollYProgress.get()}
+              className="h-[240px] sm:h-[320px] md:h-[380px]"
+            />
           </motion.div>
+
+          {/* The mark floats over the section's own glow, so the emerald rim
+              reads as light coming off the letters rather than a sticker. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto max-w-3xl px-6 text-center">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-600">
+              11+ providers docked
+            </p>
+          </div>
         </motion.div>
       </ScrollFade>
 
@@ -487,10 +495,15 @@ function DockFeatures() {
         />
       </ScrollFade>
 
-      <div className="mx-auto mt-14 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* The real interface, shown right under the claim it belongs to. */}
+      <ScrollFade className="mx-auto mt-14 max-w-4xl">
+        <ProductShot />
+      </ScrollFade>
+
+      <div className="mx-auto mt-12 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => (
           <ScrollFade key={f.title} delay={i * 0.07} className="h-full">
-            <GlassPanel className="h-full p-6 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.04]">
+            <GlassPanel tilt className="h-full p-6 hover:border-white/20 hover:bg-white/[0.04]">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-300">
                 {f.icon}
               </div>
