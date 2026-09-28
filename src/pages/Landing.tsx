@@ -183,11 +183,12 @@ function Hero() {
           Meta and more — behind one interface, running on your own API keys.
         </p>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <LaunchButton />
+          <PreviewButton />
           <button
             onClick={() => openLink(GITHUB_URL)}
-            className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white"
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
           >
             Read the source
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
