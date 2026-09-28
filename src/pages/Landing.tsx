@@ -37,6 +37,7 @@ import {
   LaunchButton,
   GithubButton,
   InstallWebsiteButton,
+  PreviewButton,
   Navbar,
   SectionHeading,
   openLink,
@@ -766,7 +767,11 @@ function OpenSource() {
             upstream. The dock is maintained as a public project and shaped by the
             people who use it.
           </p>
-          <GithubButton label="Explore the source" className="mt-2" />
+          {/* Developer-facing links live here rather than crowding the hero. */}
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <GithubButton label="Explore the source" />
+            <PreviewButton />
+          </div>
         </div>
 
         <GlassPanel className="overflow-hidden p-0">
