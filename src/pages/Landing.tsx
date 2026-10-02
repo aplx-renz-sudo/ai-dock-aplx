@@ -48,7 +48,6 @@ import {
 import { SpendChart } from "@/components/viledocx/CostCharts";
 import { DJProvider, DJOverlay, useDJ } from "@/components/viledocx/DJMode";
 import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/viledocx/scroll";
-import { VileDocxMark3D } from "@/components/viledocx/VileDocxMark3D";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -226,10 +225,11 @@ function Hero() {
             style={{ y: shotY, filter: shotBlur, scale: shotScale }}
             className="will-change-transform"
           >
-            <VileDocxMark3D
-              getProgress={() => scrollYProgress.get()}
-              className="h-[240px] sm:h-[320px] md:h-[380px]"
-            />
+            <div className="flex h-[240px] sm:h-[320px] md:h-[380px] items-center justify-center px-6">
+              <span className="font-display text-5xl sm:text-6xl md:text-7xl font-bold tracking-[0.18em] text-neutral-800 sm:text-neutral-900">
+                DOCX
+              </span>
+            </div>
           </motion.div>
 
           {/* The mark floats over the section's own glow, so the emerald rim
