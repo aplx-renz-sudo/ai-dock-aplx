@@ -97,7 +97,7 @@ function LandingInner() {
         <div className="pointer-events-auto inline-flex items-center gap-2 rounded-xl border border-amber-500/20 bg-black/70 px-4 py-2.5 backdrop-blur-xl shadow-[0_0_40px_rgba(251,191,36,0.08)]">
           <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
           <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/90">
-            Due to errors from the Developers side, V3 ALPHA version will be deployed sooner than expected.
+            V3 Alpha has MANY errors in SWARM mode, DO NOT RUN BUILD SWARM MODE, unless you want to.
           </p>
         </div>
       </div>
