@@ -25,7 +25,7 @@ export function LaunchButton({ className }: { className?: string }) {
         className,
       )}
     >
-      Launch APLX
+      Launch VileDocx
       <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
@@ -282,18 +282,31 @@ const NAV_LINKS = [
   { label: "Source", href: "#source" },
 ];
 
+export function RenameBanner() {
+  return (
+    <div className="fixed inset-x-0 top-0 z-[60] h-8 border-b border-white/[0.06] bg-black/90 backdrop-blur-xl">
+      <div className="mx-auto flex h-8 w-full max-w-6xl items-center justify-center px-5 text-[11px] tracking-tight text-neutral-500 sm:text-[12px]">
+        <span>
+          APLX has been renamed to{" "}
+          <span className="font-medium text-neutral-300">VileDocx</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-black/70 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-8 z-50 border-b border-white/[0.06] bg-black/70 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5">
         <a href="#top" className="flex items-center gap-2.5">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white text-[13px] font-bold text-black">
-            A
+            V
           </span>
           <span className="font-display text-[15px] font-semibold tracking-tight text-white">
-            APLX
+            VileDocx
           </span>
         </a>
 
@@ -354,7 +367,7 @@ export function Navbar() {
             }}
             className="block w-full px-5 py-3 text-left text-sm font-semibold text-white"
           >
-            Launch APLX →
+            Launch VileDocx →
           </button>
         </div>
       )}

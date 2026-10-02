@@ -28,8 +28,8 @@ import {
   OPEN_PROVIDERS,
   LAUNCH_URL,
   GITHUB_URL,
-  type AplxProvider,
-} from "@/components/aplx/data";
+  type VileDocxProvider,
+} from "@/components/viledocx/data";
 import {
   GlassPanel,
   DotField,
@@ -39,15 +39,16 @@ import {
   InstallWebsiteButton,
   PreviewButton,
   Navbar,
+  RenameBanner,
   SectionHeading,
   openLink,
   INSTALL_WEBSITE_URL,
   PREVIEW_URL,
-} from "@/components/aplx/ui";
-import { SpendChart } from "@/components/aplx/CostCharts";
-import { DJProvider, DJOverlay, useDJ } from "@/components/aplx/DJMode";
-import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/aplx/scroll";
-import { AplxMark3D } from "@/components/aplx/AplxMark3D";
+} from "@/components/viledocx/ui";
+import { SpendChart } from "@/components/viledocx/CostCharts";
+import { DJProvider, DJOverlay, useDJ } from "@/components/viledocx/DJMode";
+import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/viledocx/scroll";
+import { VileDocxMark3D } from "@/components/viledocx/VileDocxMark3D";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -91,6 +92,7 @@ function LandingInner() {
 
       <ScrollProgress />
       <MotionBlur />
+      <RenameBanner />
       <Navbar />
       <DJOverlay />
 
@@ -224,7 +226,7 @@ function Hero() {
             style={{ y: shotY, filter: shotBlur, scale: shotScale }}
             className="will-change-transform"
           >
-            <AplxMark3D
+            <VileDocxMark3D
               getProgress={() => scrollYProgress.get()}
               className="h-[240px] sm:h-[320px] md:h-[380px]"
             />
@@ -662,7 +664,7 @@ function ProviderCard({
   expanded,
   onExpand,
 }: {
-  provider: AplxProvider;
+  provider: VileDocxProvider;
   expanded: boolean;
   onExpand: () => void;
 }) {

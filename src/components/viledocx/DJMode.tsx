@@ -570,8 +570,8 @@ export function DJOverlay() {
       : micActive
         ? "Microphone — Live"
         : paused
-          ? "Aplx Beats — Paused"
-          : "Aplx Beats — Demo Track";
+          ? "VileDocx Beats — Paused"
+          : "VileDocx Beats — Demo Track";
   const bpmLabel = paused ? "Paused" : tabCaptured || micActive ? "Analyzing…" : "128 BPM · Electronic";
 
   return (

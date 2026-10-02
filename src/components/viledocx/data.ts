@@ -1,4 +1,4 @@
-export interface AplxProvider {
+export interface VileDocxProvider {
   id: string;
   name: string;
   /** Accent color used in the catalog UI */
@@ -13,7 +13,7 @@ export interface AplxProvider {
   open?: boolean;
 }
 
-export const PROVIDERS: AplxProvider[] = [
+export const PROVIDERS: VileDocxProvider[] = [
   {
     id: "openai",
     name: "OpenAI",

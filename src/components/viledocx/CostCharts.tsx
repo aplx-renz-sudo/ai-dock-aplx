@@ -36,7 +36,7 @@ const tooltipStyle = {
  */
 const SPEND_DATA = Array.from({ length: 12 }, (_, i) => ({
   month: `M${i + 1}`,
-  aplx: 0,
+  viledocx: 0,
   subscription: (i + 1) * 20,
 }));
 
@@ -45,7 +45,7 @@ export function SpendChart() {
     <ResponsiveContainer width="100%" height={260}>
       <AreaChart data={SPEND_DATA} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
         <defs>
-          <linearGradient id="aplxFill" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="viledocxFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={EMERALD} stopOpacity={0.25} />
             <stop offset="100%" stopColor={EMERALD} stopOpacity={0} />
           </linearGradient>
@@ -69,7 +69,7 @@ export function SpendChart() {
           itemStyle={{ color: "#fafafa" }}
           formatter={(value: number, name: string) => [
             `$${value}`,
-            name === "aplx" ? "APLX Dock licence" : "$20/mo subscription",
+            name === "viledocx" ? "VileDocx Dock licence" : "$20/mo subscription",
           ]}
         />
         <Area
@@ -81,10 +81,10 @@ export function SpendChart() {
         />
         <Area
           type="monotone"
-          dataKey="aplx"
+          dataKey="viledocx"
           stroke={EMERALD}
           strokeWidth={2.5}
-          fill="url(#aplxFill)"
+          fill="url(#viledocxFill)"
         />
       </AreaChart>
     </ResponsiveContainer>
