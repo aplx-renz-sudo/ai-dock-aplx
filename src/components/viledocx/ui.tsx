@@ -6,7 +6,7 @@ import { GITHUB_URL, LAUNCH_URL } from "./data";
 import { useDJ } from "./DJMode";
 
 export const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
-export const PREVIEW_URL = "https://aplx-preview.vercel.app/";
+export const PREVIEW_URL = "https://veildocx.ai.studio";
 
 /* Buttons open their destination immediately — no effects, no delay. */
 export function openLink(href: string, target = "_blank") {

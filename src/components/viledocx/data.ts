@@ -68,7 +68,7 @@ export const PROVIDERS: VileDocxProvider[] = [
   },
 ];
 
-export const LAUNCH_URL = "https://aplx-web.vercel.app";
+export const LAUNCH_URL = "https://veildocx.ai.studio";
 export const GITHUB_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
 
 export const TOTAL_MODELS = PROVIDERS.reduce((n, p) => n + p.models.length, 0);
