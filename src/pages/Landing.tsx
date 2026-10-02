@@ -170,7 +170,7 @@ function Hero() {
         >
         <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
           <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/25" />
-          APLX V2
+          VileDocx V2
           <span className="text-white/20">/</span>
           <span className="text-emerald-400/90">Free forever</span>
           <span className="h-px w-8 bg-gradient-to-l from-transparent to-white/25" />
@@ -181,7 +181,7 @@ function Hero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
-          APLX Dock brings the major AI providers — OpenAI, Anthropic, Google,
+          VileDocx Dock brings the major AI providers — OpenAI, Anthropic, Google,
           Meta and more — behind one interface, running on your own API keys.
         </p>
 
@@ -353,7 +353,7 @@ function ProductShot() {
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />            <div className="mx-auto flex items-center gap-2 rounded-md border border-white/[0.07] bg-black/40 px-3 py-1 text-[11px] text-neutral-500">
           <Shield className="h-3 w-3 text-emerald-400/70" />
-          APLX Dock — Local
+          VileDocx Dock — Local
           <span className="ml-0.5 inline-block h-3 w-1 animate-pulse rounded-[1px] bg-emerald-400/70" />
         </div>
       </div>
@@ -450,7 +450,7 @@ function Cost() {
             align="left"
             kicker="Cost"
             title="You pay your provider. Nothing else."
-            subtitle="APLX Dock is a local app under the MIT licence. There is no seat price, no usage markup, and no ad inventory — the only invoice is the one your model provider already sends you."
+            subtitle="VileDocx Dock is a local app under the MIT licence. There is no seat price, no usage markup, and no ad inventory — the only invoice is the one your model provider already sends you."
           />
         </ScrollFade>
 
@@ -482,7 +482,7 @@ function Cost() {
         <ScrollFade className="mt-6 max-w-2xl">
           <p className="text-[13px] leading-relaxed text-neutral-500">
             Model usage is billed by whichever provider you connect, at their
-            published rates. APLX sits in front of that and adds nothing to it.
+            published rates. VileDocx sits in front of that and adds nothing to it.
           </p>
         </ScrollFade>
       </div>
@@ -760,7 +760,7 @@ function OpenSource() {
       <ScrollFade className="mt-14 grid items-start gap-8 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-base leading-relaxed text-neutral-400">
-            APLX Dock is fully open source. Every integration, routing layer, and
+            VileDocx Dock is fully open source. Every integration, routing layer, and
             agent pipeline is inspectable — designed so teams can self-host,
             customize provider routing, and extend the platform without vendor
             lock-in.
@@ -788,7 +788,7 @@ function OpenSource() {
               own box rather than pushing the page out of shape. */}
           <div className="space-y-2 overflow-x-auto px-4 py-4 font-mono text-[11px] text-neutral-400 sm:px-5 sm:text-[13px]">
             {[
-              "aplx-dock/",
+              "viledocx-dock/",
               `├─ providers/        # ${PROVIDERS.length} provider integrations`,
               "├─ agents/           # agent runner pipelines",
               "├─ keys/             # secure key management",
@@ -801,7 +801,7 @@ function OpenSource() {
               </div>
             ))}
             <div className="flex items-center gap-1 whitespace-nowrap pt-1 text-emerald-400/80">
-              <span>aplx-dock $</span>
+              <span>viledocx-dock $</span>
               <span className="inline-block h-3.5 w-1.5 animate-pulse rounded-[1px] bg-emerald-400/80" />
             </div>
           </div>
@@ -829,7 +829,7 @@ function NanoModel() {
     <section id="nano" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
       <ScrollFade distance={24}>
         <SectionHeading
-          kicker="APLX Nano"
+          kicker="VileDocx Nano"
           title="A model that never leaves the machine."
           subtitle="A compact 1M-parameter model bundled with the dock, for low-latency tasks and offline experimentation when a hosted provider is the wrong tool."
         />
@@ -838,7 +838,7 @@ function NanoModel() {
       <ScrollFade className="mx-auto mt-14 grid max-w-5xl items-center gap-8 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-base leading-relaxed text-neutral-400">
-            APLX Dock ships with its own Nano Model — a compact, 1M-parameter
+            VileDocx Dock ships with its own Nano Model — a compact, 1M-parameter
             local component designed for low-latency tasks and offline
             experimentation. It sits alongside the full provider ecosystem,
             giving you a lightweight option when speed and footprint matter more
@@ -856,7 +856,7 @@ function NanoModel() {
               <Box className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-display text-sm font-semibold text-white">APLX Nano</p>
+              <p className="font-display text-sm font-semibold text-white">VileDocx Nano</p>
               <p className="text-[11px] text-neutral-500">Local inference component</p>
             </div>
           </div>
@@ -893,7 +893,7 @@ function Maintainer() {
             align="left"
             kicker="About"
             title="Small project. Public process."
-            subtitle="APLX Dock is built and maintained in the open. The roadmap, the issues, and the commit history are all readable in the same place."
+            subtitle="VileDocx Dock is built and maintained in the open. The roadmap, the issues, and the commit history are all readable in the same place."
           />
         </ScrollFade>
 
@@ -980,7 +980,7 @@ const FOOTER_COLUMNS = [
       { label: "The dock", href: "#dock" },
       { label: "Setup", href: "#setup" },
       { label: "Provider catalog", href: "#catalog" },
-      { label: "APLX Nano", href: "#nano" },
+      { label: "VileDocx Nano", href: "#nano" },
     ],
   },
   {
@@ -1014,7 +1014,7 @@ function Footer() {
                 A
               </span>
               <span className="font-display text-[15px] font-semibold tracking-tight text-white">
-                APLX
+                VileDocx
               </span>
             </div>
             <p className="mt-4 max-w-xs text-[13px] leading-relaxed text-neutral-500">
@@ -1061,7 +1061,7 @@ function Footer() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/[0.06] pt-6 sm:mt-14 sm:flex-row sm:items-center">
           <p className="text-xs text-neutral-600">
-            © {new Date().getFullYear()} APLX Dock — released under the MIT licence.
+            © {new Date().getFullYear()} VileDocx Dock — released under the MIT licence.
           </p>
           <p className="text-xs text-neutral-600">
             Built with the open-source community.

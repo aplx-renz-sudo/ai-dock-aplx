@@ -10,7 +10,7 @@ import { PROVIDERS } from "./data";
 /* -------------------------------------------------------------------------- */
 
 /**
- * The APLX monogram is drawn as real extruded geometry rather than loaded as a
+ * The DOCX monogram is drawn as real extruded geometry rather than loaded as a
  * font: every stroke is a bevelled slab, so the mark keeps hard edges at any
  * angle and there is nothing to download — and nothing that can fail to load.
  */
@@ -32,22 +32,30 @@ type Bowl = {
   pos: [number, number, number];
 };
 
-/** "A" — two legs and a crossbar. */
-const LETTER_A: Slab[] = [
-  { size: [STROKE, 1.05, DEPTH], pos: [-0.16, 0, 0], rotZ: -0.3097 },
-  { size: [STROKE, 1.05, DEPTH], pos: [0.16, 0, 0], rotZ: 0.3097 },
-  { size: [0.4, STROKE, DEPTH], pos: [0, -0.16, 0] },
-];
-
-/** "P" — a stem with a half-torus bowl closing on the stem's right edge. */
-const LETTER_P_STEM: Slab[] = [{ size: [STROKE, CAP, DEPTH], pos: [0, 0, 0] }];
-const LETTER_P_BOWL: Bowl = {
+/** "D" — a vertical stem with a half-torus bowl closing on the stem's inner edge. */
+const LETTER_D_STEM: Slab[] = [{ size: [STROKE, CAP, DEPTH], pos: [-0.25, 0, 0] }];
+const LETTER_D_BOWL: Bowl = {
   radius: 0.255,
   tube: STROKE / 2,
-  pos: [STROKE / 2, 0.5 - 0.255, 0],
+  pos: [-0.25 + STROKE / 2 + 0.255, 0.5 - 0.255 + 0.30, 0],
 };
 
-/** "L" — a stem with a foot. */
+/** "O" — a full ring (two bowls back-to-back on the same axis). */
+const LETTER_O: Bowl[] = [
+  { radius: 0.35, tube: STROKE / 2, pos: [0, 0.5, 0] },
+];
+
+/** "C" — an open torus arc (a bowl that does not close). */
+const LETTER_C: Bowl = {
+  radius: 0.27,
+  tube: STROKE / 2,
+  pos: [0, 0.5, 0],
+};
+
+/** "O" — reuse a full ring. */
+// (defined above)
+
+/** "X" — two crossed diagonals. */
 const LETTER_L: Slab[] = [
   { size: [STROKE, CAP, DEPTH], pos: [0, 0, 0] },
   { size: [0.5, STROKE, DEPTH], pos: [0.175, -0.5 + STROKE / 2, 0] },
@@ -60,11 +68,13 @@ const LETTER_X: Slab[] = [
 ];
 
 // Offsets line each letter's optical left edge up on the baseline grid.
+// DOCX: D (stem + bowl), O (full ring), C (open arc), X (cross).
+// Even spacing, total width ≈ 3.2 world units.
 const WORDMARK: { slabs: Slab[]; bowls?: Bowl[]; x: number }[] = [
-  { slabs: LETTER_A, x: -1.09 },
-  { slabs: LETTER_P_STEM, bowls: [LETTER_P_BOWL], x: -0.505 },
-  { slabs: LETTER_L, x: 0.175 },
-  { slabs: LETTER_X, x: 1.1 },
+  { slabs: LETTER_D_STEM, bowls: [LETTER_D_BOWL], x: -1.25 },
+  { slabs: [], bowls: LETTER_O, x: -0.45 },
+  { slabs: [], bowls: [LETTER_C], x: 0.275 },
+  { slabs: LETTER_X, x: 1.15 },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -431,7 +441,7 @@ function Mark({ getProgress, dim }: { getProgress?: () => number; dim: boolean }
 /*  Public component                                                           */
 /* -------------------------------------------------------------------------- */
 
-export type AplxMark3DProps = {
+export type VeilDocxMark3DProps = {
   /** Reads 0..1 scroll progress for the section that owns the mark. Called
    *  every frame, so it must be allocation-free — a MotionValue getter. */
   getProgress?: () => number;
@@ -451,7 +461,7 @@ function hasWebGL() {
   }
 }
 
-export function AplxMark3D({ getProgress, className }: AplxMark3DProps) {
+export function VileDocxMark3D({ getProgress, className }: VeilDocxMark3DProps) {
   const host = useRef<HTMLDivElement>(null);
   const [supported, setSupported] = useState<boolean | null>(null);
   const [visible, setVisible] = useState(true);
@@ -526,12 +536,11 @@ export function AplxMark3D({ getProgress, className }: AplxMark3DProps) {
  */
 function StaticMark() {
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <span className="font-display text-5xl font-bold tracking-[0.18em] text-neutral-800 sm:text-7xl">
-        APLX
+    <div className="flex h-full w-full items-center justify-center">        <span className="font-display text-5xl font-bold tracking-[0.18em] text-neutral-800 sm:text-7xl">
+        DOCX
       </span>
     </div>
   );
 }
 
-export default AplxMark3D;
+export default VileDocxMark3D;
