@@ -946,6 +946,13 @@ function Maintainer() {
 function FinalCta() {
   return (
     <section className="relative border-t border-white/[0.06] px-6 py-28 text-center sm:py-32">
+      <div className="mx-auto max-w-2xl">
+        <ScrollFade className="rounded-2xl border border-amber-500/20 bg-amber-400/5 px-5 py-4 backdrop-blur-xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-300/90">
+            V3 Alpha has MANY errors in SWARM mode. DO NOT RUN BUILD SWARM MODE, unless you want to. (THIS ERROR IS ONLY FOR NOW, GIVE IT A FEW DAYS AND THE DEV WILL FIX IT)!
+          </p>
+        </ScrollFade>
+      </div>
       <ScrollFade className="mx-auto max-w-xl">
         <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
           One dock. Your keys.
