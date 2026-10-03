@@ -394,7 +394,6 @@ function extractYouTubeId(url: string): string | null {
 }
 
 export function DJProvider({ children }: { children: React.ReactNode }) {
-  const [v3NoteDismissed, setV3NoteDismissed] = useState(false);
 
   const [active, setActive] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -506,23 +505,6 @@ export function DJProvider({ children }: { children: React.ReactNode }) {
   return (
     <DJCtx.Provider value={value}>
       {children}
-      {!v3NoteDismissed && (
-        <div className="pointer-events-auto fixed bottom-20 z-[70] mx-auto max-w-md px-4 text-center">
-          <div className="inline-flex items-center gap-2 rounded-xl border border-amber-500/20 bg-black/70 px-4 py-2.5 backdrop-blur-xl shadow-[0_0_40px_rgba(251,191,36,0.08)]">
-            <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/90">
-              Due to errors from the Developers side, V3 ALPHA version will be deployed sooner than expected.
-            </p>
-            <button
-              onClick={() => setV3NoteDismissed(true)}
-              className="shrink-0 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-400 transition-all hover:bg-white/10"
-              aria-label="Dismiss notice"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </DJCtx.Provider>
   );
 }

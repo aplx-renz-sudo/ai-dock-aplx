@@ -46,8 +46,7 @@ import {
   PREVIEW_URL,
 } from "@/components/viledocx/ui";
 import { SpendChart } from "@/components/viledocx/CostCharts";
-import { DJProvider, DJOverlay, useDJ } from "@/components/viledocx/DJMode";
-import { MotionBlur, ScrollFade, ScrollProgress } from "@/components/viledocx/scroll";
+import { ScrollFade, ScrollProgress } from "@/components/viledocx/scroll";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -65,16 +64,10 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
 /* ============================== LANDING ================================== */
 
 export default function Landing() {
-  return (
-    <DJProvider>
-      <LandingInner />
-    </DJProvider>
-  );
+  return <LandingInner />;
 }
 
 function LandingInner() {
-  const { active: djActive } = useDJ();
-
   return (
     <div className="relative min-h-screen overflow-x-clip bg-black font-sans text-neutral-200 selection:bg-white/15 selection:text-white">
       {/* subtle backdrop grid */}
@@ -90,23 +83,10 @@ function LandingInner() {
       />
 
       <ScrollProgress />
-      <MotionBlur />
       <RenameBanner />
       <Navbar />
-      <div className="pointer-events-none fixed bottom-6 z-[70] mx-auto max-w-md px-4 text-center">
-        <div className="pointer-events-auto inline-flex items-center gap-2 rounded-xl border border-amber-500/20 bg-black/70 px-4 py-2.5 backdrop-blur-xl shadow-[0_0_40px_rgba(251,191,36,0.08)]">
-          <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-300/90">
-            V3 Alpha has MANY errors in SWARM mode, DO NOT RUN BUILD SWARM MODE, unless you want to.
-          </p>
-        </div>
-      </div>
-      <DJOverlay />
 
-      <main
-        className="relative z-10 transition-opacity duration-500"
-        style={{ opacity: djActive ? 0 : 1, pointerEvents: djActive ? "none" : "auto" }}
-      >
+      <main className="relative z-10">
         <Hero />
         <ProviderStrip />
         <DockFeatures />

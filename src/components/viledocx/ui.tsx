@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, Github, Menu, Music, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_URL, LAUNCH_URL } from "./data";
-import { useDJ } from "./DJMode";
-
 export const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
 export const PREVIEW_URL = "https://veildocx.ai.studio";
 
