@@ -41,7 +41,7 @@ export function GithubButton({
       onClick={() => openLink(GITHUB_URL)}
       className={cn(
         "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium tracking-tight text-neutral-200",
-        "transition-all duration-300 ease-out hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
+        "transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
         className,
       )}
     >
@@ -74,7 +74,7 @@ export function PreviewButton({ className }: { className?: string }) {
       onClick={() => openLink(PREVIEW_URL)}
       className={cn(
         "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium tracking-tight text-neutral-200",
-        "transition-all duration-300 ease-out hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
+        "transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
         className,
       )}
     >
@@ -370,5 +370,3 @@ export function Navbar() {
     </header>
   );
 }
-
-
