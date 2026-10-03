@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ExternalLink, Github, Menu, Music, X } from "lucide-react";
+import { ArrowRight, ExternalLink, Github, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_URL, LAUNCH_URL } from "./data";
 export const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
@@ -321,7 +321,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <DJNavButton />
           <button
             onClick={() => openLink(GITHUB_URL)}
             aria-label="GitHub repository"
@@ -357,7 +356,6 @@ export function Navbar() {
               {l.label}
             </a>
           ))}
-          <MobileDJButton onClose={() => setOpen(false)} />
           <button
             onClick={() => {
               setOpen(false);
@@ -373,41 +371,4 @@ export function Navbar() {
   );
 }
 
-/* -------------------------------- DJ button ------------------------------- */
 
-function DJNavButton() {
-  const { active, startDJ, stopDJ } = useDJ();
-  return (
-    <button
-      onClick={() => (active ? stopDJ() : startDJ())}
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-[12px] font-semibold tracking-tight transition-colors",
-        active
-          ? "border-white/25 bg-white/10 text-white"
-          : "border-white/10 text-neutral-300 hover:border-white/25 hover:text-white",
-      )}
-      aria-label="Toggle DJ mode"
-    >
-      <Music className="h-3.5 w-3.5" />
-      <span className="hidden sm:inline">DJ</span>
-    </button>
-  );
-}
-
-function MobileDJButton({ onClose }: { onClose: () => void }) {
-  const { active, startDJ, stopDJ } = useDJ();
-  return (
-    <button
-      onClick={() => {
-        active ? stopDJ() : startDJ();
-        onClose();
-      }}
-      className="block w-full border-b border-white/[0.05] px-5 py-3 text-left text-sm text-neutral-300 hover:text-white md:hidden"
-    >
-      <span className="flex items-center gap-2">
-        <Music className="h-4 w-4" />
-        {active ? "Exit DJ Mode" : "Enter DJ Mode"}
-      </span>
-    </button>
-  );
-}

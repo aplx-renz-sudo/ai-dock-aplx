@@ -213,95 +213,34 @@ function Hero() {
           >
             <div className="relative flex h-[240px] sm:h-[320px] md:h-[380px] items-center justify-center px-6">
               <span
-                className="relative inline-block font-display font-bold tracking-[0.18em]"
+                className="relative inline-block select-none font-display font-bold"
                 style={{
-                  fontSize: "clamp(4rem, 16vw, 9rem)",
-                  fontWeight: "800",
-                  lineHeight: "1",
-                  letterSpacing: "0.16em",
-                  color: "#e4e4e7",
-                  textShadow:
-                    "0 0 0 rgba(228,228,231,0), 0 10px 50px -20px rgba(228,228,231,0.18), 0 2.5px 0 -0.75px rgba(255,255,255,0.35), 0 -1px 0 -0.75px rgba(0,0,0,0.6) inset",
-                }}
-              >
-                DOCX
-              </span>
-              <svg
-                className="pointer-events-none absolute left-0 top-0 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-visible"
-                aria-hidden
-                viewBox="0 0 740 240"
-              >
-                <defs>
-                  <linearGradient id="docxStroke" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#f1f1f3" />
-                    <stop offset="0.55" stopColor="#c7c7cc" />
-                    <stop offset="1" stopColor="#4b4b53"/>
-                  </linearGradient>
-                  <linearGradient id="docxCrest" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#fafafa" />
-                    <stop offset="1" stopColor="#6b6b72" />
-                  </linearGradient>
-                  <linearGradient id="docxEmissive" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#34d399" stopOpacity="0.55" />
-                    <stop offset="0.5" stopColor="#34d399" stopOpacity="0.05" />
-                    <stop offset="1" stopColor="#34d399" stopOpacity="0" />
-                  </linearGradient>
-                  <filter id="docxFX" x="-10%" y="-10%" width="120%" height="140%">
-                    <feDropShadow dx="0" dy="1" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.22" />
-                    <feDropShadow dx="0" dy="14" stdDeviation="9" floodColor="#34d399" floodOpacity="0.22"/>
-                  </filter>
-                </defs>
-                <g filter="url(#docxFX)" fill="none">
-                  <text
-                    x="50%"
-                    y="56%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="url(#docxStroke)"
-                    style={{
-                      fontFamily:
-                        "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-                      fontSize: "12rem",
-                      fontWeight: 800,
-                      letterSpacing: "0.14em",
-                      lineHeight: "1",
-                    }}
-                  >
-                    DOCX
-                  </text>
-                  <text
-                    x="50%"
-                    y="56%"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="url(#docxCrest)"
-                    opacity={0.55}
-                    transform="translateY(-3px)"
-                    style={{
-                      fontFamily:
-                        "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-                      fontSize: "12rem",
-                      fontWeight: 800,
-                      letterSpacing: "0.14em",
-                      lineHeight: "1",
-                    }}
-                  >
-                    DOCX
-                  </text>
-                </g>
-              </svg>
-
-              {/* Always-visible readable mark behind the SVG so the wordmark is never blank */}
-              <span
-                className="relative z-10 inline-block font-display font-bold tracking-[0.18em] sm:text-6xl md:text-7xl text-slate-200 select-none"
-                style={{
-                  fontSize: "clamp(4rem, 16vw, 9rem)",
-                  fontWeight: "800",
+                  fontSize: "clamp(3.5rem, 15vw, 8.5rem)",
                   lineHeight: "1",
                   letterSpacing: "0.14em",
                 }}
               >
-                DOCX
+                <span
+                  style={{
+                    background:
+                      "linear-gradient(180deg, #fafafa 0%, #c7c7cc 55%, #4b4b53 100%)",
+                    WebkitBackgroundClip: "text",
+                    backgroundClip: "text",
+                    color: "transparent",
+                    filter: "drop-shadow(0 14px 30px rgba(52,211,153,0.18))",
+                  }}
+                >
+                  DOC
+                </span>
+                <span
+                  className="italic text-emerald-400"
+                  style={{
+                    marginLeft: "0.05em",
+                    textShadow: "0 0 34px rgba(52,211,153,0.5)",
+                  }}
+                >
+                  X
+                </span>
               </span>
             </div>
           </motion.div>
