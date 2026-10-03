@@ -166,16 +166,14 @@ function Hero() {
         className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
       >
         <div className="absolute left-1/2 top-[-180px] h-[560px] w-[860px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.18),transparent_65%)] blur-2xl" />
-      </motion.div>
-
-      <ScrollFade className="w-full" distance={32}>
+      </motion.div>      <ScrollFade className="w-full" distance={32}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="mx-auto w-full max-w-4xl text-center"
         >
-        <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
+          <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
           <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/25" />
           VileDocx V2
           <span className="text-white/20">/</span>
@@ -234,21 +232,22 @@ function Hero() {
             className="will-change-transform"
           >
             <div className="relative flex h-[240px] sm:h-[320px] md:h-[380px] items-center justify-center px-6">
-              <span className="relative inline-block font-display font-bold tracking-[0.18em]"
+              <span
+                className="relative inline-block font-display font-bold tracking-[0.18em]"
                 style={{
                   fontSize: "clamp(4rem, 16vw, 9rem)",
-                  fontStyle: "normal",
                   fontWeight: "800",
                   lineHeight: "1",
                   letterSpacing: "0.16em",
                   color: "#e4e4e7",
-                  textShadow: "0 0 0 rgba(228,228,231,0) , 0 10px 50px -20px rgba(228,228,231,0.18) ,
-                    0 2.5px 0 -0.75px rgba(255,255,255,0.35) ,
-                    0 -1px 0 -0.75px rgba(0,0,0,0.6) inset",
-                }}>
+                  textShadow:
+                    "0 0 0 rgba(228,228,231,0), 0 10px 50px -20px rgba(228,228,231,0.18), 0 2.5px 0 -0.75px rgba(255,255,255,0.35), 0 -1px 0 -0.75px rgba(0,0,0,0.6) inset",
+                }}
+              >
                 DOCX
               </span>
-              <svg className="pointer-events-none absolute left-0 top-0 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-visible"
+              <svg
+                className="pointer-events-none absolute left-0 top-0 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-visible"
                 aria-hidden
                 viewBox="0 0 740 240"
               >
@@ -272,19 +271,58 @@ function Hero() {
                     <feDropShadow dx="0" dy="14" stdDeviation="9" floodColor="#34d399" floodOpacity="0.22"/>
                   </filter>
                 </defs>
-                <g filter="url(#docxFX)" fill="none"
-                  style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>
-                  <text x="50%" y="56%" textAnchor="middle" dominantBaseline="middle"
+                <g filter="url(#docxFX)" fill="none">
+                  <text
+                    x="50%"
+                    y="56%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
                     fill="url(#docxStroke)"
-                    style={{ fontSize: "12rem", fontWeight: 800, letterSpacing: "0.14em", lineHeight: "1" }}
-                  >DOCX</text>
-                  <text x="50%" y="56%" textAnchor="middle" dominantBaseline="middle"
+                    style={{
+                      fontFamily:
+                        "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+                      fontSize: "12rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.14em",
+                      lineHeight: "1",
+                    }}
+                  >
+                    DOCX
+                  </text>
+                  <text
+                    x="50%"
+                    y="56%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
                     fill="url(#docxCrest)"
-                    style={{ fontSize: "12rem", fontWeight: 800, letterSpacing: "0.14em", lineHeight: "1", opacity: 0.55 }}
+                    opacity={0.55}
                     transform="translateY(-3px)"
-                  >DOCX</text>
+                    style={{
+                      fontFamily:
+                        "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+                      fontSize: "12rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.14em",
+                      lineHeight: "1",
+                    }}
+                  >
+                    DOCX
+                  </text>
                 </g>
               </svg>
+
+              {/* Always-visible readable mark behind the SVG so the wordmark is never blank */}
+              <span
+                className="relative z-10 inline-block font-display font-bold tracking-[0.18em] sm:text-6xl md:text-7xl text-slate-200 select-none"
+                style={{
+                  fontSize: "clamp(4rem, 16vw, 9rem)",
+                  fontWeight: "800",
+                  lineHeight: "1",
+                  letterSpacing: "0.14em",
+                }}
+              >
+                DOCX
+              </span>
             </div>
           </motion.div>
 
