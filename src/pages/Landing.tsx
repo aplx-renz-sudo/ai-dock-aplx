@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";import { motion,
   AnimatePresence,
   useMotionTemplate,
+  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -60,6 +61,163 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
   xai: <Box className="h-5 w-5" />,
   ollama: <Shield className="h-5 w-5" />,
 };
+
+/* ------------------------- hero wordmark animation ----------------------- */
+
+/**
+ * The emerald "X" breaks into four tiling shards that fly apart and snap back
+ * together, while a soft bloom pulses behind them. The shard polygons are a
+ * true partition of the glyph box, so the assembled state reconstructs the
+ * letter exactly.
+ */
+const X_SHARDS = [
+  { clip: "polygon(0% 0%, 52% 0%, 47% 47%, 0% 43%)", x: "-0.20em", y: "-0.18em", rotate: -18 },
+  { clip: "polygon(52% 0%, 100% 0%, 100% 43%, 47% 47%)", x: "0.22em", y: "-0.14em", rotate: 16 },
+  { clip: "polygon(0% 43%, 47% 47%, 52% 100%, 0% 100%)", x: "-0.18em", y: "0.20em", rotate: 14 },
+  { clip: "polygon(47% 47%, 100% 43%, 100% 100%, 52% 100%)", x: "0.20em", y: "0.18em", rotate: -16 },
+];
+
+function ShatteringX() {
+  const reduce = useReducedMotion();
+  const glyphStyle: React.CSSProperties = {
+    textShadow: "0 0 34px rgba(52,211,153,0.5)",
+  };
+
+  return (
+    <span
+      className="relative inline-block italic text-emerald-400"
+      style={{ marginLeft: "0.05em" }}
+    >
+      {/* Layout ghost — sizes the box to the real glyph without painting it. */}
+      <span aria-hidden className="invisible">
+        X
+      </span>
+
+      {/* Bloom that breathes behind the separated shards. */}
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[1.1em] w-[0.95em] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(52,211,153,0.5), transparent 70%)",
+          filter: "blur(0.35em)",
+        }}
+        animate={
+          reduce
+            ? undefined
+            : { opacity: [0.35, 0.95, 0.35], scale: [0.9, 1.15, 0.9] }
+        }
+        transition={
+          reduce
+            ? undefined
+            : { repeat: Infinity, duration: 3.6, ease: "easeInOut" }
+        }
+      />
+
+      {X_SHARDS.map((s, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          className="absolute"
+          style={{
+            top: 0,
+            bottom: 0,
+            left: "-0.08em",
+            right: "-0.08em",
+            clipPath: s.clip,
+            WebkitClipPath: s.clip,
+            ...glyphStyle,
+          }}
+          animate={
+            reduce
+              ? undefined
+              : {
+                  x: ["0em", s.x, s.x, "0em"],
+                  y: ["0em", s.y, s.y, "0em"],
+                  rotate: [0, s.rotate, s.rotate * 0.6, 0],
+                }
+          }
+          transition={
+            reduce
+              ? undefined
+              : {
+                  repeat: Infinity,
+                  duration: 5,
+                  times: [0, 0.16, 0.6, 0.78],
+                  delay: i * 0.04,
+                  ease: "easeInOut",
+                }
+          }
+        >
+          X
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+const WAVE_W = 1600;
+const WAVE_H = 220;
+
+/**
+ * Seamless sine path: four even periods across the viewBox, so translating the
+ * path by half the viewBox width lands on an identical waveform.
+ */
+function wavePath(mid: number, amp: number, phase: number) {
+  const period = WAVE_W / 4;
+  let d = `M 0 ${mid}`;
+  for (let x = 8; x <= WAVE_W; x += 8) {
+    const y = mid + Math.sin((x / period) * Math.PI * 2 + phase) * amp;
+    d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+  return d;
+}
+
+const WAVE_LAYERS = [
+  { mid: 74, amp: 16, phase: 0, width: 1.6, opacity: 0.4 },
+  { mid: 110, amp: 26, phase: Math.PI / 3, width: 2.4, opacity: 0.85 },
+  { mid: 146, amp: 16, phase: (Math.PI * 2) / 3, width: 1.6, opacity: 0.4 },
+];
+
+/** Horizontal wave that drifts behind the big DOCX mark. */
+function DocxWave() {
+  const reduce = useReducedMotion();
+  return (
+    <svg
+      aria-hidden
+      viewBox={`0 0 ${WAVE_W} ${WAVE_H}`}
+      preserveAspectRatio="none"
+      className="absolute left-0 top-1/2 h-[72%] w-[200%] -translate-y-1/2"
+    >
+      <defs>
+        <linearGradient id="docx-wave" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#34d399" stopOpacity="0" />
+          <stop offset="35%" stopColor="#34d399" stopOpacity="0.9" />
+          <stop offset="65%" stopColor="#6ee7b7" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {WAVE_LAYERS.map((layer, i) => (
+        <g key={i} opacity={layer.opacity}>
+          <motion.path
+            d={wavePath(layer.mid, layer.amp, layer.phase)}
+            fill="none"
+            stroke="url(#docx-wave)"
+            strokeWidth={layer.width}
+            strokeLinecap="round"
+            style={{ filter: "blur(1.5px)" }}
+            animate={reduce ? undefined : { x: [0, -WAVE_W / 2] }}
+            transition={
+              reduce
+                ? undefined
+                : { repeat: Infinity, ease: "linear", duration: 8 + i * 2 }
+            }
+          />
+        </g>
+      ))}
+    </svg>
+  );
+}
 
 /* ============================== LANDING ================================== */
 
@@ -212,6 +370,14 @@ function Hero() {
             className="will-change-transform"
           >
             <div className="relative flex h-[240px] sm:h-[320px] md:h-[380px] items-center justify-center px-6">
+              {/* Horizontal wave drifting behind the mark. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 overflow-hidden"
+              >
+                <DocxWave />
+              </div>
+
               <span
                 className="relative inline-block select-none font-display font-bold"
                 style={{
@@ -232,15 +398,7 @@ function Hero() {
                 >
                   DOC
                 </span>
-                <span
-                  className="italic text-emerald-400"
-                  style={{
-                    marginLeft: "0.05em",
-                    textShadow: "0 0 34px rgba(52,211,153,0.5)",
-                  }}
-                >
-                  X
-                </span>
+                <ShatteringX />
               </span>
             </div>
           </motion.div>
