@@ -65,22 +65,91 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
 /* ------------------------- hero wordmark animation ----------------------- */
 
 /**
- * The emerald "X" breaks into four tiling shards that fly apart and snap back
- * together, while a soft bloom pulses behind them. The shard polygons are a
- * true partition of the glyph box, so the assembled state reconstructs the
- * letter exactly.
+ * The emerald "X" shatters into a triangular glass mesh: 24 fragments that each
+ * drift left, arcing over and under the "DOC" letters, then snap back together
+ * with a pulsing bloom behind them.
+ *
+ * The mesh vertices are shared between neighbouring triangles and the outer
+ * edge is pinned to the glyph box, so the union of every shard is still a true
+ * partition of the letter — the assembled state reconstructs it exactly.
  */
-const X_SHARDS = [
-  { clip: "polygon(0% 0%, 52% 0%, 47% 47%, 0% 43%)", x: "-0.20em", y: "-0.18em", rotate: -18 },
-  { clip: "polygon(52% 0%, 100% 0%, 100% 43%, 47% 47%)", x: "0.22em", y: "-0.14em", rotate: 16 },
-  { clip: "polygon(0% 43%, 47% 47%, 52% 100%, 0% 100%)", x: "-0.18em", y: "0.20em", rotate: 14 },
-  { clip: "polygon(47% 47%, 100% 43%, 100% 100%, 52% 100%)", x: "0.20em", y: "0.18em", rotate: -16 },
-];
+
+/** Stable pseudo-random in [-1, 1] so the mesh never re-jitters between renders. */
+function shardNoise(a: number, b: number) {
+  const n = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+  return (n - Math.floor(n)) * 2 - 1;
+}
+
+type XShard = {
+  clip: string;
+  /** travel in em; negative x sweeps left, around the "DOC" letters */
+  tx: number;
+  ty: number;
+  rotate: number;
+  delay: number;
+};
+
+const X_SHARDS: XShard[] = (() => {
+  const xs = [0, 22, 49, 75, 100];
+  const ys = [0, 34, 66, 100];
+  const cols = xs.length - 1;
+  const rows = ys.length - 1;
+
+  // Jittered grid vertices. Edge vertices stay pinned so the assembled shards
+  // still cover the whole glyph box — no clipped letterforms.
+  const vx: number[][] = [];
+  const vy: number[][] = [];
+  for (let c = 0; c <= cols; c++) {
+    vx[c] = [];
+    vy[c] = [];
+    for (let r = 0; r <= rows; r++) {
+      const onEdgeX = c === 0 || c === cols;
+      const onEdgeY = r === 0 || r === rows;
+      vx[c][r] = onEdgeX ? xs[c] : xs[c] + shardNoise(c, r) * 5;
+      vy[c][r] = onEdgeY ? ys[r] : ys[r] + shardNoise(c + 9, r + 4) * 4;
+    }
+  }
+
+  const point = (c: number, r: number) =>
+    `${vx[c][r].toFixed(1)}% ${vy[c][r].toFixed(1)}%`;
+
+  const shards: XShard[] = [];
+  let i = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const a = point(c, r);
+      const b = point(c + 1, r);
+      const d = point(c + 1, r + 1);
+      const e = point(c, r + 1);
+      // Two triangles per cell, split on a shared diagonal — a true partition.
+      for (const clip of [`polygon(${a}, ${b}, ${d})`, `polygon(${a}, ${d}, ${e})`]) {
+        const j = shardNoise(i + 1, i + 5);
+        const j2 = shardNoise(i + 11, i + 2);
+        // Everyone sweeps left, over and around the "DOC" letters.
+        const reach = 0.9 + Math.abs(j) * 1.6;
+        // Top row arcs over the letters, bottom row dips under, middle drifts.
+        const dir = r === 0 ? -1 : r === rows - 1 ? 1 : j2 > 0 ? 1 : -1;
+        shards.push({
+          clip,
+          tx: -reach,
+          ty: dir * (0.3 + Math.abs(j2) * 0.85),
+          rotate: (j > 0 ? 1 : -1) * (35 + Math.abs(j2) * 60),
+          delay: c * 0.05 + r * 0.08 + (i % 2) * 0.03,
+        });
+        i++;
+      }
+    }
+  }
+  return shards;
+})();
+
+/** em helper so travel keyframes carry the unit the transform needs. */
+const em = (n: number) => `${n.toFixed(2)}em`;
 
 function ShatteringX() {
   const reduce = useReducedMotion();
   const glyphStyle: React.CSSProperties = {
-    textShadow: "0 0 34px rgba(52,211,153,0.5)",
+    textShadow: "0 0 22px rgba(52,211,153,0.45)",
   };
 
   return (
@@ -101,6 +170,7 @@ function ShatteringX() {
           background:
             "radial-gradient(ellipse at center, rgba(52,211,153,0.5), transparent 70%)",
           filter: "blur(0.35em)",
+          willChange: "opacity, transform",
         }}
         animate={
           reduce
@@ -126,15 +196,17 @@ function ShatteringX() {
             right: "-0.08em",
             clipPath: s.clip,
             WebkitClipPath: s.clip,
+            willChange: "transform",
             ...glyphStyle,
           }}
           animate={
             reduce
               ? undefined
               : {
-                  x: ["0em", s.x, s.x, "0em"],
-                  y: ["0em", s.y, s.y, "0em"],
-                  rotate: [0, s.rotate, s.rotate * 0.6, 0],
+                  // Out toward the letters, hold while scattered, glide back.
+                  x: ["0em", em(s.tx * 0.55), em(s.tx), em(s.tx), "0em"],
+                  y: ["0em", em(s.ty * 0.6), em(s.ty), em(s.ty), "0em"],
+                  rotate: [0, s.rotate * 0.45, s.rotate, s.rotate, 0],
                 }
           }
           transition={
@@ -142,9 +214,9 @@ function ShatteringX() {
               ? undefined
               : {
                   repeat: Infinity,
-                  duration: 5,
-                  times: [0, 0.16, 0.6, 0.78],
-                  delay: i * 0.04,
+                  duration: 6.5,
+                  times: [0, 0.16, 0.36, 0.62, 0.84],
+                  delay: s.delay,
                   ease: "easeInOut",
                 }
           }
