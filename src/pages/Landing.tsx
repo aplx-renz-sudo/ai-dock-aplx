@@ -1123,7 +1123,10 @@ function NanoModel() {
 
 function Maintainer() {
   const facts = [
-    { k: "Maintained by", v: "R3nz" },
+    { k: "Maintainer", v: "R3nz" },
+    { k: "Age", v: "15 years old" },
+    { k: "Built with", v: "AI-assisted" },
+    { k: "Use of AI", v: "By design" },
     { k: "Status", v: "Active" },
     { k: "Licence", v: "MIT" },
     { k: "Contributions", v: "Open" },
@@ -1134,26 +1137,31 @@ function Maintainer() {
         <ScrollFade distance={24}>
           <SectionHeading
             align="left"
-            kicker="About"
-            title="Small project. Public process."
-            subtitle="VileDocx Dock is built and maintained in the open. The roadmap, the issues, and the commit history are all readable in the same place."
+            kicker="The developer"
+            title="Built by a 15-year-old. With AI."
+            subtitle="VileDocx Dock is made and maintained in the open by R3nz — a self-taught teenager who used AI tools to build something this large, and ships it in public."
           />
         </ScrollFade>
 
         <ScrollFade className="mt-14 grid items-start gap-6 lg:grid-cols-[1.15fr_1fr]">
           <GlassPanel className="p-6 sm:p-8">
             <p className="text-[15px] leading-relaxed text-neutral-300">
-              The dock started as a personal answer to a mundane problem: a dozen
-              AI tools, a dozen browser tabs, a dozen places for an API key to end
-              up. It stays deliberately small — a local app that routes to
-              providers you already pay for, rather than another platform holding
-              your keys and your data.
+              <span className="font-display font-semibold text-white">R3nz is 15 years old.</span>{" "}
+              No team, no funding, no studio — just a teenager, a laptop, and a
+              stubborn idea: a dozen AI tools shouldn't mean a dozen browser tabs
+              and a dozen places for an API key to end up.
             </p>
             <p className="mt-5 text-[15px] leading-relaxed text-neutral-400">
-              Scope is set in public. Provider integrations ship when they are
-              tested against the real API, not when they appear on a roadmap, and
-              anything that would require sending your keys to a server is out of
-              scope by design.
+              It would not exist without AI. Large language models were used
+              heavily to plan, write, and debug the codebase — the same tools the
+              dock exists to route. Using AI to build an app about using AI is
+              the whole point, not a shortcut he is hiding.
+            </p>
+            <p className="mt-5 text-[15px] leading-relaxed text-neutral-400">
+              Scope is still set in public. Provider integrations ship when they
+              are tested against the real API, not when they appear on a roadmap,
+              and anything that would require sending your keys to a server is out
+              of scope by design.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
               <InstallWebsiteButton />
@@ -1171,7 +1179,11 @@ function Maintainer() {
                   <dt className="text-[12px] uppercase tracking-[0.16em] text-neutral-500">
                     {f.k}
                   </dt>
-                  <dd className="font-display text-sm font-semibold text-white">
+                  <dd
+                    className={`font-display text-sm font-semibold ${
+                      f.k === "Age" ? "text-emerald-400" : "text-white"
+                    }`}
+                  >
                     {f.v}
                   </dd>
                 </div>
