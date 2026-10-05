@@ -385,9 +385,9 @@ function Hero() {
         >
           <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
           <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/25" />
-          VileDocx V2
+          V3_SF_01
           <span className="text-white/20">/</span>
-          <span className="text-emerald-400/90">Free forever</span>
+          <span className="text-emerald-400/90">Swarm Fix BETA</span>
           <span className="h-px w-8 bg-gradient-to-l from-transparent to-white/25" />
         </p>
 
@@ -418,8 +418,8 @@ function Hero() {
           {[
             `${PROVIDERS.length} providers`,
             `${TOTAL_MODELS}+ models`,
-            "1M-param local Nano",
-            "MIT licensed",
+            "V3_SF_01 — Swarm Fix BETA",
+            "Dark Mode not done yet",
           ].map((item, i) => (
             <span key={item} className="flex items-center gap-x-2.5">
               {i > 0 && <span className="text-white/15">·</span>}
@@ -1202,9 +1202,9 @@ function FinalCta() {
   return (
     <section className="relative border-t border-white/[0.06] px-6 py-28 text-center sm:py-32">
       <div className="mx-auto max-w-2xl">
-        <ScrollFade className="rounded-2xl border border-amber-500/20 bg-amber-400/5 px-5 py-4 backdrop-blur-xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-300/90">
-            V3 Alpha has MANY errors in SWARM mode. DO NOT RUN BUILD SWARM MODE, unless you want to. (THIS ERROR IS ONLY FOR NOW, GIVE IT A FEW DAYS AND THE DEV WILL FIX IT)!
+        <ScrollFade className="rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4 backdrop-blur-xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-neutral-500">
+            V3_SF_01 — Swarm Fix BETA. Dark Mode was added to make it look professional. WARNING — this update is not done perfectly yet.
           </p>
         </ScrollFade>
       </div>
