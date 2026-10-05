@@ -1273,7 +1273,7 @@ function Footer() {
           <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2.5">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white text-[13px] font-bold text-black">
-                A
+                V
               </span>
               <span className="font-display text-[15px] font-semibold tracking-tight text-white">
                 VileDocx
