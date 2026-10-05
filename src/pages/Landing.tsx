@@ -1283,6 +1283,10 @@ function Footer() {
               A local dock for the AI tools you already pay for. Your keys, your
               machine, no markup.
             </p>
+            <p className="mt-2 text-[11px] font-mono tracking-wide text-neutral-600">
+              Vile stands for — Virtual Interface &amp; Linking Environment,
+              not anything else.
+            </p>
             <div className="mt-5 inline-flex items-center gap-2 rounded-md border border-white/[0.07] bg-white/[0.02] px-2.5 py-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
               <span className="text-[11px] font-medium text-neutral-400">
