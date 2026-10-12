@@ -17,7 +17,7 @@ import {
   YAxis,
 } from "recharts";
 
-const EMERALD = "#34d399";
+const ACCENT = "#fb923c";
 const MUTED = "#3f3f46";
 const GRID = "rgba(255,255,255,0.06)";
 const AXIS = "#71717a";
@@ -46,8 +46,8 @@ export function SpendChart() {
       <AreaChart data={SPEND_DATA} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="viledocxFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={EMERALD} stopOpacity={0.25} />
-            <stop offset="100%" stopColor={EMERALD} stopOpacity={0} />
+            <stop offset="0%" stopColor={ACCENT} stopOpacity={0.25} />
+            <stop offset="100%" stopColor={ACCENT} stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid stroke={GRID} vertical={false} />
@@ -82,7 +82,7 @@ export function SpendChart() {
         <Area
           type="monotone"
           dataKey="viledocx"
-          stroke={EMERALD}
+          stroke={ACCENT}
           strokeWidth={2.5}
           fill="url(#viledocxFill)"
         />

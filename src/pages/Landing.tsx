@@ -65,7 +65,7 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
 /* ------------------------- hero wordmark animation ----------------------- */
 
 /**
- * The emerald "X" shatters into a triangular glass mesh: 24 fragments that each
+ * The orange "X" shatters into a triangular glass mesh: 24 fragments that each
  * drift left, arcing over and under the "DOC" letters, then snap back together
  * with a pulsing bloom behind them.
  *
@@ -149,12 +149,12 @@ const em = (n: number) => `${n.toFixed(2)}em`;
 function ShatteringX() {
   const reduce = useReducedMotion();
   const glyphStyle: React.CSSProperties = {
-    textShadow: "0 0 22px rgba(52,211,153,0.45)",
+    textShadow: "0 0 22px rgba(249,115,22,0.45)",
   };
 
   return (
     <span
-      className="relative inline-block italic text-emerald-400"
+      className="relative inline-block italic text-orange-400"
       style={{ marginLeft: "0.05em" }}
     >
       {/* Layout ghost — sizes the box to the real glyph without painting it. */}
@@ -168,7 +168,7 @@ function ShatteringX() {
         className="pointer-events-none absolute left-1/2 top-1/2 h-[1.1em] w-[0.95em] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(52,211,153,0.5), transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(249,115,22,0.5), transparent 70%)",
           filter: "blur(0.35em)",
           willChange: "opacity, transform",
         }}
@@ -263,10 +263,10 @@ function DocxWave() {
     >
       <defs>
         <linearGradient id="docx-wave" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#34d399" stopOpacity="0" />
-          <stop offset="35%" stopColor="#34d399" stopOpacity="0.9" />
-          <stop offset="65%" stopColor="#6ee7b7" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+          <stop offset="0%" stopColor="#fb923c" stopOpacity="0" />
+          <stop offset="35%" stopColor="#fb923c" stopOpacity="0.9" />
+          <stop offset="65%" stopColor="#fdba74" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#fb923c" stopOpacity="0" />
         </linearGradient>
       </defs>
       {WAVE_LAYERS.map((layer, i) => (
@@ -293,13 +293,187 @@ function DocxWave() {
 
 /* ============================== LANDING ================================== */
 
+/* ------------------------- halloween scenery ------------------------- */
+
+/** Low blood-moon glow on the horizon behind the hero mark. */
+function HalloweenMoon() {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none absolute top-[4%] right-[6%] h-40 w-40 sm:h-56 sm:w-56"
+      animate={
+        reduce
+          ? undefined
+          : { opacity: [0.5, 0.85, 0.5], scale: [1, 1.04, 1] }
+      }
+      transition={
+        reduce ? undefined : {
+          repeat: Infinity,
+          duration: 5,
+          ease: "easeInOut",
+        }
+      }
+    >
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.55),rgba(251,146,60,0.12)_55%,transparent_72%)] blur-md" />
+      <div className="absolute inset-[18%] rounded-full bg-[radial-gradient(circle_at_35%_32%,#fde68a_0%,#fb923c_45%,#c2410c_100%)] shadow-[0_0_60px_18px_rgba(251,146,60,0.35)]" />
+      {/* craters */}
+      <div className="absolute left-[30%] top-[24%] h-4 w-4 rounded-full bg-orange-950/25 blur-[2px]" />
+      <div className="absolute left-[52%] top-[46%] h-6 w-6 rounded-full bg-orange-950/20 blur-[3px]" />
+      <div className="absolute left-[26%] top-[58%] h-3 w-3 rounded-full bg-orange-950/25 blur-[2px]" />
+    </motion.div>
+  );
+}
+
+const BAT_PATH =
+  "M2 10 Q6 5 10 9 Q13 11 16 10 Q19 11 22 9 Q26 5 30 10 Q26 13 22 12 Q19 14 16 13 Q13 14 10 12 Q6 13 2 10 Z";
+
+function Bat({ x, y, scale, delay, drift }: { x: string; y: string; scale: number; delay: number; drift: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.svg
+      aria-hidden
+      viewBox="0 0 32 20"
+      className="absolute"
+      style={{ left: x, top: y, width: scale * 32, height: scale * 20 }}
+      animate={
+        reduce
+          ? undefined
+          : { x: [0, drift, 0], y: [0, -10, 0], rotate: [0, 4, 0] }
+      }
+      transition={
+        reduce ? undefined : {
+          repeat: Infinity,
+          duration: 7 + delay,
+          ease: "easeInOut",
+          delay,
+        }
+      }
+    >
+      <path d={BAT_PATH} fill="#18181b" opacity={0.9} />
+    </motion.svg>
+  );
+}
+
+function BatSwarm() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      <Bat x="14%" y="26%" scale={1.1} delay={0} drift={22} />
+      <Bat x="22%" y="16%" scale={0.8} delay={1.2} drift={-16} />
+      <Bat x="74%" y="20%" scale={1.25} delay={0.5} drift={26} />
+      <Bat x="82%" y="34%" scale={0.7} delay={1.8} drift={-20} />
+      <Bat x="50%" y="12%" scale={0.55} delay={2.4} drift={14} />
+    </div>
+  );
+}
+
+/** Bare spooky tree silhouettes on the hero's left/right edges. */
+function SpookyTree({ className, flip = false }: { className: string; flip?: boolean }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.svg
+      aria-hidden
+      viewBox="0 0 160 260"
+      className={`absolute bottom-0 h-[55%] w-auto ${className}`}
+      style={{ transform: flip ? "scaleX(-1)" : undefined }}
+      animate={reduce ? undefined : { rotate: [0, flip ? -1.2 : 1.2, 0] }}
+      transition={
+        reduce ? undefined : {
+          repeat: Infinity,
+          duration: 6.5,
+          ease: "easeInOut",
+        }
+      }
+    >
+      <g fill="#0a0a0a" stroke="#0a0a0a">
+        {/* trunk */}
+        <path d="M78 260 L82 200 L76 200 L80 140 L74 142 L79 96 L83 100 L86 140 L94 136 L90 200 L96 260 Z" strokeWidth="0.5" />
+        {/* left branch + twigs */}
+        <path d="M78 120 Q56 102 44 78 Q42 72 46 74 Q54 96 76 110 Z" strokeWidth="0.5" />
+        <path d="M50 86 Q38 78 30 60 L33 58 Q42 76 52 84 Z" strokeWidth="0.4" />
+        <path d="M46 92 Q40 94 30 90 L31 87 Q40 90 47 89 Z" strokeWidth="0.4" />
+        {/* right branch + twigs */}
+        <path d="M84 108 Q104 92 118 64 Q120 58 116 62 Q104 84 84 100 Z" strokeWidth="0.5" />
+        <path d="M112 70 Q124 58 132 38 L129 36 Q120 54 110 66 Z" strokeWidth="0.4" />
+        <path d="M116 78 Q126 82 138 78 L137 74 Q126 78 117 75 Z" strokeWidth="0.4" />
+        {/* top twig */}
+        <path d="M80 96 Q78 70 68 52 L71 51 Q82 68 84 94 Z" strokeWidth="0.4" />
+      </g>
+    </motion.svg>
+  );
+}
+
+/** Rows of jack-o'-lanterns along the hero floor. */
+function PumpkinPatch() {
+  const pumpkins = [
+    { left: "6%", size: 30, jitter: -2 },
+    { left: "17%", size: 20, jitter: 3 },
+    { left: "68%", size: 24, jitter: 2 },
+    { left: "86%", size: 34, jitter: -4 },
+    { left: "93%", size: 20, jitter: 5 },
+  ] as const;
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-16">
+      {pumpkins.map((p, i) => (
+        <svg
+          key={i}
+          viewBox="0 0 48 40"
+          className="absolute bottom-0"
+          style={{ left: p.left, width: p.size, height: (p.size * 40) / 48 }}
+        >
+          {/* stem */}
+          <path
+            d="M23 6 Q22 2 26 1 Q27 4 25 7 Z"
+            fill="#3f6212"
+          />
+          {/* body */}
+          <ellipse cx="24" cy="24" rx="15" ry="13" fill="#c2410c" />
+          <ellipse cx="17" cy="24" rx="7" ry="12" fill="#ea580c" />
+          <ellipse cx="31" cy="24" rx="7" ry="12" fill="#ea580c" />
+          <ellipse cx="24" cy="24" rx="4" ry="12" fill="#fb923c" />
+          {/* eyes */}
+          <path d="M15 19 L19 19 L17 23 Z" fill="#fde047" />
+          <path d="M29 19 L33 19 L31 23 Z" fill="#fde047" />
+          {/* nose */}
+          <path d="M22 24 L26 24 L24 27 Z" fill="#fde047" /> 
+          {/* grin */}
+          <path d="M15 29 Q24 35 33 29 L32 31 Q24 37 16 31 Z" fill="#fde047" />
+          <path d="M19 30 L20 33 L22 30 Z" fill="#c2410c" />
+          <path d="M26 30 L28 33 L29 30 Z" fill="#c2410c" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+function HalloweenScenery() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 top-0 h-full overflow-hidden"
+    >
+      <HalloweenMoon />
+      <BatSwarm />
+      <SpookyTree className="left-[-2%]" />
+      <SpookyTree className="right-[-2%]" flip />
+      <PumpkinPatch />
+    </div>
+  );
+}
+
 export default function Landing() {
   return <LandingInner />;
 }
 
 function LandingInner() {
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-black font-sans text-neutral-200 selection:bg-white/15 selection:text-white">
+    <div
+      className="relative min-h-screen overflow-x-clip bg-black font-sans text-neutral-200 selection:bg-orange-400/25 selection:text-white"
+      style={{
+        backgroundImage:
+          "radial-gradient(ellipse 90% 70% at 50% -10%, rgba(124,45,18,0.35), transparent 70%)",
+      }}
+    >
       {/* subtle backdrop grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.35]"
@@ -375,19 +549,28 @@ function Hero() {
         style={{ opacity: glowOpacity }}
         className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
       >
-        <div className="absolute left-1/2 top-[-180px] h-[560px] w-[860px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.18),transparent_65%)] blur-2xl" />
-      </motion.div>      <ScrollFade className="w-full" distance={32}>
+        <div className="absolute left-1/2 top-[-180px] h-[560px] w-[860px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.18),transparent_65%)] blur-2xl" />
+      </motion.div>
+
+      {/* Halloween scenery: blood moon, bats, spooky trees, pumpkin patch */}
+      <HalloweenScenery />      <ScrollFade className="w-full" distance={32}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="mx-auto w-full max-w-4xl text-center"
         >
-          <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-orange-400/[0.08] px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-orange-300">
+          🎃
+          Happy early Halloween! - R3nz
+          🎃
+        </p>
+
+        <p className="mb-7 flex items-center justify-center gap-3 text-[10px] font-medium uppercase tracking-[0.34em] text-neutral-500">
           <span className="h-px w-8 bg-gradient-to-r from-transparent to-white/25" />
           V3_SF_01
           <span className="text-white/20">/</span>
-          <span className="text-emerald-400/90">Swarm Fix BETA</span>
+          <span className="text-orange-400/90">Swarm Fix BETA</span>
           <span className="h-px w-8 bg-gradient-to-l from-transparent to-white/25" />
         </p>
 
@@ -465,7 +648,7 @@ function Hero() {
                     WebkitBackgroundClip: "text",
                     backgroundClip: "text",
                     color: "transparent",
-                    filter: "drop-shadow(0 14px 30px rgba(52,211,153,0.18))",
+                    filter: "drop-shadow(0 14px 30px rgba(249,115,22,0.18))",
                   }}
                 >
                   DOC
@@ -475,7 +658,7 @@ function Hero() {
             </div>
           </motion.div>
 
-          {/* The mark floats over the section's own glow, so the emerald rim
+          {/* The mark floats over the section's own glow, so the orange rim
               reads as light coming off the letters rather than a sticker. */}
           <div className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto max-w-3xl px-6 text-center">
             <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-600">
@@ -566,7 +749,7 @@ function HowItWorks() {
           {steps.map((step, i) => (
             <ScrollFade key={step.title} delay={i * 0.08}>
               <div className="border-t border-white/10 pt-6">
-                <span className="font-mono text-[11px] font-semibold tracking-[0.16em] text-emerald-400/80">
+                <span className="font-mono text-[11px] font-semibold tracking-[0.16em] text-orange-400/80">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="mt-3 font-display text-[15px] font-semibold tracking-tight text-white">
@@ -595,9 +778,9 @@ function ProductShot() {
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />            <div className="mx-auto flex items-center gap-2 rounded-md border border-white/[0.07] bg-black/40 px-3 py-1 text-[11px] text-neutral-500">
-          <Shield className="h-3 w-3 text-emerald-400/70" />
+          <Shield className="h-3 w-3 text-orange-400/70" />
           VileDocx Dock — Local
-          <span className="ml-0.5 inline-block h-3 w-1 animate-pulse rounded-[1px] bg-emerald-400/70" />
+          <span className="ml-0.5 inline-block h-3 w-1 animate-pulse rounded-[1px] bg-orange-400/70" />
         </div>
       </div>
 
@@ -617,7 +800,7 @@ function ProductShot() {
               >
                 <span
                   className="h-1.5 w-1.5 rounded-full"
-                  style={{ background: i === 0 ? "#34d399" : p.color }}
+                  style={{ background: i === 0 ? "#fb923c" : p.color }}
                 />
                 {p.name}
               </div>
@@ -636,7 +819,7 @@ function ProductShot() {
                 <span className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-neutral-300">
                   OpenAI · GPT-4o
                 </span>
-                <span className="rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+                <span className="rounded-md border border-orange-400/20 bg-orange-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-orange-400">
                   $0
                 </span>
               </div>
@@ -704,7 +887,7 @@ function Cost() {
                 <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-500 sm:text-[11px] sm:tracking-[0.16em]">
                   {t.label}
                 </p>
-                <div className="mt-2 font-display text-xl font-bold tracking-tight text-emerald-400 sm:text-3xl">
+                <div className="mt-2 font-display text-xl font-bold tracking-tight text-orange-400 sm:text-3xl">
                   {t.value}
                 </div>
                 <p className="mt-2 text-[12px] leading-relaxed text-neutral-500">{t.note}</p>
@@ -749,7 +932,7 @@ function ChartPanel({
           <h3 className="font-display text-sm font-semibold text-white">{title}</h3>
           <p className="mt-0.5 text-[12px] text-neutral-500">{caption}</p>
         </div>
-        <span className="self-start whitespace-nowrap rounded-md border border-emerald-400/20 bg-emerald-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+        <span className="self-start whitespace-nowrap rounded-md border border-orange-400/20 bg-orange-400/[0.08] px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-orange-400">
           MIT · no licence fee
         </span>
       </div>
@@ -933,7 +1116,7 @@ function ProviderCard({
                 {provider.name}
               </h4>
               {provider.open && (
-                <span className="rounded border border-emerald-400/25 bg-emerald-400/[0.07] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-400/90">
+                <span className="rounded border border-orange-400/25 bg-orange-400/[0.07] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-orange-400/90">
                   Open
                 </span>
               )}
@@ -964,7 +1147,7 @@ function ProviderCard({
                     key={m}
                     className="flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] text-neutral-300"
                   >
-                    <span className="h-1 w-1 rounded-full bg-emerald-400/70" />
+                    <span className="h-1 w-1 rounded-full bg-orange-400/70" />
                     {m}
                     <span className="ml-auto text-[10px] uppercase tracking-wider text-neutral-600">
                       Flagship
@@ -1043,13 +1226,13 @@ function OpenSource() {
                 {line}
               </div>
             ))}
-            <div className="flex items-center gap-1 whitespace-nowrap pt-1 text-emerald-400/80">
+            <div className="flex items-center gap-1 whitespace-nowrap pt-1 text-orange-400/80">
               <span>viledocx-dock $</span>
-              <span className="inline-block h-3.5 w-1.5 animate-pulse rounded-[1px] bg-emerald-400/80" />
+              <span className="inline-block h-3.5 w-1.5 animate-pulse rounded-[1px] bg-orange-400/80" />
             </div>
           </div>
           <div className="flex items-center gap-2 border-t border-white/[0.07] bg-white/[0.015] px-5 py-2.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <div className="h-1.5 w-1.5 rounded-full bg-orange-400" />
             <span className="text-[11px] text-neutral-500">MIT License — free for everyone</span>
           </div>
         </GlassPanel>
@@ -1095,7 +1278,7 @@ function NanoModel() {
 
         <GlassPanel className="p-6">
           <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-emerald-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-orange-400">
               <Box className="h-5 w-5" />
             </div>
             <div>
@@ -1181,7 +1364,7 @@ function Maintainer() {
                   </dt>
                   <dd
                     className={`font-display text-sm font-semibold ${
-                      f.k === "Age" ? "text-emerald-400" : "text-white"
+                      f.k === "Age" ? "text-orange-400" : "text-white"
                     }`}
                   >
                     {f.v}
@@ -1210,7 +1393,7 @@ function FinalCta() {
       </div>
       <ScrollFade className="mx-auto max-w-xl">
         <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
-          One dock. Your keys.
+          One dock. Your keys. 🎃
         </h2>
         <p className="mt-4 text-base text-neutral-400">
           Download it, connect a provider, and run your first prompt tonight.
@@ -1285,10 +1468,10 @@ function Footer() {
             </p>
             <p className="mt-2 text-[11px] font-mono tracking-wide text-neutral-600">
               Vile stands for — Virtual Interface &amp; Linking Environment,
-              not anything else.
+              not anything else. 🎃 Happy early Halloween! — R3nz
             </p>
             <div className="mt-5 inline-flex items-center gap-2 rounded-md border border-white/[0.07] bg-white/[0.02] px-2.5 py-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-400" />
               <span className="text-[11px] font-medium text-neutral-400">
                 All systems operational
               </span>

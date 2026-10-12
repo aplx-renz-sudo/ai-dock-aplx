@@ -111,7 +111,7 @@ export function GlassPanel({
     return () => mq.removeEventListener("change", update);
   }, [tilt]);
 
-  // A faint emerald highlight that tracks the pointer across the panel, plus an
+  // A faint orange highlight that tracks the pointer across the panel, plus an
   // optional 3D tilt driven from the same coordinates.
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
@@ -159,7 +159,7 @@ export function GlassPanel({
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-out group-hover/panel:opacity-100"
         style={{
           background:
-            "radial-gradient(240px circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(52,211,153,0.10), transparent 70%)",
+            "radial-gradient(240px circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(249,115,22,0.10), transparent 70%)",
         }}
       />
       <div className="relative">{children}</div>
@@ -257,7 +257,7 @@ export function SectionHeading({
         }}
         style={{ originX: align === "center" ? 0.5 : 0 }}
         className={cn(
-          "mt-5 block h-px w-20 bg-gradient-to-r from-emerald-400/0 via-emerald-400 to-emerald-400/0",
+          "mt-5 block h-px w-20 bg-gradient-to-r from-orange-400/0 via-orange-400 to-orange-400/0",
           align === "center" ? "mx-auto" : "origin-left",
         )}
       />
