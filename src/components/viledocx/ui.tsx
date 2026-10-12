@@ -18,8 +18,8 @@ export function LaunchButton({ className }: { className?: string }) {
     <button
       onClick={() => openLink(LAUNCH_URL)}
       className={cn(
-        "group inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold tracking-tight text-black",
-        "transition-all duration-300 ease-out hover:bg-white/90",
+        "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium tracking-tight text-neutral-200",
+        "transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
         className,
       )}
     >
@@ -73,12 +73,12 @@ export function PreviewButton({ className }: { className?: string }) {
     <button
       onClick={() => openLink(PREVIEW_URL)}
       className={cn(
-        "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium tracking-tight text-neutral-200",
-        "transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.07] hover:text-white",
+        "group inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold tracking-tight text-black",
+        "transition-all duration-300 ease-out hover:bg-white/90",
         className,
       )}
     >
-      Preview updates
+      LAUNCH HALLOWEEN VERSION
       <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );

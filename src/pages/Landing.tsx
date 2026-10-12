@@ -962,8 +962,8 @@ function Hero() {
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <LaunchButton />
           <PreviewButton />
+          <LaunchButton />
           <button
             onClick={() => openLink(GITHUB_URL)}
             className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
