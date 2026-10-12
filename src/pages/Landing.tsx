@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from "react";import { motion,
+import { useMemo, useRef, useState } from "react";
+import { motion,
   AnimatePresence,
   useMotionTemplate,
   useReducedMotion,
@@ -461,124 +462,266 @@ function HalloweenScenery() {
   );
 }
 
-/* ------------------- witch-cat tree + root frame for CTAs ------------------- */
+/* ---------------- grand witch-cat tree + scroll-following roots ---------------- */
+
+const PURPLE_DEEP = "#4c1d95";
+const PURPLE_MID = "#7c3aed";
+const PURPLE_SOFT = "#a78bfa";
+const PURPLE_FAINT = "#c4b5fd";
 
 /**
- * A bare tree with a sleeping black cat in a witch hat curled on a branch.
- * Roots extend far below the canopy so the wrapping-roots frame (rendered
- * around the CTA row) reads as the same tree's roots reaching down.
+ * THE big tree. Anchored to the right edge of the viewport, its great branch
+ * stretches all the way across the screen above the hero. A black cat in a
+ * witch hat sleeps on that branch, tail slowly waggling. Pumpkins hang from
+ * the twigs and cluster at the trunk. Painted in playful shades of purple
+ * rather than black so it feels Halloween-cute, not grim.
  */
-function WitchCatTree({ className }: { className: string }) {
+function GrandWitchTree() {
   const reduce = useReducedMotion();
   return (
-    <motion.svg
+    <div
       aria-hidden
-      viewBox="0 0 120 160"
-      className={className}
-      animate={reduce ? undefined : { rotate: [-0.8, 0.8, -0.8] }}
-      transition={
-        reduce
-          ? undefined
-          : { repeat: Infinity, duration: 8, ease: "easeInOut" }
-      }
-      style={{ transformOrigin: "50% 100%" }}
+      className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[420px] w-full sm:h-[520px]"
     >
-      <g fill="#0a0a0a" stroke="#0a0a0a">
-        {/* trunk */}
-        <path d="M56 160 L58 120 L54 120 L57 78 L60 78 L63 120 L59 120 L61 160 Z" strokeWidth="0.4" />
-        {/* left branch: cat sleeps here */}
-        <path d="M58 84 Q40 74 30 54 Q29 50 33 52 Q44 68 60 78 Z" strokeWidth="0.4" />
-        {/* right branch */}
-        <path d="M60 74 Q78 62 88 42 Q89 38 85 41 Q76 58 60 70 Z" strokeWidth="0.4" />
-        {/* twigs */}
-        <path d="M34 58 Q28 50 26 40 L28 39 Q31 49 36 56 Z" strokeWidth="0.3" />
-        <path d="M84 46 Q90 38 92 28 L94 29 Q92 40 86 49 Z" strokeWidth="0.3" />
-        <path d="M59 66 Q58 54 52 44 L54 43 Q60 54 61 66 Z" strokeWidth="0.3" />
+      <motion.svg
+        viewBox="0 0 1440 520"
+        preserveAspectRatio="xMaxYMin slice"
+        className="h-full w-full"
+        animate={reduce ? undefined : { rotate: [0, 0.35, 0, -0.35, 0] }}
+        transition={
+          reduce
+            ? undefined
+            : { repeat: Infinity, duration: 11, ease: "easeInOut" }
+        }
+        style={{ transformOrigin: "92% 0%" }}
+      >
+        <defs>
+          <linearGradient id="witch-bark" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={PURPLE_SOFT} />
+            <stop offset="55%" stopColor={PURPLE_MID} />
+            <stop offset="100%" stopColor={PURPLE_DEEP} />
+          </linearGradient>
+          <linearGradient id="witch-branch" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={PURPLE_DEEP} />
+            <stop offset="70%" stopColor={PURPLE_MID} />
+            <stop offset="100%" stopColor={PURPLE_SOFT} />
+          </linearGradient>
+        </defs>
 
-        {/* ------- sleeping cat (curled on left branch, at ~x 22-44, y 42-56) */}
+        {/* ------- trunk, rooted at the right edge ------- */}
+        <path
+          d="M1440 520 L1436 380 Q1434 300 1428 240 Q1424 180 1432 120 L1438 40 L1444 40 L1448 130 Q1452 200 1446 260 Q1440 330 1438 400 L1438 520 Z"
+          fill="url(#witch-bark)"
+        />
+        {/* root flares at the trunk base */}
+        <path d="M1432 520 Q1396 500 1368 506 Q1400 492 1430 496 Z" fill={PURPLE_DEEP} />
+        <path d="M1444 520 L1446 488 Q1470 478 1490 486 Q1462 488 1446 502 Z" fill={PURPLE_DEEP} />
+
+        {/* ------- the great branch: sweeps left across the whole screen ------- */}
+        <path
+          d="M1436 250 Q1240 200 1020 206 Q800 212 620 232 Q420 254 240 244 Q120 236 28 208 Q18 204 22 198 Q34 194 60 202 Q180 230 300 234 Q470 238 660 218 Q850 198 1060 194 Q1260 190 1434 238 Z"
+          fill="url(#witch-branch)"
+        />
+        {/* drooping twiglets off the great branch */}
+        <path d="M300 230 Q292 250 274 264 L270 258 Q288 246 296 228 Z" fill={PURPLE_MID} />
+        <path d="M560 226 Q556 248 540 262 L536 256 Q552 244 556 224 Z" fill={PURPLE_MID} opacity="0.9" />
+        <path d="M840 206 Q840 228 828 244 L822 240 Q834 226 834 206 Z" fill={PURPLE_MID} opacity="0.85" />
+        <path d="M1080 198 Q1084 218 1076 236 L1068 232 Q1078 216 1074 198 Z" fill={PURPLE_MID} opacity="0.9" />
+        <path d="M1240 198 Q1252 214 1262 230 L1254 234 Q1244 220 1234 202 Z" fill={PURPLE_MID} opacity="0.8" />
+
+        {/* small hanging pumpkins from the twigs */}
         <g>
-          {/* body: curled blob */}
-          <path
-            d="M24 52 Q22 44 30 42 Q40 40 42 48 Q42 54 34 55 Q26 56 24 52 Z"
-            fill="#18181b"
-            strokeWidth="0"
-          />
-          {/* tail wrapped around body */}
-          <path
-            d="M24 52 Q20 48 22 44 Q24 42 26 44 Q24 47 26 50 Z"
-            fill="#18181b"
-            strokeWidth="0"
-          />
-          {/* ear + head tucked */}
-          <path d="M37 43 L39 39 L41 43 Z" fill="#18181b" strokeWidth="0" />
-          {/* witch hat */}
-          <path
-            d="M28 42 Q35 32 34 24 Q34 20 38 20 Q42 21 40 26 Q40 34 44 42 Q36 40 28 42 Z"
-            fill="#1c1917"
-            strokeWidth="0"
-          />
-          {/* hat brim */}
-          <path
-            d="M26 42 Q35 38 46 42 Q35 44 26 42 Z"
-            fill="#0c0a09"
-            strokeWidth="0"
-          />
-          {/* hat band buckle glint */}
-          <path d="M34 33 L37 33 L36 36 L33 36 Z" fill="#fb923c" strokeWidth="0" opacity="0.7" />
-          {/* closed eye: tiny curve */}
-          <path
-            d="M38 46 Q40 47 42 46"
-            stroke="#f5f5f4"
-            strokeWidth="0.7"
-            fill="none"
-            opacity="0.5"
-          />
-          {/* "z z" sleep bubbles */}
-          <text x="46" y="34" fontSize="7" fill="#fb923c" opacity="0.65" fontFamily="monospace">z</text>
-          <text x="51" y="27" fontSize="5.5" fill="#fb923c" opacity="0.5" fontFamily="monospace">z</text>
-          <text x="55" y="21" fontSize="4.5" fill="#fb923c" opacity="0.4" fontFamily="monospace">z</text>
+          <path d="M274 264 Q273 276 276 284" stroke={PURPLE_MID} strokeWidth="2" fill="none" />
+          <ellipse cx="276" cy="296" rx="9" ry="7" fill="#c2410c" />
+          <ellipse cx="276" cy="296" rx="3.5" ry="7" fill="#fb923c" />
+          <path d="M274 289 Q275 285 278 286 L277 290 Z" fill="#3f6212" />
+          <path d="M271 294 L275 294 L273 297 Z M277 294 L281 294 L279 297 Z" fill="#fde047" />
         </g>
-      </g>
-    </motion.svg>
+        <g>
+          <path d="M540 262 Q538 274 542 284" stroke={PURPLE_MID} strokeWidth="2" fill="none" />
+          <ellipse cx="542" cy="296" rx="11" ry="8" fill="#c2410c" />
+          <ellipse cx="542" cy="296" rx="4" ry="8" fill="#fb923c" />
+          <path d="M539 288 Q540 284 544 285 L543 289 Z" fill="#3f6212" />
+          <path d="M536 294 L541 294 L538 298 Z M543 294 L548 294 L545 298 Z" fill="#fde047" />
+        </g>
+        <g>
+          <path d="M828 244 Q826 256 830 266" stroke={PURPLE_MID} strokeWidth="2" fill="none" />
+          <ellipse cx="830" cy="278" rx="8" ry="6" fill="#c2410c" />
+          <ellipse cx="830" cy="278" rx="3" ry="6" fill="#fb923c" />
+          <path d="M828 272 Q829 268 832 269 L831 273 Z" fill="#3f6212" />
+          <path d="M825 276 L829 276 L827 279 Z M831 276 L835 276 L833 279 Z" fill="#fde047" />
+        </g>
+
+        {/* ground pumpkins clustered at the trunk base */}
+        <g>
+          <ellipse cx="1368" cy="512" rx="14" ry="10" fill="#c2410c" />
+          <ellipse cx="1368" cy="512" rx="5" ry="10" fill="#fb923c" />
+          <path d="M1365 502 Q1366 497 1370 498 L1369 503 Z" fill="#3f6212" />
+          <path d="M1362 509 L1367 509 L1364 513 Z M1370 509 L1375 509 L1372 513 Z" fill="#fde047" />
+        </g>
+        <g>
+          <ellipse cx="1400" cy="516" rx="10" ry="7.5" fill="#c2410c" />
+          <ellipse cx="1400" cy="516" rx="3.5" ry="7.5" fill="#fb923c" />
+          <path d="M1397 508 Q1398 504 1402 505 L1401 509 Z" fill="#3f6212" />
+        </g>
+
+        {/* ------- sleeping cat, curled on the branch near the left third ------- */}
+        <g transform="translate(150 176)">
+          <motion.g
+            animate={
+              reduce
+                ? undefined
+                : { rotate: [0, 7, 10, 4, 0, -3, 0] }
+            }
+            transition={
+              reduce
+                ? undefined
+                : {
+                    repeat: Infinity,
+                    duration: 6,
+                    ease: "easeInOut",
+                    times: [0, 0.25, 0.4, 0.6, 0.75, 0.9, 1],
+                  }
+            }
+            style={{ transformOrigin: "52px 12px" }}
+          >
+            {/* tail: lifts off the body and slowly waggles */}
+            <path
+              d="M50 14 Q62 8 70 14 Q76 19 70 22 Q62 25 56 19 Q53 16 50 14 Z"
+              fill="#312e81"
+              strokeWidth="0"
+            />
+            {/* tail tip in a lighter purple */}
+            <path d="M68 16 Q72 18 70 21 Q68 22 66 20 Z" fill={PURPLE_SOFT} strokeWidth="0" />
+          </motion.g>
+
+          {/* body: curled sleeping blob lying along the branch */}
+          <path
+            d="M14 12 Q14 2 26 2 Q40 2 44 10 Q46 18 36 21 Q22 24 14 12 Z"
+            fill="#312e81"
+            strokeWidth="0"
+          />
+          <path
+            d="M20 16 Q26 20 34 18 Q30 21 24 20 Q21 19 20 16 Z"
+            fill={PURPLE_MID}
+            opacity="0.6"
+            strokeWidth="0"
+          />
+          {/* tucked head + ear */}
+          <path d="M34 4 L36 0 L40 3 Z" fill="#312e81" strokeWidth="0" />
+          <path
+            d="M36 9 Q38 10 40 9"
+            stroke={PURPLE_FAINT}
+            strokeWidth="0.8"
+            fill="none"
+            opacity="0.7"
+          />
+
+          {/* ------- witch hat, slightly oversized and playful ------- */}
+          <path
+            d="M26 4 Q34 -6 32 -16 Q32 -21 37 -21 Q42 -19 39 -13 Q39 -4 45 4 Q35 0 26 4 Z"
+            fill={PURPLE_DEEP}
+            strokeWidth="0"
+          />
+          <path d="M20 5 Q32 0 47 5 Q33 9 20 5 Z" fill="#312e81" strokeWidth="0" />
+          <path d="M31 -6 L35 -6 L34 -2 L30 -2 Z" fill="#fb923c" strokeWidth="0" opacity="0.85" />
+          <path d="M33 -18 Q37 -22 41 -20 Q37 -19 35 -15 Z" fill={PURPLE_MID} strokeWidth="0" />
+
+          {/* sleeping z z z bubbles */}
+          <text x="54" y="-14" fontSize="10" fill={PURPLE_SOFT} opacity="0.85" fontFamily="monospace">z</text>
+          <text x="62" y="-24" fontSize="8" fill={PURPLE_SOFT} opacity="0.65" fontFamily="monospace">z</text>
+          <text x="69" y="-32" fontSize="6.5" fill={PURPLE_SOFT} opacity="0.5" fontFamily="monospace">z</text>
+        </g>
+      </motion.svg>
+    </div>
   );
 }
 
 /**
- * Root tendrils that curl around the CTA buttons, visually connecting to the
- * witch-cat tree standing beside the hero copy.
+ * The tree's roots: a fixed thin vine on the left edge of the viewport whose
+ * length GROWS with the user's scroll progress (scroll-linked, not
+ * time-based), like the big tree's roots reaching down past you. At the
+ * bottom of the page they curl around the FinalCta's Launch /
+ * Read-the-source buttons.
  */
-function CtaRoots() {
+function ScrollRootsWitchCta() {
   const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+
+  const rootLen = useSpring(useTransform(scrollYProgress, [0, 1], [0, 1]), {
+    stiffness: 70,
+    damping: 22,
+  });
+  const rootY = useTransform(rootLen, (v) => `${v * 100}dvh`);
+  const nodeT = [0.2, 0.4, 0.6, 0.8];
+  const nodeOps = nodeT.map((t) =>
+    useTransform(rootLen, (v) => Math.max(0, Math.min(1, (v - t) / 0.05))),
+  );
+  const nodeYs = nodeT.map((t) =>
+    useTransform(rootLen, (v) => `${Math.max(0, v - t) * 100}dvh`),
+  );
+
+  const wrapSpring = useSpring(useTransform(scrollYProgress, [0.8, 0.98], [0, 1]), {
+    stiffness: 80,
+    damping: 24,
+  });
+  const wrapOpacity = useTransform(
+    wrapSpring,
+    (v) => Math.max(0, Math.min(1, v)) * 0.95,
+  );
+  const wrapY = useSpring(useTransform(scrollYProgress, [0.8, 1], [40, 0]), {
+    stiffness: 80,
+    damping: 24,
+  });
+
   return (
-    <motion.svg
-      aria-hidden
-      viewBox="0 0 360 90"
-      preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-x-0 -bottom-10 h-[70px] w-full"
-      animate={reduce ? undefined : { opacity: [0.75, 1, 0.75] }}
-      transition={
-        reduce ? undefined : { repeat: Infinity, duration: 5, ease: "easeInOut" }
-      }
-    >
-      <g stroke="#0a0a0a" fill="none" strokeLinecap="round">
-        {/* left root: enters from the left, curls under the Launch button */}
-        <path d="M-4 40 Q40 34 74 44 Q96 50 118 44 Q136 38 154 46 Q166 52 150 56 Q120 64 92 56 Q60 46 20 52 L-4 50" strokeWidth="7" opacity="0.95" />
-        <path d="M70 46 Q86 40 104 46 Q118 52 132 48" strokeWidth="3" opacity="0.7" />
-        <path d="M60 52 Q74 60 96 58" strokeWidth="2" opacity="0.5" />
-        {/* right root: enters from the right, wraps under the source link */}
-        <path d="M364 42 Q322 36 286 46 Q264 52 242 46 Q224 40 206 48 Q192 54 210 58 Q240 64 270 57 Q304 48 344 54 L364 52" strokeWidth="7" opacity="0.95" />
-        <path d="M298 48 Q282 42 262 48 Q250 54 236 50" strokeWidth="3" opacity="0.7" />
-        <path d="M306 54 Q292 62 268 60" strokeWidth="2" opacity="0.5" />
-        {/* small rootlets */}
-        <path d="M118 60 Q116 70 108 76" strokeWidth="2" opacity="0.5" />
-        <path d="M242 60 Q244 70 250 76" strokeWidth="2" opacity="0.5" />
-        <path d="M154 50 Q164 44 176 48 Q184 51 178 53 Q170 55 160 51" strokeWidth="2.5" opacity="0.6" />
-        <path d="M206 52 Q196 46 184 50 Q176 53 182 55 Q190 57 200 53" strokeWidth="2.5" opacity="0.6" />
-      </g>
-    </motion.svg>
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+      {/* growing main root along the left edge */}
+      <motion.div
+        className="absolute left-[7px] top-0 w-[7px] origin-top rounded-full"
+        style={{
+          height: rootY,
+          background:
+            "linear-gradient(to bottom, rgba(167,139,250,0.7), rgba(124,58,237,0.45) 40%, rgba(76,29,149,0.35))",
+        }}
+      />
+      {/* glowing nodes along the root */}
+      {nodeT.map((t, i) => (
+        <motion.div
+          key={i}
+          className="absolute left-[4px] h-3 w-3 rounded-full"
+          style={{
+            top: nodeYs[i],
+            opacity: nodeOps[i],
+            background: PURPLE_MID,
+            boxShadow: `0 0 12px ${PURPLE_SOFT}`,
+          }}
+        />
+      ))}
+
+      {/* tendrils wrapping around the FinalCta buttons */}
+      <motion.svg
+        viewBox="0 0 360 90"
+        preserveAspectRatio="none"
+        className="absolute inset-x-0 bottom-0 h-[70px] w-full"
+        style={{ opacity: wrapOpacity, y: wrapY }}
+      >
+        <g stroke={PURPLE_DEEP} fill="none" strokeLinecap="round">
+          <path d="M-4 40 Q40 34 74 44 Q96 50 118 44 Q136 38 154 46 Q166 52 150 56 Q120 64 92 56 Q60 46 20 52 L-4 50" strokeWidth="6" opacity="0.95" />
+          <path d="M70 46 Q86 40 104 46 Q118 52 132 48" strokeWidth="2.5" opacity="0.7" />
+          <path d="M60 52 Q74 60 96 58" strokeWidth="1.8" opacity="0.5" />
+          <path d="M364 42 Q322 36 286 46 Q264 52 242 46 Q224 40 206 48 Q192 54 210 58 Q240 64 270 57 Q304 48 344 54 L364 52" strokeWidth="6" opacity="0.95" />
+          <path d="M298 48 Q282 42 262 48 Q250 54 236 50" strokeWidth="2.5" opacity="0.7" />
+          <path d="M306 54 Q292 62 268 60" strokeWidth="1.8" opacity="0.5" />
+          <path d="M118 60 Q116 70 108 76" strokeWidth="1.8" opacity="0.5" />
+          <path d="M242 60 Q244 70 250 76" strokeWidth="1.8" opacity="0.5" />
+          <path d="M154 50 Q164 44 176 48 Q184 51 178 53 Q170 55 160 51" strokeWidth="2.2" opacity="0.6" />
+          <path d="M206 52 Q196 46 184 50 Q176 53 182 55 Q190 57 200 53" strokeWidth="2.2" opacity="0.6" />
+        </g>
+      </motion.svg>
+    </div>
   );
 }
-
 export default function Landing() {
   return <LandingInner />;
 }
@@ -607,6 +750,8 @@ function LandingInner() {
       <ScrollProgress />
       <RenameBanner />
       <Navbar />
+      {/* The big tree's roots creep down the full page and wrap the FinalCta buttons */}
+      <ScrollRootsWitchCta />
 
       <main className="relative z-10">
         <Hero />
@@ -670,8 +815,13 @@ function Hero() {
         <div className="absolute left-1/2 top-[-180px] h-[560px] w-[860px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.18),transparent_65%)] blur-2xl" />
       </motion.div>
 
-      {/* Halloween scenery: blood moon, bats, spooky trees, pumpkin patch */}
-      <HalloweenScenery />      <ScrollFade className="w-full" distance={32}>
+      {/* Halloween scenery: blood moon, bats, pumpkin patch*/}
+      <HalloweenScenery />
+
+      {/* THE big purple witch-cat tree hugging the right edge */}
+      <GrandWitchTree />
+
+      <ScrollFade className="relative z-10 w-full" distance={32}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -701,23 +851,16 @@ function Hero() {
           Meta and more — behind one interface, running on your own API keys.
         </p>
 
-        {/* CTA row framed by the witch-cat tree and its roots: the tree stands
-            at the left edge, and its roots reach all the way down and curl
-            around both buttons without blocking clicks. */}
-        <div className="relative mx-auto mt-9 flex w-full max-w-lg justify-center">
-          <WitchCatTree className="pointer-events-none absolute -left-2 bottom-0 z-0 hidden h-40 w-auto -translate-y-2 sm:block" />
-          <div className="z-10 flex flex-wrap items-center justify-center gap-3">
-            <LaunchButton />
-            <PreviewButton />
-            <button
-              onClick={() => openLink(GITHUB_URL)}
-              className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
-            >
-              Read the source
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
-            </button>
-          </div>
-          <CtaRoots />
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <LaunchButton />
+          <PreviewButton />
+          <button
+            onClick={() => openLink(GITHUB_URL)}
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
+          >
+            Read the source
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
+          </button>
         </div>
 
         {/* Derived from the provider data so this line can never drift from the
@@ -738,7 +881,7 @@ function Hero() {
         </motion.div>
       </ScrollFade>
 
-      <ScrollFade className="w-full" distance={48}>
+      <ScrollFade className="relative z-10 w-full" distance={48}>
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
