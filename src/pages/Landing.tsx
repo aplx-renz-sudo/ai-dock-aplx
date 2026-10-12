@@ -567,11 +567,12 @@ function GrandWitchTree() {
 
         {/* ------- sleeping cat, curled on the branch near the left third ------- */}
         <g transform="translate(150 176)">
+          {/* ---- TAIL (behind body, waggling slowly: lifts, sways, settles) */}
           <motion.g
             animate={
               reduce
                 ? undefined
-                : { rotate: [0, 7, 10, 4, 0, -3, 0] }
+                : { rotate: [0, 6, 9, 5, 0, -4, 0] }
             }
             transition={
               reduce
@@ -580,57 +581,166 @@ function GrandWitchTree() {
                     repeat: Infinity,
                     duration: 6,
                     ease: "easeInOut",
-                    times: [0, 0.25, 0.4, 0.6, 0.75, 0.9, 1],
+                    times: [0, 0.22, 0.38, 0.58, 0.74, 0.9, 1],
                   }
             }
-            style={{ transformOrigin: "52px 12px" }}
+            style={{ transformOrigin: "14px 16px" }}
           >
-            {/* tail: lifts off the body and slowly waggles */}
+            {/* thick tapered tail sweeping right then curling over its own end */}
             <path
-              d="M50 14 Q62 8 70 14 Q76 19 70 22 Q62 25 56 19 Q53 16 50 14 Z"
+              d="M14 17
+                 Q30 22 44 20
+                 Q58 18 64 11
+                 Q68 7 72 10
+                 Q74 13 70 16
+                 Q63 21 54 23
+                 Q34 27 16 21
+                 Q12 19 14 17 Z"
               fill="#312e81"
               strokeWidth="0"
             />
-            {/* tail tip in a lighter purple */}
-            <path d="M68 16 Q72 18 70 21 Q68 22 66 20 Z" fill={PURPLE_SOFT} strokeWidth="0" />
+            <path
+              d="M66 10 Q70 6 74 9 Q76 12 72 15 Q70 16 68 14 Z"
+              fill={PURPLE_SOFT}
+              strokeWidth="0"
+            />
           </motion.g>
 
-          {/* body: curled sleeping blob lying along the branch */}
-          <path
-            d="M14 12 Q14 2 26 2 Q40 2 44 10 Q46 18 36 21 Q22 24 14 12 Z"
-            fill="#312e81"
-            strokeWidth="0"
-          />
-          <path
-            d="M20 16 Q26 20 34 18 Q30 21 24 20 Q21 19 20 16 Z"
-            fill={PURPLE_MID}
-            opacity="0.6"
-            strokeWidth="0"
-          />
-          {/* tucked head + ear */}
-          <path d="M34 4 L36 0 L40 3 Z" fill="#312e81" strokeWidth="0" />
-          <path
-            d="M36 9 Q38 10 40 9"
-            stroke={PURPLE_FAINT}
-            strokeWidth="0.8"
-            fill="none"
-            opacity="0.7"
-          />
+          {/* ---- BODY: proper sleeping loaf, chest at left, haunch at right */}
+          <g>
+            {/* main body mass */}
+            <path
+              d="M10 18
+                 Q8 8 18 5
+                 Q28 2 38 5
+                 Q48 8 50 15
+                 Q52 20 46 22
+                 Q34 25 20 23
+                 Q12 22 10 18 Z"
+              fill="#312e81"
+              strokeWidth="0"
+            />
+            {/* haunch: rounded hind-leg mound at the rear (right side) */}
+            <path
+              d="M36 22
+                 Q38 12 46 12
+                 Q53 12 54 18
+                 Q55 23 48 24
+                 Q40 25 36 22 Z"
+              fill="#3b2f88"
+              strokeWidth="0"
+            />
+            {/* front leg folded under the chest (left side) */}
+            <path
+              d="M12 20
+                 Q14 16 20 17
+                 Q24 18 23 21
+                 Q20 24 14 23
+                 Q11 22 12 20 Z"
+              fill="#3b2f88"
+              strokeWidth="0"
+            />
+            {/* paw peeking out from under the leg */}
+            <ellipse cx="23" cy="21.5" rx="3" ry="2" fill={PURPLE_SOFT} strokeWidth="0" opacity="0.9" />
+            {/* belly highlight */}
+            <path
+              d="M16 18 Q24 22 36 21 Q28 24 20 22 Q17 21 16 18 Z"
+              fill={PURPLE_MID}
+              opacity="0.55"
+              strokeWidth="0"
+            />
+            {/* tabby stripes over the back */}
+            <path d="M20 4 Q21 8 20 11" stroke={PURPLE_DEEP} strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.7" />
+            <path d="M27 3 Q28 8 27 12" stroke={PURPLE_DEEP} strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.7" />
+            <path d="M34 4 Q35 8 34 11" stroke={PURPLE_DEEP} strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.7" />
 
-          {/* ------- witch hat, slightly oversized and playful ------- */}
-          <path
-            d="M26 4 Q34 -6 32 -16 Q32 -21 37 -21 Q42 -19 39 -13 Q39 -4 45 4 Q35 0 26 4 Z"
-            fill={PURPLE_DEEP}
-            strokeWidth="0"
-          />
-          <path d="M20 5 Q32 0 47 5 Q33 9 20 5 Z" fill="#312e81" strokeWidth="0" />
-          <path d="M31 -6 L35 -6 L34 -2 L30 -2 Z" fill="#fb923c" strokeWidth="0" opacity="0.85" />
-          <path d="M33 -18 Q37 -22 41 -20 Q37 -19 35 -15 Z" fill={PURPLE_MID} strokeWidth="0" />
+            {/* ---- HEAD, tucked down toward the chest, facing right */}
+            {/* head mass */}
+            <path
+              d="M32 12
+                 Q32 5 39 5
+                 Q46 5 47 11
+                 Q48 16 43 18
+                 Q36 19 33 16
+                 Q32 14 32 12 Z"
+              fill="#433896"
+              strokeWidth="0"
+            />
+            {/* muzzle: slightly lighter wedge */}
+            <path
+              d="M42 13
+                 Q46 12 47 15
+                 Q46 17 43 16
+                 Q41 15 42 13 Z"
+              fill={PURPLE_SOFT}
+              opacity="0.35"
+              strokeWidth="0"
+            />
+            {/* closed eye: gentle downward curve with tiny lashes */}
+            <path
+              d="M41 10 Q43 11.5 45 10"
+              stroke="#ede9fe"
+              strokeWidth="0.9"
+              fill="none"
+              strokeLinecap="round"
+              opacity="0.85"
+            />
+            <path d="M41 10 L40.2 9" stroke="#ede9fe" strokeWidth="0.5" opacity="0.5" strokeLinecap="round" />
+            <path d="M45 10 L45.8 9" stroke="#ede9fe" strokeWidth="0.5" opacity="0.5" strokeLinecap="round" />
+            {/* tiny nose */}
+            <path d="M46.6 12.4 L48 12.4 L47.3 13.4 Z" fill="#f0abfc" strokeWidth="0" />
+            {/* whiskers */}
+            <path d="M47.5 14 L51 13.6" stroke={PURPLE_FAINT} strokeWidth="0.45" opacity="0.6" />
+            <path d="M47.5 15.2 L51 15.8" stroke={PURPLE_FAINT} strokeWidth="0.45" opacity="0.6" />
+            {/* far ear behind the head */}
+            <path d="M36 6 L37 1.5 L40 4 Z" fill="#2c2568" strokeWidth="0" />
+            {/* near ear with inner-ear blush */}
+            <path d="M41 4.5 L44 0.5 L46 5 Z" fill="#4c3fa8" strokeWidth="0" />
+            <path d="M42 4 L43.5 1.8 L44.6 4.2 Z" fill="#f0abfc" opacity="0.4" strokeWidth="0" />
 
-          {/* sleeping z z z bubbles */}
-          <text x="54" y="-14" fontSize="10" fill={PURPLE_SOFT} opacity="0.85" fontFamily="monospace">z</text>
-          <text x="62" y="-24" fontSize="8" fill={PURPLE_SOFT} opacity="0.65" fontFamily="monospace">z</text>
-          <text x="69" y="-32" fontSize="6.5" fill={PURPLE_SOFT} opacity="0.5" fontFamily="monospace">z</text>
+            {/* breathing (subtle body scale) — runs in a separate springy cycle */}
+
+            {/* ---- WITCH HAT sitting over the near ear, tilted for coziness */}
+            <g transform="translate(41 -2) rotate(-6)">
+              {/* tip folds over to the left, like a well-worn hat */}
+              <path
+                d="M-4 7
+                   Q-2 0 2 -7
+                   Q5 -13 1 -18
+                   Q-1 -21 3 -22
+                   Q7 -21 6 -16
+                   Q7 -8 3 0
+                   Q1 5 0 7
+                   Q-1 8 -4 7 Z"
+                fill={PURPLE_DEEP}
+                strokeWidth="0"
+              />
+              {/* brim, wider than the head, upturned at the left edge */}
+              <path
+                d="M-10 8
+                   Q0 3 12 8
+                   Q6 12 -2 11
+                   Q-7 10 -10 8 Z"
+                fill="#312e81"
+                strokeWidth="0"
+              />
+              {/* band + buckle */}
+              <path d="M-3 4 Q2 2 6 3 L5.5 6 Q1 6 -2.5 7 Z" fill={PURPLE_MID} strokeWidth="0" />
+              <path d="M0 3.6 L3.2 3.2 L2.6 5.6 L-0.2 5.9 Z" fill="#fb923c" strokeWidth="0" opacity="0.9" />
+              {/* tip glow star */}
+              <path
+                d="M2 -24 L3 -21 L6 -20 L3 -19 L2 -16 L1 -19 L-2 -20 L1 -21 Z"
+                fill="#fde047"
+                opacity="0.85"
+                strokeWidth="0"
+              />
+            </g>
+
+            {/* zZz bubbles drifting off the hat tip */}
+            <text x="16" y="-18" fontSize="10" fill={PURPLE_SOFT} opacity="0.85" fontFamily="monospace">z</text>
+            <text x="24" y="-28" fontSize="8" fill={PURPLE_SOFT} opacity="0.6" fontFamily="monospace">z</text>
+            <text x="31" y="-36" fontSize="6.5" fill={PURPLE_SOFT} opacity="0.45" fontFamily="monospace">z</text>
+          </g>
         </g>
       </motion.svg>
     </div>
