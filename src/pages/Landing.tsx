@@ -461,6 +461,124 @@ function HalloweenScenery() {
   );
 }
 
+/* ------------------- witch-cat tree + root frame for CTAs ------------------- */
+
+/**
+ * A bare tree with a sleeping black cat in a witch hat curled on a branch.
+ * Roots extend far below the canopy so the wrapping-roots frame (rendered
+ * around the CTA row) reads as the same tree's roots reaching down.
+ */
+function WitchCatTree({ className }: { className: string }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.svg
+      aria-hidden
+      viewBox="0 0 120 160"
+      className={className}
+      animate={reduce ? undefined : { rotate: [-0.8, 0.8, -0.8] }}
+      transition={
+        reduce
+          ? undefined
+          : { repeat: Infinity, duration: 8, ease: "easeInOut" }
+      }
+      style={{ transformOrigin: "50% 100%" }}
+    >
+      <g fill="#0a0a0a" stroke="#0a0a0a">
+        {/* trunk */}
+        <path d="M56 160 L58 120 L54 120 L57 78 L60 78 L63 120 L59 120 L61 160 Z" strokeWidth="0.4" />
+        {/* left branch: cat sleeps here */}
+        <path d="M58 84 Q40 74 30 54 Q29 50 33 52 Q44 68 60 78 Z" strokeWidth="0.4" />
+        {/* right branch */}
+        <path d="M60 74 Q78 62 88 42 Q89 38 85 41 Q76 58 60 70 Z" strokeWidth="0.4" />
+        {/* twigs */}
+        <path d="M34 58 Q28 50 26 40 L28 39 Q31 49 36 56 Z" strokeWidth="0.3" />
+        <path d="M84 46 Q90 38 92 28 L94 29 Q92 40 86 49 Z" strokeWidth="0.3" />
+        <path d="M59 66 Q58 54 52 44 L54 43 Q60 54 61 66 Z" strokeWidth="0.3" />
+
+        {/* ------- sleeping cat (curled on left branch, at ~x 22-44, y 42-56) */}
+        <g>
+          {/* body: curled blob */}
+          <path
+            d="M24 52 Q22 44 30 42 Q40 40 42 48 Q42 54 34 55 Q26 56 24 52 Z"
+            fill="#18181b"
+            strokeWidth="0"
+          />
+          {/* tail wrapped around body */}
+          <path
+            d="M24 52 Q20 48 22 44 Q24 42 26 44 Q24 47 26 50 Z"
+            fill="#18181b"
+            strokeWidth="0"
+          />
+          {/* ear + head tucked */}
+          <path d="M37 43 L39 39 L41 43 Z" fill="#18181b" strokeWidth="0" />
+          {/* witch hat */}
+          <path
+            d="M28 42 Q35 32 34 24 Q34 20 38 20 Q42 21 40 26 Q40 34 44 42 Q36 40 28 42 Z"
+            fill="#1c1917"
+            strokeWidth="0"
+          />
+          {/* hat brim */}
+          <path
+            d="M26 42 Q35 38 46 42 Q35 44 26 42 Z"
+            fill="#0c0a09"
+            strokeWidth="0"
+          />
+          {/* hat band buckle glint */}
+          <path d="M34 33 L37 33 L36 36 L33 36 Z" fill="#fb923c" strokeWidth="0" opacity="0.7" />
+          {/* closed eye: tiny curve */}
+          <path
+            d="M38 46 Q40 47 42 46"
+            stroke="#f5f5f4"
+            strokeWidth="0.7"
+            fill="none"
+            opacity="0.5"
+          />
+          {/* "z z" sleep bubbles */}
+          <text x="46" y="34" fontSize="7" fill="#fb923c" opacity="0.65" fontFamily="monospace">z</text>
+          <text x="51" y="27" fontSize="5.5" fill="#fb923c" opacity="0.5" fontFamily="monospace">z</text>
+          <text x="55" y="21" fontSize="4.5" fill="#fb923c" opacity="0.4" fontFamily="monospace">z</text>
+        </g>
+      </g>
+    </motion.svg>
+  );
+}
+
+/**
+ * Root tendrils that curl around the CTA buttons, visually connecting to the
+ * witch-cat tree standing beside the hero copy.
+ */
+function CtaRoots() {
+  const reduce = useReducedMotion();
+  return (
+    <motion.svg
+      aria-hidden
+      viewBox="0 0 360 90"
+      preserveAspectRatio="none"
+      className="pointer-events-none absolute inset-x-0 -bottom-10 h-[70px] w-full"
+      animate={reduce ? undefined : { opacity: [0.75, 1, 0.75] }}
+      transition={
+        reduce ? undefined : { repeat: Infinity, duration: 5, ease: "easeInOut" }
+      }
+    >
+      <g stroke="#0a0a0a" fill="none" strokeLinecap="round">
+        {/* left root: enters from the left, curls under the Launch button */}
+        <path d="M-4 40 Q40 34 74 44 Q96 50 118 44 Q136 38 154 46 Q166 52 150 56 Q120 64 92 56 Q60 46 20 52 L-4 50" strokeWidth="7" opacity="0.95" />
+        <path d="M70 46 Q86 40 104 46 Q118 52 132 48" strokeWidth="3" opacity="0.7" />
+        <path d="M60 52 Q74 60 96 58" strokeWidth="2" opacity="0.5" />
+        {/* right root: enters from the right, wraps under the source link */}
+        <path d="M364 42 Q322 36 286 46 Q264 52 242 46 Q224 40 206 48 Q192 54 210 58 Q240 64 270 57 Q304 48 344 54 L364 52" strokeWidth="7" opacity="0.95" />
+        <path d="M298 48 Q282 42 262 48 Q250 54 236 50" strokeWidth="3" opacity="0.7" />
+        <path d="M306 54 Q292 62 268 60" strokeWidth="2" opacity="0.5" />
+        {/* small rootlets */}
+        <path d="M118 60 Q116 70 108 76" strokeWidth="2" opacity="0.5" />
+        <path d="M242 60 Q244 70 250 76" strokeWidth="2" opacity="0.5" />
+        <path d="M154 50 Q164 44 176 48 Q184 51 178 53 Q170 55 160 51" strokeWidth="2.5" opacity="0.6" />
+        <path d="M206 52 Q196 46 184 50 Q176 53 182 55 Q190 57 200 53" strokeWidth="2.5" opacity="0.6" />
+      </g>
+    </motion.svg>
+  );
+}
+
 export default function Landing() {
   return <LandingInner />;
 }
@@ -583,16 +701,23 @@ function Hero() {
           Meta and more — behind one interface, running on your own API keys.
         </p>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <LaunchButton />
-          <PreviewButton />
-          <button
-            onClick={() => openLink(GITHUB_URL)}
-            className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
-          >
-            Read the source
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
-          </button>
+        {/* CTA row framed by the witch-cat tree and its roots: the tree stands
+            at the left edge, and its roots reach all the way down and curl
+            around both buttons without blocking clicks. */}
+        <div className="relative mx-auto mt-9 flex w-full max-w-lg justify-center">
+          <WitchCatTree className="pointer-events-none absolute -left-2 bottom-0 z-0 hidden h-40 w-auto -translate-y-2 sm:block" />
+          <div className="z-10 flex flex-wrap items-center justify-center gap-3">
+            <LaunchButton />
+            <PreviewButton />
+            <button
+              onClick={() => openLink(GITHUB_URL)}
+              className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
+            >
+              Read the source
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out group-hover:translate-x-0.5" />
+            </button>
+          </div>
+          <CtaRoots />
         </div>
 
         {/* Derived from the provider data so this line can never drift from the
