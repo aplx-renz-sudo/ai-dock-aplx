@@ -975,6 +975,7 @@ function Hero() {
             `${TOTAL_MODELS}+ models`,
             "V3_SF_01 — Swarm Fix BETA",
             "Dark Mode not done yet",
+            "CANDY MODE IN VILEDOCX IS STILL IN BETA, SETTINGS IS BROKEN ONLY FOR LIGHT (Candy) MODE!",
           ].map((item, i) => (
             <span key={item} className="flex items-center gap-x-2.5">
               {i > 0 && <span className="text-white/15">·</span>}

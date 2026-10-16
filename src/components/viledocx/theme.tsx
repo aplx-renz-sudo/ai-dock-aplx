@@ -153,6 +153,10 @@ export function ThemeSwitcher({ className }: { className?: string }) {
             <p className="px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
               Theme
             </p>
+            <p className="mx-1 mb-1.5 rounded-md border border-orange-400/30 bg-orange-400/[0.08] px-2 py-1.5 text-[10px] font-semibold leading-snug tracking-tight text-orange-300">
+              CANDY MODE IN VILEDOCX IS STILL IN BETA, SETTINGS IS
+              BROKEN ONLY FOR LIGHT (Candy) MODE!
+            </p>
             {THEME_OPTIONS.map((option) => {
               const active = option.id === theme;
               return (
