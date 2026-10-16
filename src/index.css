@@ -126,10 +126,10 @@
   }
 }
 
-/* pure-black application shell */
+/* application shell — the page background follows the active theme */
 html,
 body {
-  background-color: #000;
+  background-color: var(--shell-bg, #000);
   scroll-behavior: smooth;
 }
 
@@ -152,4 +152,131 @@ body {
 /* ---- recharts tooltip ---- */
 .recharts-tooltip-wrapper {
   outline: none;
+}
+
+/* ============================== themes ============================== */
+/*
+ * The active theme lives on <html data-theme="...">. Three looks are offered
+ * (see src/components/viledocx/theme.tsx):
+ *   dark      — the original dark mode
+ *   halloween — the current release theme (default)
+ *   candy     — a white light mode washed in pink + yellow
+ *
+ * Dark and Halloween share the shadcn dark palette. Candy keeps the light
+ * `:root` tokens (retinted warm) and re-maps the handful of dark-tuned
+ * utility classes the landing page is built from.
+ */
+:root {
+  --shell-bg: #000;
+  --shell-glow: radial-gradient(
+    ellipse 90% 70% at 50% -10%,
+    rgba(124, 45, 18, 0.35),
+    transparent 70%
+  );
+}
+
+html[data-theme="dark"] {
+  --shell-bg: #000;
+  --shell-glow: radial-gradient(
+    ellipse 90% 70% at 50% -10%,
+    rgba(63, 63, 70, 0.28),
+    transparent 70%
+  );
+}
+
+html[data-theme="candy"] {
+  --shell-bg: #fff6fb;
+  --shell-glow: radial-gradient(
+      ellipse 90% 70% at 50% -10%,
+      rgba(249, 168, 212, 0.75),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 80% 55% at 85% 8%,
+      rgba(253, 224, 71, 0.5),
+      transparent 62%
+    );
+
+  /* warm light palette for the shadcn token set */
+  --background: oklch(0.99 0.015 350);
+  --foreground: oklch(0.32 0.09 350);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.32 0.09 350);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.32 0.09 350);
+  --primary: oklch(0.72 0.19 350);
+  --primary-foreground: oklch(0.99 0.01 350);
+  --secondary: oklch(0.97 0.03 350);
+  --secondary-foreground: oklch(0.34 0.09 350);
+  --muted: oklch(0.97 0.025 350);
+  --muted-foreground: oklch(0.56 0.09 350);
+  --accent: oklch(0.96 0.04 350);
+  --accent-foreground: oklch(0.34 0.09 350);
+  --border: oklch(0.9 0.05 350);
+  --input: oklch(0.92 0.04 350);
+  --ring: oklch(0.72 0.19 350);
+}
+
+/* The page shell paints the themed background + glow behind everything. */
+.vd-shell {
+  background-color: var(--shell-bg);
+  background-image: var(--shell-glow);
+}
+
+/* Season decorations belong to Halloween only. */
+html[data-theme="dark"] .vd-halloween,
+html[data-theme="candy"] .vd-halloween {
+  display: none !important;
+}
+
+/* ---- Candy (light) re-mapping of the dark-tuned utilities ---- */
+html[data-theme="candy"] [class*="bg-black/"] {
+  background-color: rgba(255, 255, 255, 0.55);
+}
+html[data-theme="candy"] [class~="bg-black"] {
+  background-color: transparent;
+}
+html[data-theme="candy"] [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+html[data-theme="candy"] [class*="border-white"] {
+  border-color: rgba(190, 24, 93, 0.16);
+}
+html[data-theme="candy"] [class*="text-white"] {
+  color: #4a1036;
+}
+html[data-theme="candy"] [class*="text-neutral-200"],
+html[data-theme="candy"] [class*="text-neutral-300"] {
+  color: #6b2148;
+}
+html[data-theme="candy"] [class*="text-neutral-400"] {
+  color: #8b3a63;
+}
+html[data-theme="candy"] [class*="text-neutral-500"] {
+  color: #9d5578;
+}
+html[data-theme="candy"] [class*="text-neutral-600"] {
+  color: #ad6b88;
+}
+/* accents: pumpkin orange becomes candy pink */
+html[data-theme="candy"] [class*="text-orange-"] {
+  color: #db2777;
+}
+html[data-theme="candy"] [class*="border-orange-"] {
+  border-color: rgba(219, 39, 119, 0.35);
+}
+/* the solid-white chips (logo badge, primary button) need a soft edge on white */
+html[data-theme="candy"] [class~="bg-white"] {
+  box-shadow: 0 6px 18px -8px rgba(190, 24, 93, 0.45);
+}
+/* the mock chat window is a near-black slab — lighten it (and its shadow) */
+html[data-theme="candy"] .vd-window {
+  background-color: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 30px 80px -40px rgba(190, 24, 93, 0.4);
+}
+/* keep the Settings popover readable in the light theme */
+html[data-theme="candy"] .vd-popover {
+  background-color: rgba(255, 255, 255, 0.97) !important;
+  border-color: rgba(190, 24, 93, 0.16) !important;
+  box-shadow: 0 24px 60px -24px rgba(190, 24, 93, 0.35) !important;
 }

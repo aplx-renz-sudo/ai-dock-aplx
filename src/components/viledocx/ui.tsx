@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, Github, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_URL, LAUNCH_URL } from "./data";
+import { ThemeSwitcher } from "./theme";
 export const INSTALL_WEBSITE_URL = "https://github.com/aplx-renz-sudo/Aplx-Website";
 export const PREVIEW_URL = "https://viledocx.ai.studio";
 
@@ -321,6 +322,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeSwitcher />
           <button
             onClick={() => openLink(GITHUB_URL)}
             aria-label="GitHub repository"

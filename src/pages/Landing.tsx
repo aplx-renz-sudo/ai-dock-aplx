@@ -451,7 +451,7 @@ function HalloweenScenery() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 h-full overflow-hidden"
+      className="vd-halloween pointer-events-none absolute inset-x-0 top-0 h-full overflow-hidden"
     >
       <HalloweenMoon />
       <BatSwarm />
@@ -481,7 +481,7 @@ function GrandWitchTree() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[420px] w-full sm:h-[520px]"
+      className="vd-halloween pointer-events-none absolute inset-x-0 top-0 z-[1] h-[420px] w-full sm:h-[520px]"
     >
       <motion.svg
         viewBox="0 0 1440 520"
@@ -785,7 +785,7 @@ function ScrollRootsWitchCta() {
   });
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+    <div aria-hidden className="vd-halloween pointer-events-none fixed inset-0 z-0">
       {/* growing main root along the left edge */}
       <motion.div
         className="absolute left-[7px] top-0 w-[7px] origin-top rounded-full"
@@ -838,13 +838,7 @@ export default function Landing() {
 
 function LandingInner() {
   return (
-    <div
-      className="relative min-h-screen overflow-x-clip bg-black font-sans text-neutral-200 selection:bg-orange-400/25 selection:text-white"
-      style={{
-        backgroundImage:
-          "radial-gradient(ellipse 90% 70% at 50% -10%, rgba(124,45,18,0.35), transparent 70%)",
-      }}
-    >
+    <div className="vd-shell relative min-h-screen overflow-x-clip font-sans text-neutral-200 selection:bg-orange-400/25 selection:text-white">
       {/* subtle backdrop grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.35]"
@@ -1150,7 +1144,7 @@ function HowItWorks() {
 function ProductShot() {
   const sidebar = PROVIDERS.slice(0, 6);
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#070707] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]">
+    <div className="vd-window overflow-hidden rounded-2xl border border-white/10 bg-[#070707] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]">
       {/* window chrome */}
       <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.02] px-4 py-3">
         <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
