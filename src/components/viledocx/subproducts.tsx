@@ -1,7 +1,14 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Github, Hammer, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Github,
+  Hammer,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_URL } from "./data";
 import {
@@ -11,8 +18,10 @@ import {
   PreviewButton,
   openLink,
 } from "./ui";
+import { TRENCH_URL } from "@/components/trench/data";
+import { TrenchSite } from "@/components/trench/TrenchSite";
 
-export const TRENCH_URL = "https://github.com/aplx-renz-sudo/Trench";
+export { TRENCH_URL };
 export const TRENCH_STATUS = "T01 still under construction, release soon";
 
 /**
@@ -26,11 +35,27 @@ export function SubProductsOverlay({
   open: boolean;
   onClose: () => void;
 }) {
+  const [trenchOpen, setTrenchOpen] = useState(false);
+  const openSiteRef = useRef<HTMLButtonElement>(null);
+
+  // Closing this page also drops the site stacked on top of it.
+  const closePage = () => {
+    setTrenchOpen(false);
+    onClose();
+  };
+
+  // Stable so the TRENCH site's open/close effect doesn't re-run on renders.
+  const closeTrench = useCallback(() => {
+    setTrenchOpen(false);
+    window.setTimeout(() => openSiteRef.current?.focus(), 30);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      // The TRENCH site has its own Escape handler; don't close both layers.
+      if (event.key === "Escape" && !trenchOpen) onClose();
     };
     document.addEventListener("keydown", onKeyDown);
 
@@ -42,13 +67,14 @@ export function SubProductsOverlay({
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, onClose]);
+  }, [open, onClose, trenchOpen]);
 
   // Portalled to <body> so the landing page's overflow clipping and stacking
   // order can never cut the wrapper off.
   return createPortal(
-    <AnimatePresence>
-      {open && (
+    <>
+      <AnimatePresence>
+        {open && (
         <motion.div
           key="sub-products"
           role="dialog"
@@ -80,7 +106,7 @@ export function SubProductsOverlay({
             <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={closePage}
                 autoFocus
                 className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[13px] font-medium text-neutral-200 backdrop-blur-xl transition-colors hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/60"
               >
@@ -89,7 +115,7 @@ export function SubProductsOverlay({
               </button>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={closePage}
                 aria-label="Close"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-neutral-300 transition-colors hover:border-white/30 hover:text-white"
               >
@@ -185,6 +211,16 @@ export function SubProductsOverlay({
                 <div className="mt-6 flex flex-wrap items-center gap-2">
                   <button
                     type="button"
+                    ref={openSiteRef}
+                    onClick={() => setTrenchOpen(true)}
+                    aria-haspopup="dialog"
+                    className="group inline-flex items-center gap-2 rounded-lg bg-[#3ad3e3] px-4 py-2 text-[13px] font-semibold tracking-tight text-[#04181c] transition-colors duration-200 hover:bg-[#6ee6f2]"
+                  >
+                    Open site
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => openLink(TRENCH_URL)}
                     className={cn(
                       "group inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-2 text-[13px] font-medium tracking-tight text-neutral-200",
@@ -205,7 +241,12 @@ export function SubProductsOverlay({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>,
+      </AnimatePresence>
+
+      {/* The TRENCH site stacks on top of this page. */}
+      <TrenchSite open={open && trenchOpen} onClose={closeTrench} />
+    </>,
     document.body,
   );
 }
+

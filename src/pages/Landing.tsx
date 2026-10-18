@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { motion,
   AnimatePresence,
   useMotionTemplate,
@@ -842,7 +842,9 @@ export default function Landing() {
 
 function LandingInner() {
   const [productsOpen, setProductsOpen] = useState(false);
-  const openProducts = () => setProductsOpen(true);
+  // Stable handlers: overlays on top subscribe to these in effects.
+  const openProducts = useCallback(() => setProductsOpen(true), []);
+  const closeProducts = useCallback(() => setProductsOpen(false), []);
 
   return (
     <div className="vd-shell relative min-h-screen overflow-x-clip font-sans text-neutral-200 selection:bg-orange-400/25 selection:text-white">
@@ -879,10 +881,7 @@ function LandingInner() {
       </main>
 
       {/* A page that wraps over the landing page, not a new route. */}
-      <SubProductsOverlay
-        open={productsOpen}
-        onClose={() => setProductsOpen(false)}
-      />
+      <SubProductsOverlay open={productsOpen} onClose={closeProducts} />
     </div>
   );
 }
