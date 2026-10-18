@@ -281,9 +281,34 @@ const NAV_LINKS = [
   { label: "Source", href: "#source" },
 ];
 
+/* True once the page has been scrolled past `threshold` px. */
+export function useScrolled(threshold = 16) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+
+  return scrolled;
+}
+
+/* Shared motion curve so the banner + header move as one piece. */
+const HEADER_EASE = "ease-[cubic-bezier(0.22,1,0.36,1)]";
+
 export function RenameBanner() {
+  const scrolled = useScrolled();
+
   return (
-    <div className="fixed inset-x-0 top-0 z-[60] h-8 border-b border-white/[0.06] bg-black/90 backdrop-blur-xl">
+    <div
+      className={cn(
+        "fixed inset-x-0 top-0 z-[60] h-8 border-b border-white/[0.06] bg-black/90 backdrop-blur-xl transition-all duration-500 motion-reduce:transition-none",
+        HEADER_EASE,
+        scrolled && "-translate-y-full opacity-0",
+      )}
+    >
       <div className="mx-auto flex h-8 w-full max-w-6xl items-center justify-center px-5 text-[11px] tracking-tight text-neutral-500 sm:text-[12px]">
         <span>
           APLX has been renamed to{" "}
@@ -296,79 +321,129 @@ export function RenameBanner() {
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const scrolled = useScrolled();
 
   return (
-    <header className="fixed inset-x-0 top-8 z-50 border-b border-white/[0.06] bg-black/70 backdrop-blur-xl">
-      <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5">
-        <a href="#top" className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white text-[13px] font-bold text-black">
-            V
-          </span>
-          <span className="font-display text-[15px] font-semibold tracking-tight text-white">
-            VileDocx
-          </span>
-        </a>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+      <div
+        className={cn(
+          "pointer-events-auto mx-auto w-full transition-all duration-500 motion-reduce:transition-none",
+          HEADER_EASE,
+          scrolled
+            ? "mt-3 max-w-4xl px-3 sm:px-4"
+            : "mt-8 max-w-6xl px-0",
+        )}
+      >
+        <nav
+          className={cn(
+            "relative flex items-center justify-between transition-all duration-500 motion-reduce:transition-none",
+            HEADER_EASE,
+            scrolled
+              ? "h-12 rounded-full border border-white/15 bg-white/[0.06] bg-gradient-to-b from-white/[0.12] to-white/[0.02] px-2.5 shadow-[0_16px_40px_-18px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-2xl backdrop-saturate-150"
+              : "h-16 rounded-none border-b border-white/[0.06] bg-black/70 px-5 backdrop-blur-xl",
+          )}
+        >
+          {/* frosted sheen — only visible once the bar condenses into the pill */}
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent transition-opacity duration-500",
+              scrolled ? "opacity-100" : "opacity-0",
+            )}
+          />
 
-        <div className="hidden items-center gap-1 md:flex">
-          {NAV_LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="rounded-md px-3 py-1.5 text-[13px] text-neutral-400 transition-colors hover:text-white"
+          <a href="#top" className="relative flex items-center gap-2.5">
+            <span
+              className={cn(
+                "flex items-center justify-center rounded-md bg-white font-bold text-black transition-all duration-500",
+                HEADER_EASE,
+                scrolled ? "h-6 w-6 text-[11px]" : "h-7 w-7 text-[13px]",
+              )}
             >
-              {l.label}
-            </a>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <ThemeSwitcher />
-          <button
-            onClick={() => openLink(GITHUB_URL)}
-            aria-label="GitHub repository"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-neutral-300 transition-colors hover:border-white/25 hover:text-white"
-          >
-            <Github className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => openLink(LAUNCH_URL)}
-            className="hidden rounded-md bg-white px-3.5 py-1.5 text-[13px] font-semibold text-black transition-colors hover:bg-white/90 sm:inline-flex"
-          >
-            Launch
-          </button>
-          <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-neutral-300 transition-colors hover:text-white md:hidden"
-          >
-            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
-        </div>
-      </nav>
-
-      {open && (
-        <div className="border-t border-white/[0.06] bg-black/95 md:hidden">
-          {NAV_LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              className="block border-b border-white/[0.05] px-5 py-3 text-sm text-neutral-300 hover:text-white"
+              V
+            </span>
+            <span
+              className={cn(
+                "font-display font-semibold tracking-tight text-white transition-all duration-500",
+                HEADER_EASE,
+                scrolled ? "text-[14px]" : "text-[15px]",
+              )}
             >
-              {l.label}
-            </a>
-          ))}
-          <button
-            onClick={() => {
-              setOpen(false);
-              openLink(LAUNCH_URL);
-            }}
-            className="block w-full px-5 py-3 text-left text-sm font-semibold text-white"
+              VileDocx
+            </span>
+          </a>
+
+          <div className="relative hidden items-center gap-1 md:flex">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className={cn(
+                  "rounded-full text-[13px] text-neutral-400 transition-colors hover:text-white",
+                  scrolled ? "px-3 py-1" : "px-3 py-1.5",
+                )}
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>
+
+          <div className="relative flex items-center gap-2">
+            <ThemeSwitcher />
+            <button
+              onClick={() => openLink(GITHUB_URL)}
+              aria-label="GitHub repository"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-neutral-300 transition-colors hover:border-white/25 hover:text-white"
+            >
+              <Github className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => openLink(LAUNCH_URL)}
+              className="hidden rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-black transition-colors hover:bg-white/90 sm:inline-flex"
+            >
+              Launch
+            </button>
+            <button
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle menu"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-neutral-300 transition-colors hover:text-white md:hidden"
+            >
+              {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
+        </nav>
+
+        {open && (
+          <div
+            className={cn(
+              "overflow-hidden border border-white/10 bg-black/85 backdrop-blur-2xl md:hidden",
+              scrolled
+                ? "mt-2 rounded-3xl shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]"
+                : "mt-0 rounded-b-2xl border-t-0",
+            )}
           >
-            Launch VileDocx →
-          </button>
-        </div>
-      )}
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="block border-b border-white/[0.05] px-5 py-3 text-sm text-neutral-300 hover:text-white"
+              >
+                {l.label}
+              </a>
+            ))}
+            <button
+              onClick={() => {
+                setOpen(false);
+                openLink(LAUNCH_URL);
+              }}
+              className="block w-full px-5 py-3 text-left text-sm font-semibold text-white"
+            >
+              Launch VileDocx →
+            </button>
+          </div>
+        )}
+      </div>
     </header>
   );
 }
