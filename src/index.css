@@ -265,6 +265,14 @@ html[data-theme="candy"] [class*="text-orange-"] {
 html[data-theme="candy"] [class*="border-orange-"] {
   border-color: rgba(219, 39, 119, 0.35);
 }
+/* status accents (Live / Soon on the sub-products page) need a darker ink on white */
+html[data-theme="candy"] [class*="text-emerald-3"] {
+  color: #047857;
+}
+html[data-theme="candy"] [class*="text-amber-3"] {
+  color: #b45309;
+}
+
 /* the solid-white chips (logo badge, primary button) need a soft edge on white */
 html[data-theme="candy"] [class~="bg-white"] {
   box-shadow: 0 6px 18px -8px rgba(190, 24, 93, 0.45);

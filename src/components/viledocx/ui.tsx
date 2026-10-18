@@ -279,7 +279,11 @@ const NAV_LINKS = [
   { label: "Cost", href: "#free" },
   { label: "Nano", href: "#nano" },
   { label: "Source", href: "#source" },
+  { label: "Sub products", href: "#products" },
 ];
+
+/* The sub-products entry opens a page over the landing page, not an anchor. */
+const PRODUCTS_HREF = "#products";
 
 /* True once the page has been scrolled past `threshold` px. */
 export function useScrolled(threshold = 16) {
@@ -319,7 +323,11 @@ export function RenameBanner() {
   );
 }
 
-export function Navbar() {
+export function Navbar({
+  onOpenProducts,
+}: {
+  onOpenProducts?: () => void;
+} = {}) {
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled();
 
@@ -373,19 +381,40 @@ export function Navbar() {
             </span>
           </a>
 
-          <div className="relative hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className={cn(
-                  "rounded-full text-[13px] text-neutral-400 transition-colors hover:text-white",
-                  scrolled ? "px-3 py-1" : "px-3 py-1.5",
-                )}
-              >
-                {l.label}
-              </a>
-            ))}
+          <div className="relative hidden items-center gap-1 lg:flex">
+            {NAV_LINKS.map((l) =>
+              l.href === PRODUCTS_HREF ? (
+                <button
+                  key={l.href}
+                  type="button"
+                  onClick={() => onOpenProducts?.()}
+                  aria-haspopup="dialog"
+                  className={cn(
+                    "group inline-flex items-center gap-1.5 rounded-full text-[13px] font-medium text-orange-300/90 transition-colors hover:text-orange-200",
+                    scrolled ? "px-3 py-1" : "px-3 py-1.5",
+                  )}
+                >
+                  {l.label}
+                  <span
+                    aria-hidden
+                    className="text-[10px] opacity-70 transition-transform duration-300 group-hover:translate-x-0.5"
+                  >
+                    →
+                  </span>
+                </button>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className={cn(
+                    "rounded-full text-[13px] text-neutral-400 transition-colors hover:text-white",
+                    scrolled ? "px-3 py-1" : "px-3 py-1.5",
+                  )}
+                >
+                  {l.label}
+                </a>
+              ),
+            )}
           </div>
 
           <div className="relative flex items-center gap-2">
@@ -406,7 +435,7 @@ export function Navbar() {
             <button
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-neutral-300 transition-colors hover:text-white md:hidden"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-neutral-300 transition-colors hover:text-white lg:hidden"
             >
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -416,22 +445,38 @@ export function Navbar() {
         {open && (
           <div
             className={cn(
-              "overflow-hidden border border-white/10 bg-black/85 backdrop-blur-2xl md:hidden",
+              "overflow-hidden border border-white/10 bg-black/85 backdrop-blur-2xl lg:hidden",
               scrolled
                 ? "mt-2 rounded-3xl shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)]"
                 : "mt-0 rounded-b-2xl border-t-0",
             )}
           >
-            {NAV_LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="block border-b border-white/[0.05] px-5 py-3 text-sm text-neutral-300 hover:text-white"
-              >
-                {l.label}
-              </a>
-            ))}
+            {NAV_LINKS.map((l) =>
+              l.href === PRODUCTS_HREF ? (
+                <button
+                  key={l.href}
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={() => {
+                    setOpen(false);
+                    onOpenProducts?.();
+                  }}
+                  className="flex w-full items-center justify-between border-b border-white/[0.05] px-5 py-3 text-left text-sm font-medium text-orange-300 hover:text-orange-200"
+                >
+                  {l.label}
+                  <span aria-hidden>→</span>
+                </button>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="block border-b border-white/[0.05] px-5 py-3 text-sm text-neutral-300 hover:text-white"
+                >
+                  {l.label}
+                </a>
+              ),
+            )}
             <button
               onClick={() => {
                 setOpen(false);

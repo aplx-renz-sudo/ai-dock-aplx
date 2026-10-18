@@ -49,6 +49,10 @@ import {
 } from "@/components/viledocx/ui";
 import { SpendChart } from "@/components/viledocx/CostCharts";
 import { ScrollFade, ScrollProgress } from "@/components/viledocx/scroll";
+import {
+  SubProductsOverlay,
+  TRENCH_URL,
+} from "@/components/viledocx/subproducts";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -837,6 +841,9 @@ export default function Landing() {
 }
 
 function LandingInner() {
+  const [productsOpen, setProductsOpen] = useState(false);
+  const openProducts = () => setProductsOpen(true);
+
   return (
     <div className="vd-shell relative min-h-screen overflow-x-clip font-sans text-neutral-200 selection:bg-orange-400/25 selection:text-white">
       {/* subtle backdrop grid */}
@@ -853,7 +860,7 @@ function LandingInner() {
 
       <ScrollProgress />
       <RenameBanner />
-      <Navbar />
+      <Navbar onOpenProducts={openProducts} />
       {/* The big tree's roots creep down the full page and wrap the FinalCta buttons */}
       <ScrollRootsWitchCta />
 
@@ -868,8 +875,14 @@ function LandingInner() {
         <NanoModel />
         <Maintainer />
         <FinalCta />
-        <Footer />
+        <Footer onOpenProducts={openProducts} />
       </main>
+
+      {/* A page that wraps over the landing page, not a new route. */}
+      <SubProductsOverlay
+        open={productsOpen}
+        onClose={() => setProductsOpen(false)}
+      />
     </div>
   );
 }
@@ -1790,7 +1803,15 @@ function FinalCta() {
 
 /* ============================================================ FOOTER */
 
-const FOOTER_COLUMNS = [
+type FooterLink = {
+  label: string;
+  href?: string;
+  external?: boolean;
+  /** Opens the "Sub products of VileDocx" page over the landing page. */
+  overlay?: boolean;
+};
+
+const FOOTER_COLUMNS: { heading: string; links: FooterLink[] }[] = [
   {
     heading: "Product",
     links: [
@@ -1819,13 +1840,21 @@ const FOOTER_COLUMNS = [
       { label: "Report an issue", href: GITHUB_URL, external: true },
     ],
   },
+  {
+    heading: "Sub products of VileDocx",
+    links: [
+      { label: "All products", overlay: true },
+      { label: "VileDocx", overlay: true },
+      { label: "Trench", href: TRENCH_URL, external: true },
+    ],
+  },
 ];
 
-function Footer() {
+function Footer({ onOpenProducts }: { onOpenProducts: () => void }) {
   return (
     <footer className="relative border-t border-white/[0.06] px-6 pb-10 pt-16">
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2.5">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white text-[13px] font-bold text-black">
@@ -1859,9 +1888,17 @@ function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    {link.external ? (
+                    {link.overlay ? (
                       <button
-                        onClick={() => openLink(link.href)}
+                        onClick={onOpenProducts}
+                        aria-haspopup="dialog"
+                        className="text-left text-[13px] font-medium text-orange-300 transition-colors hover:text-orange-200"
+                      >
+                        {link.label} →
+                      </button>
+                    ) : link.href && link.external ? (
+                      <button
+                        onClick={() => openLink(link.href ?? "")}
                         className="text-[13px] text-neutral-400 transition-colors hover:text-white"
                       >
                         {link.label}
