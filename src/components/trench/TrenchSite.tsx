@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Github, Menu, X } from "lucide-react";
+import { ScrollBlurLayer } from "@/components/scroll-blur";
 import "./trench.css";
 import {
   NAV_LINKS,
@@ -110,6 +111,9 @@ export function TrenchSite({
       aria-modal="true"
       aria-label="TRENCH — terminal-native AI coding agent"
     >
+      {/* Only the page body smears: the utility bar and nav sit above it. */}
+      <ScrollBlurLayer container={overlayRef} zIndex={15} maxBlur={1.8} />
+
       <div className="trench-site">
         <button
           type="button"

@@ -53,6 +53,8 @@ import {
   SubProductsOverlay,
   TRENCH_URL,
 } from "@/components/viledocx/subproducts";
+import { TrenchSite } from "@/components/trench/TrenchSite";
+import { ScrollBlurLayer } from "@/components/scroll-blur";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -842,9 +844,17 @@ export default function Landing() {
 
 function LandingInner() {
   const [productsOpen, setProductsOpen] = useState(false);
+  const [trenchOpen, setTrenchOpen] = useState(false);
+  const trenchTriggerRef = useRef<HTMLButtonElement>(null);
   // Stable handlers: overlays on top subscribe to these in effects.
   const openProducts = useCallback(() => setProductsOpen(true), []);
   const closeProducts = useCallback(() => setProductsOpen(false), []);
+  const openTrench = useCallback(() => setTrenchOpen(true), []);
+  const closeTrench = useCallback(() => {
+    setTrenchOpen(false);
+    // Hand focus back to the button that opened the site.
+    window.setTimeout(() => trenchTriggerRef.current?.focus(), 30);
+  }, []);
 
   return (
     <div className="vd-shell relative min-h-screen overflow-x-clip font-sans text-neutral-200 selection:bg-orange-400/25 selection:text-white">
@@ -867,7 +877,7 @@ function LandingInner() {
       <ScrollRootsWitchCta />
 
       <main className="relative z-10">
-        <Hero />
+        <Hero onOpenTrench={openTrench} trenchTriggerRef={trenchTriggerRef} />
         <ProviderStrip />
         <DockFeatures />
         <HowItWorks />
@@ -882,13 +892,23 @@ function LandingInner() {
 
       {/* A page that wraps over the landing page, not a new route. */}
       <SubProductsOverlay open={productsOpen} onClose={closeProducts} />
+      {/* Straight from the landing CTA — the site, not the catalogue. */}
+      <TrenchSite open={trenchOpen} onClose={closeTrench} />
+      {/* Content smears while the page is moving fast, then snaps sharp. */}
+      <ScrollBlurLayer zIndex={40} />
     </div>
   );
 }
 
 /* ============================================================ HERO */
 
-function Hero() {
+function Hero({
+  onOpenTrench,
+  trenchTriggerRef,
+}: {
+  onOpenTrench: () => void;
+  trenchTriggerRef: React.RefObject<HTMLButtonElement | null>;
+}) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -970,6 +990,21 @@ function Hero() {
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <PreviewButton />
           <LaunchButton />
+          {/* The second product in the family, one click from the hero. */}
+          <button
+            type="button"
+            ref={trenchTriggerRef}
+            onClick={onOpenTrench}
+            aria-haspopup="dialog"
+            className="group inline-flex items-center gap-2 rounded-lg border border-cyan-400/30 bg-cyan-400/[0.07] px-6 py-3 text-sm font-semibold tracking-tight text-cyan-100 transition-all duration-300 ease-out hover:border-cyan-300/55 hover:bg-cyan-400/[0.13] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50"
+          >
+            <span
+              aria-hidden
+              className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_9px_2px_rgba(34,211,238,0.55)]"
+            />
+            Trench
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
+          </button>
           <button
             onClick={() => openLink(GITHUB_URL)}
             className="group inline-flex items-center gap-1.5 text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:ml-3"
