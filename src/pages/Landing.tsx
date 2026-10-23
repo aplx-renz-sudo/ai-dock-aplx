@@ -55,6 +55,7 @@ import {
 } from "@/components/viledocx/subproducts";
 import { TrenchSite } from "@/components/trench/TrenchSite";
 import { ScrollBlurLayer } from "@/components/scroll-blur";
+import { cn } from "@/lib/utils";
 
 /* ----------------------------- provider icons ---------------------------- */
 
@@ -880,6 +881,7 @@ function LandingInner() {
         <Hero onOpenTrench={openTrench} trenchTriggerRef={trenchTriggerRef} />
         <ProviderStrip />
         <DockFeatures />
+        <BuildModeIde />
         <HowItWorks />
         <ProviderCatalog />
         <Cost />
@@ -1427,6 +1429,162 @@ function DockFeatures() {
           </ScrollFade>
         ))}
       </div>
+      </div>
+    </section>
+  );
+}
+
+/* ==================================================== BUILD MODE → IDE */
+
+function BuildModeIde() {
+  const points = [
+    {
+      icon: <FileCode className="h-5 w-5" />,
+      title: "Your real files, in place",
+      body: "Point the IDE at a folder that's already on disk. Edits land in the same files you run and commit — nothing to export, nothing to upload again.",
+    },
+    {
+      icon: <Zap className="h-5 w-5" />,
+      title: "Fewer context switches",
+      body: "Read, edit and review in one window, so you spend the day in code instead of pasting snippets between a chat tab and your editor.",
+    },
+    {
+      icon: <Shield className="h-5 w-5" />,
+      title: "Local by default",
+      body: "The IDE only touches local paths. Your project isn't sent to a VileDocx service to be worked on, and it keeps working with the network off.",
+    },
+  ];
+
+  const files = [
+    { name: "src/", meta: "folder", depth: 0, active: false },
+    { name: "pages/Landing.tsx", meta: "edited", depth: 1, active: true },
+    { name: "components/Dock.tsx", meta: "", depth: 1, active: false },
+    { name: "lib/providers.ts", meta: "", depth: 1, active: false },
+    { name: "package.json", meta: "", depth: 0, active: false },
+    { name: "README.md", meta: "", depth: 0, active: false },
+  ];
+
+  const session = [
+    { k: "Opened", v: "~/projects/viledocx" },
+    { k: "Editing", v: "1 local file" },
+    { k: "Saved to", v: "your disk" },
+    { k: "Synced to", v: "—" },
+  ];
+
+  return (
+    <section id="ide" className="relative border-t border-white/[0.06] px-6 py-24 sm:py-28">
+      <div className="mx-auto max-w-5xl">
+        <ScrollFade distance={24}>
+          <SectionHeading
+            align="left"
+            kicker="Docx IDE"
+            title="Build mode replaced by - Docx IDE!"
+            subtitle="The old build mode is retired. The Docx IDE is the new place to open a project, work through it with a model, and keep the result on your own machine — local files only, for now."
+          />
+        </ScrollFade>
+
+        <ScrollFade delay={0.08} className="mt-12">
+          <GlassPanel className="overflow-hidden">
+            <div className="flex items-center gap-3 border-b border-white/[0.07] px-4 py-3">
+              <span className="flex items-center gap-1.5" aria-hidden>
+                <span className="h-2 w-2 rounded-full bg-white/15" />
+                <span className="h-2 w-2 rounded-full bg-white/15" />
+                <span className="h-2 w-2 rounded-full bg-white/15" />
+              </span>
+              <span className="truncate font-mono text-[11px] text-neutral-500">
+                ~/projects/viledocx
+              </span>
+              <span className="ml-auto shrink-0 rounded-full border border-amber-400/30 bg-amber-400/[0.08] px-2 py-0.5 font-mono text-[10px] tracking-wide text-amber-300/90">
+                LOCAL ONLY
+              </span>
+            </div>
+
+            <div className="grid gap-0 sm:grid-cols-[1.15fr_1fr]">
+              <div className="border-b border-white/[0.07] p-4 sm:border-b-0 sm:border-r">
+                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-600">
+                  Workspace
+                </p>
+                <ul className="space-y-1">
+                  {files.map((f) => (
+                    <li
+                      key={f.name}
+                      className={cn(
+                        "flex items-center justify-between rounded-md px-2 py-1 font-mono text-[11.5px]",
+                        f.active
+                          ? "bg-orange-400/[0.09] text-orange-200/90"
+                          : "text-neutral-400",
+                      )}
+                    >
+                      <span
+                        className="truncate"
+                        style={{ paddingLeft: f.depth * 12 }}
+                      >
+                        {f.name}
+                      </span>
+                      {f.meta && (
+                        <span className="ml-3 shrink-0 text-[10px] text-neutral-600">
+                          {f.meta}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="p-4">
+                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-600">
+                  Session
+                </p>
+                <dl className="space-y-2">
+                  {session.map((row) => (
+                    <div
+                      key={row.k}
+                      className="flex items-baseline justify-between gap-3 border-b border-white/[0.05] pb-2 last:border-0 last:pb-0"
+                    >
+                      <dt className="text-[11px] text-neutral-500">{row.k}</dt>
+                      <dd className="truncate font-mono text-[11px] text-neutral-300">
+                        {row.v}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-4 text-[11px] leading-relaxed text-neutral-500">
+                  GitHub sync isn't ready yet, so the IDE deliberately stays
+                  local: no remote push, no remote pull.
+                </p>
+              </div>
+            </div>
+          </GlassPanel>
+        </ScrollFade>
+
+        <div className="mt-10 grid gap-3 sm:grid-cols-3">
+          {points.map((p, i) => (
+            <ScrollFade key={p.title} delay={i * 0.07} className="h-full">
+              <GlassPanel className="h-full p-6">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-orange-300/90">
+                  {p.icon}
+                </div>
+                <h3 className="font-display text-[15px] font-semibold tracking-tight text-white">
+                  {p.title}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-neutral-400">{p.body}</p>
+              </GlassPanel>
+            </ScrollFade>
+          ))}
+        </div>
+
+        <ScrollFade delay={0.1} className="mt-8">
+          <div className="flex flex-col gap-2 rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3 sm:flex-row sm:items-center sm:gap-4">
+            <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+              Roadmap
+            </span>
+            <p className="text-[13px] leading-relaxed text-neutral-400">
+              Repository sync is planned. Until it ships, the IDE is local-first on
+              purpose, and it says so in the interface rather than pretending to
+              sync.
+            </p>
+          </div>
+        </ScrollFade>
       </div>
     </section>
   );
