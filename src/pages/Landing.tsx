@@ -55,6 +55,7 @@ import {
 } from "@/components/viledocx/subproducts";
 import { TrenchSite } from "@/components/trench/TrenchSite";
 import { ScrollBlurLayer } from "@/components/scroll-blur";
+import { useSmoothScroll } from "@/components/smooth-scroll";
 import { cn } from "@/lib/utils";
 
 /* ----------------------------- provider icons ---------------------------- */
@@ -851,6 +852,8 @@ function LandingInner() {
   const openProducts = useCallback(() => setProductsOpen(true), []);
   const closeProducts = useCallback(() => setProductsOpen(false), []);
   const openTrench = useCallback(() => setTrenchOpen(true), []);
+  // The wheel eases to a stop instead of jumping notch by notch.
+  useSmoothScroll();
   const closeTrench = useCallback(() => {
     setTrenchOpen(false);
     // Hand focus back to the button that opened the site.

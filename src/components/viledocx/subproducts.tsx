@@ -20,6 +20,7 @@ import {
 } from "./ui";
 import { TRENCH_URL } from "@/components/trench/data";
 import { TrenchSite } from "@/components/trench/TrenchSite";
+import { useSmoothScroll } from "@/components/smooth-scroll";
 
 export { TRENCH_URL };
 export const TRENCH_STATUS = "T01 still under construction, release soon";
@@ -37,6 +38,10 @@ export function SubProductsOverlay({
 }) {
   const [trenchOpen, setTrenchOpen] = useState(false);
   const openSiteRef = useRef<HTMLButtonElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // This wrapper scrolls itself, so it gets its own eased wheel.
+  useSmoothScroll(overlayRef, open);
 
   // Closing this page also drops the site stacked on top of it.
   const closePage = () => {
@@ -77,6 +82,7 @@ export function SubProductsOverlay({
         {open && (
         <motion.div
           key="sub-products"
+          ref={overlayRef}
           role="dialog"
           aria-modal="true"
           aria-label="Sub products of VileDocx"

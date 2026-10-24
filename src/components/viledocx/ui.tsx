@@ -426,12 +426,25 @@ export function Navbar({
             >
               <Github className="h-4 w-4" />
             </button>
-            <button
-              onClick={() => openLink(LAUNCH_URL)}
-              className="hidden rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-black transition-colors hover:bg-white/90 sm:inline-flex"
+            {/* The one launch action in the header — the biggest thing in it. */}
+            <a
+              href="https://viledocx.ai.studio/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "group inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-white font-bold text-black leading-none",
+                "shadow-[0_12px_30px_-14px_rgba(255,255,255,0.75)] transition-all duration-300 hover:bg-white/90 active:scale-[0.98] motion-reduce:transition-none",
+                "px-4 py-2.5 text-[13px] sm:px-6 sm:py-3 sm:text-[15px]",
+              )}
             >
-              Launch
-            </button>
+              Launch VileDocx
+              <span
+                aria-hidden
+                className="transition-transform duration-300 ease-out group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </a>
             <button
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
@@ -477,15 +490,6 @@ export function Navbar({
                 </a>
               ),
             )}
-            <button
-              onClick={() => {
-                setOpen(false);
-                openLink(LAUNCH_URL);
-              }}
-              className="block w-full px-5 py-3 text-left text-sm font-semibold text-white"
-            >
-              Launch VileDocx →
-            </button>
           </div>
         )}
       </div>

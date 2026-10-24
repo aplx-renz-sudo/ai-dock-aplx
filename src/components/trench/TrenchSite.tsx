@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Github, Menu, X } from "lucide-react";
 import { ScrollBlurLayer } from "@/components/scroll-blur";
+import { useSmoothScroll } from "@/components/smooth-scroll";
 import "./trench.css";
 import {
   NAV_LINKS,
@@ -100,6 +101,9 @@ export function TrenchSite({
     },
     [reduceMotion],
   );
+
+  // The overlay scrolls itself, so it gets its own eased wheel.
+  useSmoothScroll(overlayRef, open);
 
   if (!open) return null;
 

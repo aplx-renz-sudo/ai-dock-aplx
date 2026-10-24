@@ -159,8 +159,8 @@ body {
  * The active theme lives on <html data-theme="...">. Three looks are offered
  * (see src/components/viledocx/theme.tsx):
  *   dark      — the original dark mode
- *   halloween — the current release theme (default)
- *   candy     — a white light mode washed in pink + yellow
+ *   halloween — seasonal release theme (pumpkins, bats, witch tree)
+ *   candy     — a white light mode washed in pink + yellow (default)
  *
  * Dark and Halloween share the shadcn dark palette. Candy keeps the light
  * `:root` tokens (retinted warm) and re-maps the handful of dark-tuned

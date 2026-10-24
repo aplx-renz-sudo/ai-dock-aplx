@@ -22,8 +22,8 @@ import { cn } from "@/lib/utils";
  */
 export type VileTheme = "dark" | "halloween" | "candy";
 
-const STORAGE_KEY = "viledocx-theme";
-const DEFAULT_THEME: VileTheme = "halloween";
+const STORAGE_KEY = "viledocx-theme-v2";
+const DEFAULT_THEME: VileTheme = "candy";
 
 type ThemeOption = {
   id: VileTheme;
